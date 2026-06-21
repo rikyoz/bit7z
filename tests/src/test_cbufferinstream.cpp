@@ -34,7 +34,11 @@ TEST_CASE( "CBufferInStream: Seeking a buffer stream with no content", "[cbuffer
         UInt64 newPosition{ 0 };
 
         SECTION( "Invalid seek origin" ) {
-            REQUIRE( inStream.Seek( 0, 3, &newPosition ) == STG_E_INVALIDFUNCTION );
+            // Only STREAM_SEEK_SET (0), STREAM_SEEK_CUR (1), and STREAM_SEEK_END (2) are valid origins.
+            // The 258 case guards against an out-of-range origin being narrowed onto a valid enumerator
+            // (258 would alias to STREAM_SEEK_END under a plain cast) instead of being rejected.
+            const UInt32 invalidOrigin = GENERATE( 3u, 42u, 258u, std::numeric_limits< UInt32 >::max() );
+            REQUIRE( inStream.Seek( 0, invalidOrigin, &newPosition ) == STG_E_INVALIDFUNCTION );
             REQUIRE( newPosition == 0 );
         }
 

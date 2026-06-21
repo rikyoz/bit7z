@@ -51,8 +51,11 @@ STDMETHODIMP CFileOutStream::Write( const void* data, UInt32 size, UInt32* proce
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CFileOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) noexcept {
+    SeekOrigin origin; // NOLINT(cppcoreguidelines-init-variables)
+    RINOK( toSeekOrigin( seekOrigin, origin ) ) //-V3504
+
     std::uint64_t finalPosition = 0;
-    const auto result = mFile.seek( static_cast< SeekOrigin >( seekOrigin ), offset, finalPosition );
+    const auto result = mFile.seek( origin, offset, finalPosition );
     if ( newPosition != nullptr ) {
         *newPosition = finalPosition;
     }

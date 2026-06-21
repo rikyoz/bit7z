@@ -31,6 +31,20 @@
 
 namespace bit7z {
 
+// FileHandle::seek casts a SeekOrigin straight to the platform's seek-origin constant, so the
+// enumerators must match the values that lseek (Unix) and SetFilePointerEx (Windows) expect.
+#ifdef _WIN32
+static_assert( static_cast< DWORD >( SeekOrigin::Begin ) == FILE_BEGIN, "SeekOrigin::Begin must match FILE_BEGIN" );
+static_assert( static_cast< DWORD >( SeekOrigin::CurrentPosition ) == FILE_CURRENT,
+               "SeekOrigin::CurrentPosition must match FILE_CURRENT" );
+static_assert( static_cast< DWORD >( SeekOrigin::End ) == FILE_END, "SeekOrigin::End must match FILE_END" );
+#else
+static_assert( static_cast< int >( SeekOrigin::Begin ) == SEEK_SET, "SeekOrigin::Begin must match SEEK_SET" );
+static_assert( static_cast< int >( SeekOrigin::CurrentPosition ) == SEEK_CUR,
+               "SeekOrigin::CurrentPosition must match SEEK_CUR" );
+static_assert( static_cast< int >( SeekOrigin::End ) == SEEK_END, "SeekOrigin::End must match SEEK_END" );
+#endif
+
 namespace {
 
 BIT7Z_ALWAYS_INLINE

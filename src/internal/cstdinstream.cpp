@@ -49,10 +49,10 @@ COM_DECLSPEC_NOTHROW
 STDMETHODIMP CStdInStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) noexcept {
     mInputStream.clear();
 
-    std::ios_base::seekdir way; // NOLINT(cppcoreguidelines-init-variables)
-    RINOK( toSeekdir( seekOrigin, way ) ) //-V3504
+    SeekOrigin origin; // NOLINT(cppcoreguidelines-init-variables)
+    RINOK( toSeekOrigin( seekOrigin, origin ) ) //-V3504
 
-    mInputStream.seekg( static_cast< std::istream::off_type >( offset ), way );
+    mInputStream.seekg( static_cast< std::istream::off_type >( offset ), toSeekdir( origin ) );
 
     if ( mInputStream.bad() ) {
         return HRESULT_FROM_WIN32( ERROR_SEEK );

@@ -10,28 +10,22 @@
 #ifndef STREAMUTIL_HPP
 #define STREAMUTIL_HPP
 
-#include "internal/windows.hpp"
+#include "internal/seekorigin.hpp"
 
-#include <cstdint>
 #include <ios>
 
 namespace bit7z {
 
-inline auto toSeekdir( std::uint32_t seekOrigin, std::ios_base::seekdir& way ) -> HRESULT {
+inline auto toSeekdir( SeekOrigin seekOrigin ) -> std::ios_base::seekdir {
     switch ( seekOrigin ) {
-        case STREAM_SEEK_SET:
-            way = std::ios_base::beg;
-            break;
-        case STREAM_SEEK_CUR:
-            way = std::ios_base::cur;
-            break;
-        case STREAM_SEEK_END:
-            way = std::ios_base::end;
-            break;
+        case SeekOrigin::CurrentPosition:
+            return std::ios_base::cur;
+        case SeekOrigin::End:
+            return std::ios_base::end;
+        case SeekOrigin::Begin:
         default:
-            return STG_E_INVALIDFUNCTION;
+            return std::ios_base::beg;
     }
-    return S_OK;
 }
 
 } // namespace bit7z

@@ -68,8 +68,11 @@ STDMETHODIMP CBufferInStream::Read( void* data, UInt32 size, UInt32* processedSi
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CBufferInStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) noexcept {
+    SeekOrigin origin; // NOLINT(cppcoreguidelines-init-variables)
+    RINOK( toSeekOrigin( seekOrigin, origin ) ) //-V3504
+
     std::uint64_t newIndex{};
-    const HRESULT res = seek( mBuffer, mCurrentPosition, offset, seekOrigin, newIndex );
+    const HRESULT res = seek( mBuffer, mCurrentPosition, offset, origin, newIndex );
 
     if ( res != S_OK ) {
         // The newIndex is not in the range [0, mBuffer.size]

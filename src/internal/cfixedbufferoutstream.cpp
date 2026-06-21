@@ -20,6 +20,7 @@
 #include "bitexception.hpp"
 #include "bittypes.hpp"
 #include "internal/cpp26.hpp"
+#include "internal/seekorigin.hpp"
 #include "internal/util.hpp"
 
 #include <algorithm> // for std::copy_n
@@ -73,21 +74,22 @@ STDMETHODIMP CFixedBufferOutStream::Write( const void* data, UInt32 size, UInt32
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CFixedBufferOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) noexcept {
+    SeekOrigin origin; // NOLINT(cppcoreguidelines-init-variables)
+    RINOK( toSeekOrigin( seekOrigin, origin ) ) //-V3504
+
     std::uint64_t seekIndex{};
-    switch ( seekOrigin ) {
-        case STREAM_SEEK_SET: {
+    switch ( origin ) {
+        case SeekOrigin::Begin: {
             break;
         }
-        case STREAM_SEEK_CUR: {
+        case SeekOrigin::CurrentPosition: {
             seekIndex = mCurrentPosition;
             break;
         }
-        case STREAM_SEEK_END: {
+        case SeekOrigin::End: {
             seekIndex = mBufferSize;
             break;
         }
-        default:
-            return STG_E_INVALIDFUNCTION;
     }
 
     RINOK( seekToOffset( seekIndex, offset ) ) //-V3504

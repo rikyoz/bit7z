@@ -64,8 +64,11 @@ STDMETHODIMP CBufferOutStream::Write( const void* data, UInt32 size, UInt32* pro
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CBufferOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) noexcept {
+    SeekOrigin origin; // NOLINT(cppcoreguidelines-init-variables)
+    RINOK( toSeekOrigin( seekOrigin, origin ) ) //-V3504
+
     std::uint64_t newIndex{};
-    const HRESULT res = seek( mBuffer, mCurrentPosition, offset, seekOrigin, newIndex );
+    const HRESULT res = seek( mBuffer, mCurrentPosition, offset, origin, newIndex );
 
     if ( res != S_OK ) {
         // We failed to seek (e.g., the new index would not be in the range [0, mBuffer.size]).

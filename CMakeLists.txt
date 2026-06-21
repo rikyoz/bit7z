@@ -110,6 +110,7 @@ set(
         src/internal/optional.hpp
         src/internal/processeditem.hpp
         src/internal/rawdataextractcallback.hpp
+        src/internal/seekorigin.hpp
         src/internal/sequentialextractcallback.hpp
         src/internal/streamextractcallback.hpp
         src/internal/streamutil.hpp

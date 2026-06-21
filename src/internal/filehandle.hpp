@@ -12,14 +12,13 @@
 
 #include "bittypes.hpp" // For to_underlying
 #include "internal/fs.hpp"
+#include "internal/seekorigin.hpp" // For SeekOrigin
 #include "internal/windows.hpp" // For HRESULT, GetLastError, and Windows-specific flags
 
 #include <cstdint>
 
-#ifdef _WIN32
-#include <cstdio> // For SEEK_ flags
-#else
-#include <fcntl.h> // For SEEK_ and O_ flags
+#ifndef _WIN32
+#include <fcntl.h> // For O_ flags
 #endif
 
 namespace bit7z {
@@ -29,15 +28,6 @@ using handle_t = HANDLE;
 #else
 using handle_t = int;
 #endif
-
-/**
- * @brief Enumeration defining the origin of a seek operation.
- */
-enum struct SeekOrigin : std::int8_t {
-    Begin = SEEK_SET,           ///< Set the file pointer at the given offset from the beginning of the file.
-    CurrentPosition = SEEK_CUR, ///< Set the file pointer at the given offset from the current file pointer position.
-    End = SEEK_END              ///< Set the file pointer at the given offset from the end of the file.
-};
 
 #ifdef _WIN32
 /**

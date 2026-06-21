@@ -48,10 +48,10 @@ STDMETHODIMP CStdOutStream::Write( const void* data, UInt32 size, UInt32* proces
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CStdOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) noexcept {
-    std::ios_base::seekdir way; // NOLINT(cppcoreguidelines-init-variables)
-    RINOK( toSeekdir( seekOrigin, way ) ) //-V3504
+    SeekOrigin origin; // NOLINT(cppcoreguidelines-init-variables)
+    RINOK( toSeekOrigin( seekOrigin, origin ) ) //-V3504
 
-    mOutputStream.seekp( static_cast< std::ostream::off_type >( offset ), way );
+    mOutputStream.seekp( static_cast< std::ostream::off_type >( offset ), toSeekdir( origin ) );
 
     if ( mOutputStream.bad() ) {
         return HRESULT_FROM_WIN32( ERROR_SEEK );

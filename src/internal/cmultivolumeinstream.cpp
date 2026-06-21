@@ -16,6 +16,7 @@
 #include "bitexception.hpp"
 #include "bittypes.hpp"
 #include "internal/fs.hpp"
+#include "internal/seekorigin.hpp"
 #include "internal/util.hpp"
 
 namespace bit7z {
@@ -118,18 +119,19 @@ STDMETHODIMP CMultiVolumeInStream::Read( void* data, UInt32 size, UInt32* proces
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CMultiVolumeInStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) noexcept {
+    SeekOrigin origin; // NOLINT(cppcoreguidelines-init-variables)
+    RINOK( toSeekOrigin( seekOrigin, origin ) ) //-V3504
+
     std::uint64_t seekPosition{};
-    switch ( seekOrigin ) {
-        case STREAM_SEEK_SET:
+    switch ( origin ) {
+        case SeekOrigin::Begin:
             break;
-        case STREAM_SEEK_CUR:
+        case SeekOrigin::CurrentPosition:
             seekPosition = mAbsolutePosition;
             break;
-        case STREAM_SEEK_END:
+        case SeekOrigin::End:
             seekPosition = mTotalSize;
             break;
-        default:
-            return STG_E_INVALIDFUNCTION;
     }
 
     RINOK( seekToOffset( seekPosition, offset ) ) //-V3504

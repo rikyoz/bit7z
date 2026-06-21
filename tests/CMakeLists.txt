@@ -46,7 +46,15 @@ set(
     INTERNAL_API_SOURCE_FILES
         src/test_bititemsvector.cpp # BitItemsVector is not meant to be used by the user
         src/test_cbufferinstream.cpp
+        src/test_cbufferoutstream.cpp
+        src/test_cfileinstream.cpp
+        src/test_cfileoutstream.cpp
+        src/test_cfixedbufferoutstream.cpp
+        src/test_cmultivolumeinstream.cpp
+        src/test_cmultivolumeoutstream.cpp
         src/test_cpp26.cpp
+        src/test_cstdinstream.cpp
+        src/test_cstdoutstream.cpp
         src/test_dateutil.cpp
         src/test_formatdetect.cpp
         src/test_fsutil.cpp

@@ -11,7 +11,7 @@
 #define BUFFERUTIL_HPP
 
 #include "bittypes.hpp"
-#include "bitwindows.hpp"
+#include "internal/seekorigin.hpp"
 
 #include <cstdint>
 
@@ -21,7 +21,7 @@ auto seek(
     const buffer_t& buffer,
     const buffer_t::const_iterator& currentPosition,
     std::int64_t offset,
-    std::uint32_t seekOrigin,
+    SeekOrigin seekOrigin,
     std::uint64_t& newPosition
 ) -> HRESULT;
 
