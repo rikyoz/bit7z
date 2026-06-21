@@ -38,7 +38,7 @@ CFixedBufferOutStream::CFixedBufferOutStream( byte_t* buffer, std::size_t size )
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP CFixedBufferOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) noexcept {
+STDMETHODIMP CFixedBufferOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) noexcept { // NOSONAR
     if ( processedSize != nullptr ) {
         *processedSize = 0;
     }

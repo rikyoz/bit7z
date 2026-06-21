@@ -41,7 +41,7 @@ CSynchronizedInStream::~CSynchronizedInStream() {
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP CSynchronizedInStream::Read( void* data, UInt32 size, UInt32* processedSize ) noexcept {
+STDMETHODIMP CSynchronizedInStream::Read( void* data, UInt32 size, UInt32* processedSize ) noexcept { // NOSONAR
     if ( processedSize != nullptr ) {
         *processedSize = 0;
     }

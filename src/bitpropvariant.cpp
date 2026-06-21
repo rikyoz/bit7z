@@ -83,9 +83,8 @@ BitPropVariant::BitPropVariant() noexcept : PROPVARIANT() {
 
 BitPropVariant::BitPropVariant( const BitPropVariant& other ) : PROPVARIANT( other ) {
     if ( vt == VT_BSTR ) { // Until now, we've copied only the pointer to the string, hence we need a deep copy.
-        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
         bstrVal = SysAllocStringByteLen(
-            reinterpret_cast< LPCSTR >( other.bstrVal ),
+            reinterpret_cast< LPCSTR >( other.bstrVal ), // NOLINT(*-pro-type-reinterpret-cast) // NOSONAR
             SysStringByteLen( other.bstrVal )
         );
         if ( bstrVal == nullptr ) {
@@ -198,50 +197,9 @@ auto BitPropVariant::operator=( const BitPropVariant& other ) -> BitPropVariant&
 auto BitPropVariant::operator=( BitPropVariant&& other ) noexcept -> BitPropVariant& {
     if ( this != &other ) {
         internalClear();
-        vt = other.vt;
-        switch ( vt ) {
-            case VT_BOOL:
-                boolVal = other.boolVal;
-                break;
-            case VT_BSTR:
-                bstrVal = other.bstrVal;
-                other.bstrVal = nullptr;
-                break;
-            case VT_UI1:
-                bVal = other.bVal;
-                break;
-            case VT_UI2:
-                uiVal = other.uiVal;
-                break;
-            case VT_UINT:
-                uintVal = other.uintVal;
-                break;
-            case VT_UI4:
-                ulVal = other.ulVal;
-                break;
-            case VT_UI8:
-                uhVal = other.uhVal;
-                break;
-            case VT_I1:
-                cVal = other.cVal;
-                break;
-            case VT_I2:
-                iVal = other.iVal;
-                break;
-            case VT_INT:
-                intVal = other.intVal;
-                break;
-            case VT_I4:
-                lVal = other.lVal;
-                break;
-            case VT_I8:
-                hVal = other.hVal;
-                break;
-            case VT_FILETIME:
-                filetime = other.filetime;
-                break;
-            default: // The type is not supported
-                break;
+        static_cast< PROPVARIANT& >( *this ) = other; // Trivially copying the whole union.
+        if ( vt == VT_BSTR ) {
+            other.bstrVal = nullptr; // Stealing the string ownership.
         }
     }
     return *this;
@@ -251,7 +209,7 @@ auto BitPropVariant::getBool() const -> bool {
     if ( vt != VT_BOOL ) {
         throw BitException( "BitPropVariant is not a bool", make_error_code( BitError::RequestedWrongVariantType ) );
     }
-    return boolVal != VARIANT_FALSE; //simply returning boolVal should work, but this prevents some compiler warnings.
+    return boolVal != VARIANT_FALSE; // Simply returning boolVal should work, but this prevents some compiler warnings.
 }
 
 auto BitPropVariant::getString() const -> tstring {
@@ -530,12 +488,12 @@ void BitPropVariant::internalClear() noexcept {
     wReserved1 = 0;
     wReserved2 = 0;
     wReserved3 = 0;
-    uhVal.QuadPart = 0;
+    uhVal.QuadPart = 0; // NOSONAR
 }
 
 namespace {
 /* Needed for comparing FILETIME objects in BitPropVariant */
- auto operator==( FILETIME ft1, FILETIME ft2 ) noexcept -> bool {
+ auto filetimeEquals( FILETIME ft1, FILETIME ft2 ) noexcept -> bool {
 #ifdef _WIN32
     return CompareFileTime( &ft1, &ft2 ) == 0;
 #else
@@ -544,7 +502,7 @@ namespace {
 }
 }
 
-auto operator==( const BitPropVariant& lhs, const BitPropVariant& rhs ) noexcept -> bool {
+auto operator==( const BitPropVariant& lhs, const BitPropVariant& rhs ) noexcept -> bool { // NOSONAR
     if ( lhs.vt != rhs.vt ) {
         return false;
     }
@@ -576,13 +534,13 @@ auto operator==( const BitPropVariant& lhs, const BitPropVariant& rhs ) noexcept
         case VT_I8:
             return lhs.hVal.QuadPart == rhs.hVal.QuadPart;
         case VT_FILETIME:
-            return lhs.filetime == rhs.filetime;
+            return filetimeEquals( lhs.filetime, rhs.filetime );
         default:
             return false;
     }
 }
 
-auto operator!=( const BitPropVariant& lhs, const BitPropVariant& rhs ) noexcept -> bool {
+auto operator!=( const BitPropVariant& lhs, const BitPropVariant& rhs ) noexcept -> bool { // NOSONAR
     return !( lhs == rhs ); // NOLINT(*-redundant-parentheses)
 }
 
@@ -591,7 +549,7 @@ auto operator!=( const BitPropVariant& lhs, const BitPropVariant& rhs ) noexcept
         return #enum_value
 
 auto to_string( BitProperty property ) -> std::string {
-    switch ( property ) {
+    switch ( property ) { // NOSONAR
         ENUM_TO_STRING( BitProperty::NoProperty );
         ENUM_TO_STRING( BitProperty::MainSubfile );
         ENUM_TO_STRING( BitProperty::HandlerItemIndex );

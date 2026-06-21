@@ -18,7 +18,7 @@ CFileInStream::CFileInStream( const native_string& filePath, bool storeOpenFiles
     : mFile{ filePath, storeOpenFiles } {}
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP CFileInStream::Read( void* data, UInt32 size, UInt32* processedSize ) noexcept {
+STDMETHODIMP CFileInStream::Read( void* data, UInt32 size, UInt32* processedSize ) noexcept { // NOSONAR
     if ( processedSize != nullptr ) {
         *processedSize = 0;
     }

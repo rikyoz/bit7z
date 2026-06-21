@@ -118,7 +118,7 @@ class Bit7zLibraryLoader final {
          *
          * @throws BitException if no library is currently loaded.
          */
-        /* implicit */ operator const Bit7zLibrary&() const; //NOLINT(*-explicit-conversions)
+        /* implicit */ operator const Bit7zLibrary&() const; //NOLINT(*-explicit-conversions) //NOSONAR
 
     private:
         /* We can't use std::optional here since bit7z's public API is still C++14.

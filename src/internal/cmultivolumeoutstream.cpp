@@ -33,7 +33,11 @@ CMultiVolumeOutStream::CMultiVolumeOutStream( std::uint64_t volSize, fs::path ar
       mTotalSize( 0 ) {}
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP CMultiVolumeOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) noexcept try {
+STDMETHODIMP CMultiVolumeOutStream::Write(
+    const void* data, // NOSONAR
+    UInt32 size,
+    UInt32* processedSize
+) noexcept try {
     if ( processedSize != nullptr ) {
         *processedSize = 0;
     }

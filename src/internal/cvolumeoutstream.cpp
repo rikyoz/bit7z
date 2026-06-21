@@ -37,7 +37,7 @@ void CVolumeOutStream::setCurrentSize( std::uint64_t currentSize ) {
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP CVolumeOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) noexcept {
+STDMETHODIMP CVolumeOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) noexcept { // NOSONAR
     if ( processedSize != nullptr ) {
         *processedSize = 0;
     }

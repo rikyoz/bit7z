@@ -89,7 +89,7 @@ auto filetimeCast( const FileTimeDuration unixEpoch ) -> time_type {
 
 auto toTimeType( FILETIME fileTime ) -> time_type {
     const FileTimeDuration fileTimeDuration{
-        ( static_cast< std::uint64_t >( fileTime.dwHighDateTime ) << 32ull ) + fileTime.dwLowDateTime
+        ( static_cast< std::uint64_t >( fileTime.dwHighDateTime ) << 32uLL ) + fileTime.dwLowDateTime
     };
     const auto unixEpoch = fileTimeDuration + nt_to_unix_epoch;
     return filetimeCast< time_type::duration >( unixEpoch );
@@ -101,7 +101,7 @@ auto toFILETIME( time_type timePoint ) -> FILETIME {
     const auto ticks = static_cast< std::uint64_t >( ntEpoch.count() );
     FILETIME fileTime{};
     fileTime.dwLowDateTime = static_cast< DWORD >( ticks );
-    fileTime.dwHighDateTime = static_cast< DWORD >( ticks >> 32ull );
+    fileTime.dwHighDateTime = static_cast< DWORD >( ticks >> 32uLL );
     return fileTime;
 }
 
@@ -120,5 +120,3 @@ auto currentFileTime() -> FILETIME {
 #endif
 }
 } // namespace bit7z
-
-//#endif

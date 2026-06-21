@@ -96,7 +96,7 @@ class Optional final : OptionalBase< T > {
         constexpr Optional() noexcept : mEngaged{ false }, mStorage{ empty_init } {}
 
         //NOLINTNEXTLINE(*-explicit-conversions)
-        /* implicit */ constexpr Optional( nullopt_t /* unused */ ) noexcept
+        /* implicit */ constexpr Optional( nullopt_t /* unused */ ) noexcept // NOSONAR
             : mEngaged{ false }, mStorage{ empty_init } {}
 
         /* implicit */ Optional( const Optional& other ) : mEngaged{ other.mEngaged }, mStorage{ empty_init } {
@@ -113,10 +113,10 @@ class Optional final : OptionalBase< T > {
         }
 
         //NOLINTNEXTLINE(*-explicit-conversions)
-        /* implicit */ constexpr Optional( const T& value ) : mEngaged{ true }, mStorage{ value } {}
+        /* implicit */ constexpr Optional( const T& value ) : mEngaged{ true }, mStorage{ value } {} // NOSONAR
 
         //NOLINTNEXTLINE(*-explicit-conversions)
-        /* implicit */ constexpr Optional( T&& value ) : mEngaged{ true }, mStorage{ std::move( value ) } {}
+        /* implicit */ constexpr Optional( T&& value ) : mEngaged{ true }, mStorage{ std::move( value ) } {} // NOSONAR
 
         template< class... Args >
         constexpr explicit Optional( in_place_t /*unused*/, Args&&... args )

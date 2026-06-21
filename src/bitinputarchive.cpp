@@ -525,7 +525,7 @@ void BitInputArchive::extractMatchingTo(
     const bool extractMatchingItems = policy == FilterPolicy::Include;
     extractTo(
         outDir,
-        [ & ] ( const BitArchiveItem& item ) -> FilterResult {
+        [ &itemFilter, extractMatchingItems ] ( const BitArchiveItem& item ) -> FilterResult {
             return shouldProcessItem( item, itemFilter, extractMatchingItems )
                        ? FilterResult::ProcessItem
                        : FilterResult::SkipItem;
@@ -552,7 +552,7 @@ void BitInputArchive::extractMatchingTo( const tstring& outDir, const tregex& re
     const bool extractMatchingItems = policy == FilterPolicy::Include;
     extractTo(
         outDir,
-        [ &regex, &extractMatchingItems ] ( const BitArchiveItem& item ) -> FilterResult {
+        [ &regex, extractMatchingItems ] ( const BitArchiveItem& item ) -> FilterResult {
             return shouldProcessItem( item, regex, extractMatchingItems )
                        ? FilterResult::ProcessItem
                        : FilterResult::SkipItem;
@@ -763,7 +763,7 @@ void BitInputArchive::extractMatchingTo( buffer_t& outBuffer, const tstring& ite
     const bool extractMatchingItems = policy == FilterPolicy::Include;
     extractTo(
         outBuffer,
-        [ & ] ( const BitArchiveItem& item ) -> FilterResult {
+        [ &itemFilter, extractMatchingItems ] ( const BitArchiveItem& item ) -> FilterResult {
             return shouldProcessItem( item, itemFilter, extractMatchingItems )
                        ? FilterResult::ProcessItem
                        : FilterResult::SkipItem;

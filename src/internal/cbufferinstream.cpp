@@ -33,7 +33,7 @@ CBufferInStream::CBufferInStream( const buffer_t& inBuffer )
     : mBuffer( inBuffer ), mCurrentPosition{ mBuffer.begin() } {}
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP CBufferInStream::Read( void* data, UInt32 size, UInt32* processedSize ) noexcept {
+STDMETHODIMP CBufferInStream::Read( void* data, UInt32 size, UInt32* processedSize ) noexcept { // NOSONAR
     if ( processedSize != nullptr ) {
         *processedSize = 0;
     }

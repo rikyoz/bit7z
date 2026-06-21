@@ -26,7 +26,7 @@ CBufferOutStream::CBufferOutStream( buffer_t& outBuffer )
     : mBuffer( outBuffer ), mCurrentPosition{ mBuffer.begin() } {}
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP CBufferOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) noexcept {
+STDMETHODIMP CBufferOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) noexcept { // NOSONAR
     if ( processedSize != nullptr ) {
         *processedSize = 0;
     }

@@ -19,7 +19,7 @@ namespace bit7z {
 CRawOutStream::CRawOutStream( RawDataCallback callback ) : mOutputCallback{ std::move( callback ) } {}
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP CRawOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) noexcept {
+STDMETHODIMP CRawOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) noexcept { // NOSONAR
     if ( processedSize != nullptr ) {
         *processedSize = 0;
     }

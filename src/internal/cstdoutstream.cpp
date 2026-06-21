@@ -26,7 +26,7 @@ namespace bit7z {
 CStdOutStream::CStdOutStream( std::ostream& outputStream ) : mOutputStream( outputStream ) {}
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP CStdOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) noexcept {
+STDMETHODIMP CStdOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) noexcept { // NOSONAR
     if ( processedSize != nullptr ) {
         *processedSize = 0;
     }

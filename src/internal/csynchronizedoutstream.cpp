@@ -20,7 +20,7 @@ namespace bit7z {
 CSynchronizedOutStream::CSynchronizedOutStream( BufferQueue& queue ) : mBufferQueue{ queue } {}
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP CSynchronizedOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) noexcept {
+STDMETHODIMP CSynchronizedOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) noexcept { // NOSONAR
     if ( processedSize != nullptr ) {
         *processedSize = 0;
     }

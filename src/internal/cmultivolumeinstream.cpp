@@ -72,7 +72,7 @@ auto CMultiVolumeInStream::currentVolume() -> CachedVolume< CFileInStream >& {
 // NOLINTEND(*-pro-bounds-avoid-unchecked-container-access)
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP CMultiVolumeInStream::Read( void* data, UInt32 size, UInt32* processedSize ) noexcept try {
+STDMETHODIMP CMultiVolumeInStream::Read( void* data, UInt32 size, UInt32* processedSize ) noexcept try { // NOSONAR
     if ( processedSize != nullptr ) {
         *processedSize = 0;
     }

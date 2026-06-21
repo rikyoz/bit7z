@@ -42,7 +42,7 @@ CSymlinkInStream::CSymlinkInStream( const fs::path& symlinkPath )
       mSymlinkStream{ bit7z::make_com< CStdInStream >( mStream ) } {}
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP CSymlinkInStream::Read( void* data, UInt32 size, UInt32* processedSize ) noexcept {
+STDMETHODIMP CSymlinkInStream::Read( void* data, UInt32 size, UInt32* processedSize ) noexcept { // NOSONAR
     return mSymlinkStream->Read( data, size, processedSize );
 }
 
