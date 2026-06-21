@@ -68,7 +68,7 @@ class BitIndicesView final {
          *
          * @param index  the single index to be viewed.
          */
-        /* implicit */ constexpr BitIndicesView( const_reference index ) noexcept
+        /* implicit */ constexpr BitIndicesView( const_reference index ) noexcept // NOSONAR
             : mIndices{ &index }, mSize{ 1 } {}
 
         /**
@@ -78,7 +78,7 @@ class BitIndicesView final {
          *
          * @param indices  the vector of indices to be viewed.
          */
-        /* implicit */ BitIndicesView( const IndicesVector& indices ) noexcept
+        /* implicit */ BitIndicesView( const IndicesVector& indices ) noexcept // NOSONAR
             : BitIndicesView{ indices.data(), indices.size() } {}
 
         /**
@@ -88,7 +88,7 @@ class BitIndicesView final {
          * @param indices  the array of indices to be viewed.
          */
         template< std::size_t N >
-        /* implicit */ constexpr BitIndicesView( element_type (&indices)[ N ] ) noexcept
+        /* implicit */ constexpr BitIndicesView( element_type (&indices)[ N ] ) noexcept // NOSONAR
             : BitIndicesView{ static_cast< const_pointer >( indices ), N } {}
 
         /**
@@ -103,7 +103,7 @@ class BitIndicesView final {
             std::size_t N,
             typename = typename std::enable_if< std::is_convertible< U(*)[ ], element_type(*)[ ] >::value >::type
         >
-        /* implicit */ constexpr BitIndicesView( const std::array< U, N >& indices ) noexcept
+        /* implicit */ constexpr BitIndicesView( const std::array< U, N >& indices ) noexcept // NOSONAR
             : BitIndicesView{ indices.data(), indices.size() } {}
 
         /**

@@ -94,13 +94,13 @@ class BitInFormat {
          * @param other  the target object to compare to.
          * @return a boolean value indicating whether this format is equal to the "other" or not.
          */
-        auto operator==( BitInFormat const& other ) const noexcept -> bool;
+        auto operator==( const BitInFormat& other ) const noexcept -> bool;
 
         /**
          * @param other  the target object to compare to.
          * @return a boolean value indicating whether this format is different from the "other" or not.
          */
-        auto operator!=( BitInFormat const& other ) const noexcept -> bool;
+        auto operator!=( const BitInFormat& other ) const noexcept -> bool;
 
     private:
         unsigned char mValue;

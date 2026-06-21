@@ -55,7 +55,7 @@ class BitCompressor : public BitAbstractArchiveCreator {
          * @param lib       the 7z library to use.
          * @param format    the output archive format.
          */
-        BitCompressor( Bit7zLibrary const& lib, BitInOutFormat const& format )
+        BitCompressor( const Bit7zLibrary& lib, const BitInOutFormat& format )
             : BitAbstractArchiveCreator( lib, format ) {}
 
         /**

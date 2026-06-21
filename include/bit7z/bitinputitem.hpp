@@ -77,7 +77,11 @@ class BitInputItem final {
             SymlinkPolicy symlinkPolicy = SymlinkPolicy::Follow
         );
 
-        BitInputItem( const bit7zfs::path& searchPath, const bit7zfs::directory_entry& entry, SymlinkPolicy symlinkPolicy );
+        BitInputItem(
+            const bit7zfs::path& searchPath,
+            const bit7zfs::directory_entry& entry,
+            SymlinkPolicy symlinkPolicy
+        );
 
         BitInputItem( const buffer_t& buffer, const tstring& path );
 

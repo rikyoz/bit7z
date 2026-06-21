@@ -33,13 +33,13 @@ void Bit7zLibraryLoader::load( const tstring& libraryPath ) {
     mLoaded = true;
 }
 
-void Bit7zLibraryLoader::load( const tstring& libraryPath, std::error_code& ec ) noexcept try {
+void Bit7zLibraryLoader::load( const tstring& libraryPath, std::error_code& error ) noexcept try {
     load( libraryPath );
-    ec.clear();
+    error.clear();
 } catch ( const std::system_error& ex ) {
-    ec = ex.code();
+    error = ex.code();
 } catch ( ... ) {
-    ec = make_error_code( BitError::Fail );
+    error = make_error_code( BitError::Fail );
 }
 
 auto Bit7zLibraryLoader::library() const -> const Bit7zLibrary& {

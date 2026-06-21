@@ -74,9 +74,9 @@ class Bit7zLibraryLoader final {
          * @note A failed load leaves the loader in an unloaded state even if it was previously loaded.
          *
          * @param libraryPath  the path to the 7-zip shared library to be loaded.
-         * @param ec           an output error code indicating the result of the operation.
+         * @param error        an output error code indicating the result of the operation.
          */
-        void load( const tstring& libraryPath, std::error_code& ec ) noexcept;
+        void load( const tstring& libraryPath, std::error_code& error ) noexcept;
 
         /**
          * @brief Returns a reference to the loaded Bit7zLibrary.
