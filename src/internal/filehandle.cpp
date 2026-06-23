@@ -166,7 +166,12 @@ OutputFile::OutputFile( const native_string& filePath, FileFlag fileFlag, ExtraF
 
 namespace {
 BIT7Z_ALWAYS_INLINE
-auto writeData( handle_t handle, const void* data, std::uint32_t size, DWORD& bytesWritten ) noexcept -> bool {
+auto writeData(
+    handle_t handle,
+    const void* data, // NOSONAR
+    std::uint32_t size,
+    DWORD& bytesWritten
+) noexcept -> bool {
 #if SIZE_MAX == 0xFFFFFFFF // 32-bit architecture
     if ( cpp20::cmp_greater( size, std::numeric_limits< std::ptrdiff_t >::max() ) ) {
         size = static_cast< std::uint32_t >( std::numeric_limits< std::ptrdiff_t >::max() );
@@ -186,7 +191,11 @@ auto writeData( handle_t handle, const void* data, std::uint32_t size, DWORD& by
 }
 } // namespace
 
-auto OutputFile::write( const void* data, std::uint32_t size, std::uint32_t& processedSize ) const noexcept -> HRESULT {
+auto OutputFile::write(
+    const void* data, // NOSONAR
+    std::uint32_t size,
+    std::uint32_t& processedSize
+) const noexcept -> HRESULT {
     do {
         DWORD bytesWritten = 0;
         const auto writeSuccessful = writeData( mHandle, data, size, bytesWritten );
@@ -248,7 +257,7 @@ InputFile::InputFile( const native_string& filePath, ExtraFlag extraFlag )
 
 namespace {
 BIT7Z_ALWAYS_INLINE
-auto readData( handle_t handle, void* data, std::uint32_t size, DWORD& bytesRead ) noexcept -> bool {
+auto readData( handle_t handle, void* data, std::uint32_t size, DWORD& bytesRead ) noexcept -> bool { // NOSONAR
 #if SIZE_MAX == 0xFFFFFFFF // 32-bit architecture
     if ( cpp20::cmp_greater( size, std::numeric_limits< std::ptrdiff_t >::max() ) ) {
         size = static_cast< std::uint32_t >( std::numeric_limits< std::ptrdiff_t >::max() );
@@ -268,7 +277,11 @@ auto readData( handle_t handle, void* data, std::uint32_t size, DWORD& bytesRead
 }
 } // namespace
 
-auto InputFile::read( void* data, std::uint32_t size, std::uint32_t& processedSize ) const noexcept -> HRESULT {
+auto InputFile::read(
+    void* data, // NOSONAR
+    std::uint32_t size,
+    std::uint32_t& processedSize
+) const noexcept -> HRESULT {
     do {
         DWORD bytesRead = 0;
         const auto readSuccessful = readData( mHandle, data, size, bytesRead );
