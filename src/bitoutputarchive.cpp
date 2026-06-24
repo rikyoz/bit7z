@@ -241,7 +241,15 @@ auto BitOutputArchive::itemStream( InputIndex index, ISequentialInStream** inStr
     const auto newItemIndex = static_cast< std::size_t >( index ) - static_cast< std::size_t >( mInputArchiveItemsCount );
     const auto& newItem = mNewItems[ newItemIndex ];
 
-    const HRESULT res = newItem.getStream( inStream, mArchiveCreator.storeOpenFiles() );
+#ifdef _WIN32
+    const HRESULT res = newItem.getStream(
+        inStream,
+        mArchiveCreator.storeOpenFiles(),
+        mArchiveCreator.preserveAccessTime()
+    );
+#else
+    const HRESULT res = newItem.getStream( inStream );
+#endif
     if ( FAILED( res ) ) {
         mFailedFiles.emplace_back( to_tstring( newItem.path() ), make_hresult_code( res ) );
     }

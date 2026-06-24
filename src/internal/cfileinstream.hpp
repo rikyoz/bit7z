@@ -23,7 +23,15 @@ namespace bit7z {
 
 class CFileInStream : public IInStream, public CMyUnknownImp {
     public:
-        explicit CFileInStream( const native_string& filePath, bool storeOpenFiles = false );
+#ifdef _WIN32
+        explicit CFileInStream(
+            const native_string& filePath,
+            bool storeOpenFiles = false,
+            bool preserveAccessTime = false
+        );
+#else
+        explicit CFileInStream( const native_string& filePath );
+#endif
 
         CFileInStream( const CFileInStream& ) = delete;
 

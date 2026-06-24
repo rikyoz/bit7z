@@ -195,6 +195,10 @@ auto BitAbstractArchiveCreator::storeOpenFiles() const noexcept -> bool {
     return mStoreOpenFiles;
 }
 
+auto BitAbstractArchiveCreator::preserveAccessTime() const noexcept -> bool {
+    return mPreserveAccessTime;
+}
+
 void BitAbstractArchiveCreator::setPassword( const tstring& password ) {
     setPassword( password, mCryptHeaders ? EncryptionScope::DataAndHeaders : EncryptionScope::DataOnly );
 }
@@ -216,7 +220,8 @@ BitAbstractArchiveCreator::BitAbstractArchiveCreator(
     mVolumeSize( 0 ),
     mThreadsCount( 0 ),
     mStoreSymbolicLinks{ false },
-    mStoreOpenFiles{ false } {
+    mStoreOpenFiles{ false },
+    mPreserveAccessTime{ false } {
     setRetainDirectories( false );
 }
 
@@ -338,6 +343,10 @@ void BitAbstractArchiveCreator::setStoreLastAccessTime( bool storeLastAccessTime
 
 void BitAbstractArchiveCreator::setStoreOpenFiles( bool storeOpenFiles ) noexcept {
     mStoreOpenFiles = storeOpenFiles;
+}
+
+void BitAbstractArchiveCreator::setPreserveAccessTime( bool preserveAccessTime ) noexcept {
+    mPreserveAccessTime = preserveAccessTime;
 }
 
 namespace {

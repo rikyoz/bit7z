@@ -53,27 +53,48 @@ auto openFile( const native_string& filePath, OpenFlags openFlags ) -> handle_t 
     DWORD flagsAndAttributes = FILE_ATTRIBUTE_NORMAL;
     if ( hasFlag( openFlags.extraFlag, ExtraFlag::NoFollow ) ) {
         // Open the reparse point itself so CreateFileW doesn't traverse it.
-        flagsAndAttributes |= FILE_FLAG_OPEN_REPARSE_POINT;
+        flagsAndAttributes |= FILE_FLAG_OPEN_REPARSE_POINT; // NOLINT(*-signed-bitwise)
     }
-    const handle_t handle = ::CreateFileW(
+
+    // Checking if we need to preserve the access time attribute of the file.
+    bool preserveAccessTime = hasFlag( openFlags.extraFlag, ExtraFlag::PreserveAccessTime );
+    const DWORD accessFlag = to_underlying( openFlags.accessFlag );
+    // Suspending the last access time updates via SetFileTime requires the FILE_WRITE_ATTRIBUTES access.
+    // NOLINTNEXTLINE(*-signed-bitwise)
+    const DWORD desiredAccess = preserveAccessTime ? ( accessFlag | FILE_WRITE_ATTRIBUTES ) : accessFlag;
+
+    // Note: the open is duplicated for the retry below on purpose, rather than factored into a lambda:
+    // wrapping CreateFileW in a lambda strips its SAL annotation, so /analyze can no longer prove the
+    // returned handle is valid past the INVALID_HANDLE_VALUE guard and reports spurious C6387 warnings.
+    handle_t handle = ::CreateFileW(
         filePath.c_str(),
-        to_underlying( openFlags.accessFlag ),
+        desiredAccess,
         to_underlying( openFlags.shareFlag ),
         nullptr,
         to_underlying( openFlags.fileFlag ),
         flagsAndAttributes,
         nullptr
     );
+    if ( handle == INVALID_HANDLE_VALUE && preserveAccessTime ) { // NOLINT(*-pro-type-cstyle-cast, *-no-int-to-ptr)
+        // Like 7-Zip, if the additional access is denied (e.g., by the file's ACL), retry the open as a
+        // plain read: the file is still compressed, but its last access time can no longer be preserved.
+        preserveAccessTime = false;
+        handle = ::CreateFileW(
+            filePath.c_str(),
+            accessFlag,
+            to_underlying( openFlags.shareFlag ),
+            nullptr,
+            to_underlying( openFlags.fileFlag ),
+            flagsAndAttributes,
+            nullptr
+        );
+    }
+
     if ( handle == INVALID_HANDLE_VALUE ) { // NOLINT(*-pro-type-cstyle-cast, *-no-int-to-ptr)
-#else
-    // NOLINTNEXTLINE(*-vararg)
-    const handle_t handle = open( filePath.c_str(), openFlags.value(), S_IRUSR | S_IWUSR );
-    if ( handle < 0 ) {
-#endif
         const std::error_code error = lastErrorCode();
         throw BitException( "Could not open the file", error, pathToTstring( filePath ) );
     }
-#ifdef _WIN32
+
     // Emulate the strict POSIX O_NOFOLLOW semantics: fail only on symlinks, not on other
     // reparse-point kinds (junctions, mount points, etc.), matching S_IFLNK on Unix.
     if ( hasFlag( openFlags.extraFlag, ExtraFlag::NoFollow ) ) {
@@ -98,8 +119,22 @@ auto openFile( const native_string& filePath, OpenFlags openFlags ) -> handle_t 
             );
         }
     }
-#endif
+    if ( preserveAccessTime ) {
+        // Passing 0xFFFFFFFF as the last access time tells Windows to stop updating it for any I/O
+        // performed through this handle, matching the behavior of 7-Zip's -ssp switch.
+        static constexpr FILETIME kSuspendAccessTime{ 0xFFFFFFFF, 0xFFFFFFFF };
+        ::SetFileTime( handle, nullptr, &kSuspendAccessTime, nullptr );
+    }
     return handle;
+#else
+    // NOLINTNEXTLINE(*-vararg)
+    const handle_t handle = open( filePath.c_str(), openFlags.value(), S_IRUSR | S_IWUSR );
+    if ( handle < 0 ) {
+        const std::error_code error = lastErrorCode();
+        throw BitException( "Could not open the file", error, pathToTstring( filePath ) );
+    }
+    return handle;
+#endif
 }
 
 } // namespace
@@ -237,20 +272,24 @@ auto OutputFile::setFileTime( FILETIME creation, FILETIME access, FILETIME modif
 }
 #endif
 
-namespace {
-constexpr auto inputOpenFlags( BIT7Z_MAYBE_UNUSED bool storeOpenFiles ) noexcept -> OpenFlags {
 #ifdef _WIN32
-    return storeOpenFiles
-        ? OpenFlags{ AccessFlag::ReadOnly, FileFlag::Existing, ShareFlag::ReadWrite, ExtraFlag::None }
-        : OpenFlags{ AccessFlag::ReadOnly, FileFlag::Existing, ShareFlag::Read, ExtraFlag::None };
-#else
-    return { AccessFlag::ReadOnly, FileFlag::Existing, ExtraFlag::None };
-#endif
+namespace {
+constexpr auto inputOpenFlags( bool storeOpenFiles, bool preserveAccessTime ) noexcept -> OpenFlags {
+    return {
+        AccessFlag::ReadOnly,
+        FileFlag::Existing,
+        storeOpenFiles ? ShareFlag::ReadWrite : ShareFlag::Read,
+        preserveAccessTime ? ExtraFlag::PreserveAccessTime : ExtraFlag::None
+    };
 }
 } // namespace
 
-InputFile::InputFile( const native_string& filePath, bool storeOpenFiles )
-    : FileHandle{ filePath, inputOpenFlags( storeOpenFiles ) } {}
+InputFile::InputFile( const native_string& filePath, bool storeOpenFiles, bool preserveAccessTime )
+    : FileHandle{ filePath, inputOpenFlags( storeOpenFiles, preserveAccessTime ) } {}
+#else
+InputFile::InputFile( const native_string& filePath )
+    : FileHandle{ filePath, { AccessFlag::ReadOnly, FileFlag::Existing, ExtraFlag::None } } {}
+#endif
 
 InputFile::InputFile( const native_string& filePath, ExtraFlag extraFlag )
     : FileHandle{ filePath, makeOpenFlags( AccessFlag::ReadOnly, FileFlag::Existing, extraFlag ) } {}

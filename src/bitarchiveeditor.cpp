@@ -281,7 +281,11 @@ auto BitArchiveEditor::itemStream( InputIndex index, ISequentialInStream** inStr
     }
 
     // The user wants to update the old item in the archive.
-    return res->second.getStream( inStream, creator().storeOpenFiles() );
+#ifdef _WIN32
+    return res->second.getStream( inStream, creator().storeOpenFiles(), creator().preserveAccessTime() );
+#else
+    return res->second.getStream( inStream );
+#endif
 }
 
 auto BitArchiveEditor::hasNewData( std::uint32_t index ) const noexcept -> bool {

@@ -86,8 +86,9 @@ enum struct ShareFlag : std::uint32_t {
  */
 #ifdef _WIN32
 enum struct ExtraFlag : std::uint8_t {
-    None     = 0,   ///< No extra flag.
-    NoFollow = 0x1  ///< Semantic bit; O_NOFOLLOW on Unix; emulated on Windows.
+    None               = 0,    ///< No extra flag.
+    NoFollow           = 0x1,  ///< Semantic bit; O_NOFOLLOW on Unix; emulated on Windows.
+    PreserveAccessTime = 0x2   ///< Suspend last access time updates for the opened handle.
 };
 #else
 enum struct ExtraFlag : std::uint32_t {
@@ -173,7 +174,15 @@ struct OutputFile final : FileHandle {
 };
 
 struct InputFile final : FileHandle {
-    explicit InputFile( const native_string& filePath, bool storeOpenFiles = false );
+#ifdef _WIN32
+    explicit InputFile(
+        const native_string& filePath,
+        bool storeOpenFiles = false,
+        bool preserveAccessTime = false
+    );
+#else
+    explicit InputFile( const native_string& filePath );
+#endif
 
     explicit InputFile( const native_string& filePath, ExtraFlag extraFlag );
 

@@ -149,6 +149,11 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
         BIT7Z_NODISCARD auto storeOpenFiles() const noexcept -> bool;
 
         /**
+         * @return whether the creator will preserve the last access time of the source files while compressing them.
+         */
+        BIT7Z_NODISCARD auto preserveAccessTime() const noexcept -> bool;
+
+        /**
          * @brief Sets up a password for the output archives.
          *
          * When setting a password, the produced archives will be encrypted using the default
@@ -342,6 +347,20 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
         void setStoreOpenFiles( bool storeOpenFiles ) noexcept;
 
         /**
+         * @brief Sets whether the creator will preserve the last access time of the source files while reading them.
+         *
+         * When enabled, on Windows the creator opens each source file requesting the additional access needed to
+         * suppress last access time updates for the file handle, which is equivalent to 7-zip's -ssp switch.
+         * If that access cannot be granted (e.g., due to the file's ACL), the file is still compressed, but its
+         * last access time may be updated.
+         *
+         * @note On non-Windows platforms this setting has no effect.
+         *
+         * @param preserveAccessTime if true, the creator will try to keep the source files' last access time unchanged.
+         */
+        void setPreserveAccessTime( bool preserveAccessTime ) noexcept;
+
+        /**
          * @brief Sets a property for the output archive format as described by the 7-zip documentation
          * (e.g., https://sevenzip.osdn.jp/chm/cmdline/switches/method.htm).
          *
@@ -398,6 +417,7 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
         std::uint32_t mThreadsCount;
         bool mStoreSymbolicLinks;
         bool mStoreOpenFiles;
+        bool mPreserveAccessTime;
         std::map< std::wstring, BitPropVariant > mExtraProperties;
 };
 

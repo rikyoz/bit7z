@@ -14,8 +14,13 @@
 
 namespace bit7z {
 
-CFileInStream::CFileInStream( const native_string& filePath, bool storeOpenFiles )
-    : mFile{ filePath, storeOpenFiles } {}
+#ifdef _WIN32
+CFileInStream::CFileInStream( const native_string& filePath, bool storeOpenFiles, bool preserveAccessTime )
+    : mFile{ filePath, storeOpenFiles, preserveAccessTime } {}
+#else
+CFileInStream::CFileInStream( const native_string& filePath )
+    : mFile{ filePath } {}
+#endif
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CFileInStream::Read( void* data, UInt32 size, UInt32* processedSize ) noexcept { // NOSONAR

@@ -273,7 +273,15 @@ void BitInputItem::setLastAccessTime( time_type lastAccessTime ) noexcept {
     mProperties.lastAccessTime = toFILETIME( lastAccessTime );
 }
 
-auto BitInputItem::getStream( ISequentialInStream** inStream, bool storeOpenFiles ) const -> HRESULT try {
+#ifdef _WIN32
+auto BitInputItem::getStream(
+    ISequentialInStream** inStream,
+    bool storeOpenFiles,
+    bool preserveAccessTime
+) const -> HRESULT try {
+#else
+auto BitInputItem::getStream( ISequentialInStream** inStream ) const -> HRESULT try {
+#endif
     if ( isDir() ) {
         return S_OK;
     }
@@ -284,7 +292,11 @@ auto BitInputItem::getStream( ISequentialInStream** inStream, bool storeOpenFile
         if ( mFilesystemItem.symlinkPolicy == SymlinkPolicy::DoNotFollow && isSymLink() ) {
             inStreamLoc = bit7z::make_com< CSymlinkInStream >( mPath );
         } else {
-            inStreamLoc = bit7z::make_com< CFileInStream >( mPath, storeOpenFiles );
+#ifdef _WIN32
+            inStreamLoc = bit7z::make_com< CFileInStream >( mPath, storeOpenFiles, preserveAccessTime );
+#else
+            inStreamLoc = bit7z::make_com< CFileInStream >( mPath );
+#endif
         }
     } else if ( mProperties.inputType == InputItemType::Buffer ) {
         // NOLINTNEXTLINE(*-pro-type-union-access)

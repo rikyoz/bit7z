@@ -23,6 +23,8 @@
 #include <bit7z/bitinputitem.hpp>
 #include <bit7z/bitarchivewriter.hpp>
 
+#include <internal/windows.hpp> // For the Win32 file time APIs used by the setPreserveAccessTime test.
+
 #include <algorithm>
 #include <cstdint>
 #include <functional>
@@ -322,6 +324,125 @@ TEST_CASE(
         const BitArchiveReader reader{ test::sevenzipLib(), buffer, BitFormat::SevenZip };
         REQUIRE( reader.itemsCount() == 1 );
         REQUIRE( reader.itemAt( 0 ).size() == 11 ); // "hello world" is 11 bytes
+    }
+}
+
+namespace {
+// Reads the file's current last access time from its standard information via an open handle.
+// Unlike GetFileAttributesExW (which returns the lazily-refreshed directory-entry copy), GetFileTime
+// reflects a recent read promptly. Opening with FILE_READ_ATTRIBUTES does not itself touch the access time.
+auto readLastAccessTime( const fs::path& filePath ) -> FILETIME {
+    auto *const handle = ::CreateFileW(
+        filePath.wstring().c_str(),
+        FILE_READ_ATTRIBUTES,
+        FILE_SHARE_READ | FILE_SHARE_WRITE, // NOLINT(*-signed-bitwise)
+        nullptr,
+        OPEN_EXISTING,
+        FILE_ATTRIBUTE_NORMAL,
+        nullptr
+    );
+    REQUIRE( handle != INVALID_HANDLE_VALUE ); // NOLINT(*-pro-type-cstyle-cast, performance-no-int-to-ptr)
+    FILETIME access{};
+    const BOOL queried = ::GetFileTime( handle, nullptr, &access, nullptr );
+    ::CloseHandle( handle );
+    REQUIRE( queried != FALSE );
+    return access;
+}
+
+// Sets only the last access time, leaving the creation and last write times untouched.
+void setLastAccessTime( const fs::path& filePath, const FILETIME& accessTime ) {
+    auto *const handle = ::CreateFileW(
+        filePath.wstring().c_str(),
+        FILE_WRITE_ATTRIBUTES,
+        FILE_SHARE_READ | FILE_SHARE_WRITE, // NOLINT(*-signed-bitwise)
+        nullptr,
+        OPEN_EXISTING,
+        FILE_ATTRIBUTE_NORMAL,
+        nullptr
+    );
+    REQUIRE( handle != INVALID_HANDLE_VALUE ); // NOLINT(*-pro-type-cstyle-cast, performance-no-int-to-ptr)
+    const BOOL updated = ::SetFileTime( handle, nullptr, &accessTime, nullptr );
+    ::CloseHandle( handle );
+    REQUIRE( updated != FALSE );
+}
+} // namespace
+
+TEST_CASE(
+    "BitArchiveWriter: setPreserveAccessTime keeps the last access time of the compressed source file",
+    "[bitarchivewriter]"
+) {
+    const TempTestDirectory testDir{ "test_bitarchivewriter" };
+
+    // Two identical files on the same volume: the "source" is compressed with preserveAccessTime enabled,
+    // the "control" without it. Both have their last access time backdated to a fixed, clearly-old value so
+    // that any update performed while reading them is detectable and distinct from "now".
+    const fs::path sourceFilePath = testDir.path() / "source.txt";
+    const fs::path controlFilePath = testDir.path() / "control.txt";
+    {
+        fs::ofstream ofs{ sourceFilePath, std::ios::binary };
+        ofs << "hello world";
+    }
+    {
+        fs::ofstream ofs{ controlFilePath, std::ios::binary };
+        ofs << "hello world";
+    }
+
+    SYSTEMTIME oldSystemTime{};
+    oldSystemTime.wYear = 2000; // NOLINT(*-magic-numbers)
+    oldSystemTime.wMonth = 1;
+    oldSystemTime.wDay = 1;
+    FILETIME backdatedTime{};
+    REQUIRE( ::SystemTimeToFileTime( &oldSystemTime, &backdatedTime ) != FALSE );
+    setLastAccessTime( sourceFilePath, backdatedTime );
+    setLastAccessTime( controlFilePath, backdatedTime );
+
+    // Read the stored values back (handling any volume-specific rounding) to use as the baselines.
+    const FILETIME baseline = readLastAccessTime( sourceFilePath );
+    const FILETIME controlBaseline = readLastAccessTime( controlFilePath );
+    REQUIRE( ::CompareFileTime( &baseline, &controlBaseline ) == 0 );
+
+    // Control: without preserveAccessTime, reading the file content advances its last access time
+    // on volumes that track it.
+    {
+        BitArchiveWriter control{ test::sevenzipLib(), BitFormat::SevenZip };
+        REQUIRE_FALSE( control.preserveAccessTime() );
+        REQUIRE_NOTHROW( control.addFile( to_tstring( controlFilePath.native() ) ) );
+        buffer_t controlBuffer;
+        REQUIRE_NOTHROW( control.compressTo( controlBuffer ) );
+    }
+
+    // Source: with preserveAccessTime, bit7z opens the file requesting FILE_WRITE_ATTRIBUTES and calls
+    // SetFileTime to suspend last access time updates for its handle.
+    BitArchiveWriter writer{ test::sevenzipLib(), BitFormat::SevenZip };
+    writer.setPreserveAccessTime( true );
+    REQUIRE( writer.preserveAccessTime() );
+    REQUIRE_NOTHROW( writer.addFile( to_tstring( sourceFilePath.native() ) ) );
+
+    buffer_t buffer;
+    REQUIRE_NOTHROW( writer.compressTo( buffer ) );
+
+    // The file content was still read and archived correctly.
+    const BitArchiveReader reader{ test::sevenzipLib(), buffer, BitFormat::SevenZip };
+    REQUIRE( reader.itemsCount() == 1 );
+    REQUIRE( reader.itemAt( 0 ).size() == 11 ); // "hello world" is 11 bytes
+
+    const FILETIME sourceAfter = readLastAccessTime( sourceFilePath );
+    const FILETIME controlAfter = readLastAccessTime( controlFilePath );
+
+    // Contract: with the option enabled, the source file's last access time must be left untouched.
+    REQUIRE( ::CompareFileTime( &sourceAfter, &baseline ) == 0 );
+
+    if ( ::CompareFileTime( &controlAfter, &controlBaseline ) != 0 ) {
+        // The control's last access time advanced, proving this volume tracks last access updates.
+        // The source's unchanged time therefore confirms SetFileTime actually suppressed the update
+        // that the control just demonstrated would otherwise happen.
+        SUCCEED( "Volume tracks last access updates; SetFileTime suppression verified against the control." );
+    } else {
+        // Last access updates are disabled on this volume (e.g., NtfsDisableLastAccessUpdate), so the
+        // suppression cannot be distinguished from a no-op here; the FILE_WRITE_ATTRIBUTES open path and
+        // the compression itself were still exercised.
+        WARN( "Last access time updates are disabled on this volume; "
+              "SetFileTime suppression could not be distinguished from a no-op." );
     }
 }
 

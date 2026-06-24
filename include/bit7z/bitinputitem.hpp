@@ -166,10 +166,17 @@ class BitInputItem final {
         friend class BitArchiveEditor;
 
         // For internal use only: provides the input stream for this item to be used during compression.
-        // On Windows, storeOpenFiles requests shared read/write access, allowing the compression of files
-        // locked by other processes. Returns S_OK on success, or an error HRESULT otherwise.
+        // On Windows, storeOpenFiles requests shared read/write access (allowing the compression of files
+        // locked by other processes), while preserveAccessTime suppresses last access time updates on the
+        // source file; neither has an equivalent on other platforms. Returns S_OK on success, or an error
+        // HRESULT otherwise.
+#ifdef _WIN32
         BIT7Z_NODISCARD
-        auto getStream( ISequentialInStream** inStream, bool storeOpenFiles ) const -> HRESULT;
+        auto getStream( ISequentialInStream** inStream, bool storeOpenFiles, bool preserveAccessTime ) const -> HRESULT;
+#else
+        BIT7Z_NODISCARD
+        auto getStream( ISequentialInStream** inStream ) const -> HRESULT;
+#endif
 
         detail::InputItemProperties mProperties;
         // Note: we need to store paths as strings rather than bit7zfs::path as the public API is in C++14.
