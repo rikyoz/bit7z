@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-cmake_minimum_required( VERSION 3.14 )
+cmake_minimum_required( VERSION 3.16 )
 
 project(
     bit7z
@@ -13,9 +13,7 @@ project(
 set( CMAKE_VERBOSE_MAKEFILE ON CACHE BOOL "ON" )
 
 cmake_policy( SET CMP0022 NEW )
-if( POLICY CMP0076 )
-    cmake_policy( SET CMP0076 NEW )
-endif()
+cmake_policy( SET CMP0076 NEW )
 
 # Public headers
 set(
@@ -239,7 +237,7 @@ include( cmake/CompilerOptions.cmake )
 # Dependencies
 include( cmake/Dependencies.cmake )
 
-if( BIT7Z_USE_PCH AND CMAKE_VERSION VERSION_GREATER_EQUAL "3.16.0" )
+if( BIT7Z_USE_PCH )
     target_precompile_headers(
         ${LIB_TARGET}
             PRIVATE
@@ -276,7 +274,7 @@ target_link_libraries( ${LIB_TARGET} PRIVATE $<BUILD_INTERFACE:7-zip> )
 # and exported usage requirements. The consumer-facing stdc++fs/c++fs requirement (needed by older
 # standard libraries) is instead linked directly to the target in cmake/Dependencies.cmake.
 target_link_libraries( ${LIB_TARGET} PRIVATE $<BUILD_INTERFACE:filesystem_lib> )
-if( USE_STANDARD_FILESYSTEM AND BIT7Z_USE_PCH AND CMAKE_VERSION VERSION_GREATER_EQUAL "3.16.0" )
+if( USE_STANDARD_FILESYSTEM AND BIT7Z_USE_PCH )
     target_precompile_headers( ${LIB_TARGET} PRIVATE <filesystem> )
 endif()
 

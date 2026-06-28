@@ -98,7 +98,7 @@ if( NOT USE_STANDARD_FILESYSTEM OR BIT7Z_BUILD_TESTS )
         message( STATUS "ghc::filesystem source code available at ${ghc_filesystem_SOURCE_DIR}" )
         add_library( ghc_filesystem INTERFACE IMPORTED )
         target_include_directories( ghc_filesystem SYSTEM INTERFACE ${ghc_filesystem_SOURCE_DIR}/include )
-        if( BIT7Z_USE_PCH AND CMAKE_VERSION VERSION_GREATER_EQUAL "3.16.0" )
+        if( BIT7Z_USE_PCH )
             target_precompile_headers(
                 ghc_filesystem INTERFACE "${ghc_filesystem_SOURCE_DIR}/include/ghc/filesystem.hpp"
             )
