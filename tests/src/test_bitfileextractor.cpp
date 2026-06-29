@@ -349,6 +349,32 @@ TEST_CASE(
     }
 }
 
+TEST_CASE(
+    "BitFileExtractor: buffer callback overloads resolve unambiguously for bare lambdas",
+    "[bitfileextractor]"
+) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "single_file" };
+
+    const auto arcFileName = to_tstring( fs::path{ clouds.name }.concat( ".7z" ) );
+    const BitFileExtractor extractor( test::sevenzipLib(), BitFormat::SevenZip );
+
+    SECTION( "ItemBufferCallback: bare lambda resolves to the (const BitArchiveItem&, const tstring&) overload" ) {
+        buffer_t outBuffer;
+        REQUIRE_NOTHROW( extractor.extract( arcFileName, [ &outBuffer ]( const BitArchiveItem&, const tstring& ) -> buffer_t& {
+            return outBuffer;
+        } ) );
+        REQUIRE( crc32( outBuffer ) == clouds.crc32 );
+    }
+
+    SECTION( "BufferCallback: bare lambda resolves to the (std::uint32_t, const tstring&) overload" ) {
+        buffer_t outBuffer;
+        REQUIRE_NOTHROW( extractor.extract( arcFileName, [ &outBuffer ]( std::uint32_t, const tstring& ) -> buffer_t& {
+            return outBuffer;
+        } ) );
+        REQUIRE( crc32( outBuffer ) == clouds.crc32 );
+    }
+}
+
 #ifdef BIT7Z_REGEX_MATCHING
 
 TEST_CASE( "BitFileExtractor: using an empty regex pattern should throw (filesystem output)", "[bitfileextractor]" ) {

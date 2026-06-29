@@ -1980,6 +1980,39 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Using extraction callbacks", "[bitinputarc
 
 // NOLINTNEXTLINE(*-err58-cpp)
 TEMPLATE_TEST_CASE(
+    "BitInputArchive: Buffer callback overloads resolve unambiguously for bare lambdas",
+    "[bitinputarchive]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "single_file" };
+
+    const auto arcFileName = fs::path{ clouds.name }.concat( ".7z" );
+
+    TestType inputArchive{};
+    getInputArchive( arcFileName, inputArchive );
+    const BitArchiveReader info( test::sevenzipLib(), inputArchive, BitFormat::SevenZip );
+
+    SECTION( "ItemBufferCallback: bare lambda resolves to the (const BitArchiveItem&, const tstring&) overload" ) {
+        buffer_t outBuffer;
+        REQUIRE_NOTHROW( info.extractTo( [ &outBuffer ]( const BitArchiveItem&, const tstring& ) -> buffer_t& {
+            return outBuffer;
+        } ) );
+        REQUIRE( crc32( outBuffer ) == clouds.crc32 );
+    }
+
+    SECTION( "BufferCallback: bare lambda resolves to the (std::uint32_t, const tstring&) overload" ) {
+        buffer_t outBuffer;
+        REQUIRE_NOTHROW( info.extractTo( [ &outBuffer ]( std::uint32_t, const tstring& ) -> buffer_t& {
+            return outBuffer;
+        } ) );
+        REQUIRE( crc32( outBuffer ) == clouds.crc32 );
+    }
+}
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEMPLATE_TEST_CASE(
     "BitInputArchive: Aborting the extraction via the progress callback",
     "[bitinputarchive]",
     tstring,

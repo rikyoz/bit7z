@@ -21,7 +21,7 @@ class BufferExtractCallback final : public ExtractCallback {
     public:
         BufferExtractCallback(
             const BitInputArchive& inputArchive,
-            BufferCallback callback,
+            ItemBufferCallback callback,
             FilterCallback filterCallback = {}
         );
 
@@ -39,7 +39,7 @@ class BufferExtractCallback final : public ExtractCallback {
         auto extractionAttempted() const -> bool override;
 
     private:
-        BufferCallback mBufferCallback;
+        ItemBufferCallback mBufferCallback;
         CMyComPtr< ISequentialOutStream > mOutMemStream;
         bool mExtractionAttempted;
 

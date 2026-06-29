@@ -501,9 +501,17 @@ class BitInputArchive {
         void extractTo( std::map< tstring, buffer_t >& outMap ) const;
 
         /**
-         * @brief Extracts the content of the archive to the buffers provided by the given BufferCallback.
+         * @brief Extracts the content of the archive to the buffers provided by the given ItemBufferCallback.
          *
          * @param callback the function providing the buffers.
+         * @param indices  (optional) the indices of the files in the archive that must be extracted.
+         */
+        void extractTo( ItemBufferCallback callback, BitIndicesView indices = {} ) const;
+
+        /**
+         * @brief Extracts the content of the archive to the buffers provided by the given BufferCallback.
+         *
+         * @param callback the function providing the buffers (receives the item index and its archive path).
          * @param indices  (optional) the indices of the files in the archive that must be extracted.
          */
         void extractTo( BufferCallback callback, BitIndicesView indices = {} ) const;

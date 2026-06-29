@@ -231,10 +231,22 @@ class BitExtractor final : public BitAbstractArchiveOpener {
         }
 
         /**
-         * @brief Extracts the content of the given archive to the buffers provided by the given BufferCallback.
+         * @brief Extracts the content of the given archive to the buffers provided by the given ItemBufferCallback.
          *
          * @param inArchive the input archive to be extracted.
          * @param callback  the function providing the buffers.
+         * @param indices   (optional) the indices of the files in the archive that must be extracted.
+         */
+        void extract( Input inArchive, ItemBufferCallback callback, BitIndicesView indices = {} ) const {
+            const BitInputArchive inputArchive( *this, inArchive );
+            inputArchive.extractTo( std::move( callback ), indices );
+        }
+
+        /**
+         * @brief Extracts the content of the given archive to the buffers provided by the given BufferCallback.
+         *
+         * @param inArchive the input archive to be extracted.
+         * @param callback  the function providing the buffers (receives the item index and its archive path).
          * @param indices   (optional) the indices of the files in the archive that must be extracted.
          */
         void extract( Input inArchive, BufferCallback callback, BitIndicesView indices = {} ) const {

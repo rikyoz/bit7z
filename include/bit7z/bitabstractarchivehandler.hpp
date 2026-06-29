@@ -73,7 +73,20 @@ using RenameCallback = std::function< tstring( const BitArchiveItem& ) >;
 using LegacyRenameCallback = std::function< tstring( std::uint32_t, const tstring& ) >;
 
 /**
+ * @brief A function returning a reference to the buffer where to extract the given archive item.
+ *
+ * @note The path passed to this callback is the item's filename when retainDirectories is false (the default),
+ *       the full archive path when retainDirectories is true, or the string @c "[Content]" for nameless
+ *       single-stream formats (e.g., gzip).
+ */
+using ItemBufferCallback = std::function< buffer_t&( const BitArchiveItem&, const tstring& ) >;
+
+/**
  * @brief A function returning a reference to the buffer where to extract the item at the given index/path.
+ *
+ * @note The path passed to this callback is the item's filename when retainDirectories is false (the default),
+ *       the full archive path when retainDirectories is true, or the string @c "[Content]" for nameless
+ *       single-stream formats (e.g., gzip).
  */
 using BufferCallback = std::function< buffer_t&( std::uint32_t, const tstring& ) >;
 

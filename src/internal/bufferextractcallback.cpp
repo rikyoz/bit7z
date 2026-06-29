@@ -23,7 +23,7 @@ namespace bit7z {
 
 BufferExtractCallback::BufferExtractCallback(
     const BitInputArchive& inputArchive,
-    BufferCallback callback,
+    ItemBufferCallback callback,
     FilterCallback filterCallback
 ) : ExtractCallback( inputArchive, std::move( filterCallback ) ),
     mBufferCallback{ std::move( callback ) },
@@ -49,12 +49,11 @@ auto BufferExtractCallback::getOutStream(
     if ( !fullPath ) {
         return E_FAIL;
     }
-
     if ( mHandler.fileCallback() ) {
         mHandler.fileCallback()( *fullPath );
     }
 
-    auto& outBuffer = mBufferCallback( item.index(), *fullPath );
+    auto& outBuffer = mBufferCallback( item, *fullPath );
     if ( !outBuffer.empty() ) {
         switch ( mHandler.overwriteMode() ) {
             case OverwriteMode::None: {

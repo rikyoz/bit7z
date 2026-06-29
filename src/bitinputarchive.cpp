@@ -740,7 +740,7 @@ void BitInputArchive::extractTo( buffer_t& outBuffer, std::uint32_t index ) cons
         );
     }
 
-    auto bufferCallback = [ &outBuffer ] ( std::uint32_t, const tstring& ) -> buffer_t& {
+    auto bufferCallback = [ &outBuffer ] ( const BitArchiveItem&, const tstring& ) -> buffer_t& {
         return outBuffer;
     };
     const auto extractCallback = bit7z::make_com< BufferExtractCallback, ExtractCallback >(
@@ -804,7 +804,7 @@ BitInputArchive::~BitInputArchive() {
 }
 
 void BitInputArchive::extractTo( buffer_t& outBuffer, FilterCallback filterCallback ) const {
-    auto bufferCallback = [ &outBuffer ] ( std::uint32_t, const tstring& ) -> buffer_t& {
+    auto bufferCallback = [ &outBuffer ] ( const BitArchiveItem&, const tstring& ) -> buffer_t& {
         return outBuffer;
     };
     const auto callback = bit7z::make_com< BufferExtractCallback, ExtractCallback >(
@@ -884,19 +884,28 @@ void BitInputArchive::extractTo( std::map< tstring, buffer_t >& outMap ) const {
         }
     }
 
-    auto bufferCallback = [ &outMap ] ( std::uint32_t, const tstring& path ) -> buffer_t& {
-        // Note: the [] operator creates the buffer if it does not already exist.
+    // Note: the [] operator creates the buffer if it does not already exist.
+    auto bufferCallback = [ &outMap ] ( const BitArchiveItem&, const tstring& path ) -> buffer_t& {
         return outMap[ path ];
     };
     extractTo( std::move( bufferCallback ), filesIndices );
 }
 
-void BitInputArchive::extractTo( BufferCallback callback, BitIndicesView indices ) const {
+void BitInputArchive::extractTo( ItemBufferCallback callback, BitIndicesView indices ) const {
     const auto extractCallback = bit7z::make_com< BufferExtractCallback, ExtractCallback >(
         *this,
         std::move( callback )
     );
     extractArchive( extractCallback, ExtractMode::Extract, indices );
+}
+
+void BitInputArchive::extractTo( BufferCallback callback, BitIndicesView indices ) const {
+    extractTo(
+        [ legacyCallback = std::move( callback ) ]( const BitArchiveItem& item, const tstring& path ) -> buffer_t& {
+            return legacyCallback( item.index(), path );
+        },
+        indices
+    );
 }
 
 void BitInputArchive::extractTo( RawDataCallback callback, BitIndicesView indices ) const {
