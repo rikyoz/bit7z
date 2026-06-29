@@ -899,6 +899,15 @@ void BitInputArchive::extractTo( ItemBufferCallback callback, BitIndicesView ind
     extractArchive( extractCallback, ExtractMode::Extract, indices );
 }
 
+void BitInputArchive::extractTo( ItemBufferCallback callback, FilterCallback filterCallback ) const {
+    const auto extractCallback = bit7z::make_com< BufferExtractCallback, ExtractCallback >(
+        *this,
+        std::move( callback ),
+        std::move( filterCallback )
+    );
+    extractArchive( extractCallback, ExtractMode::Extract );
+}
+
 void BitInputArchive::extractTo( BufferCallback callback, BitIndicesView indices ) const {
     extractTo(
         [ legacyCallback = std::move( callback ) ]( const BitArchiveItem& item, const tstring& path ) -> buffer_t& {

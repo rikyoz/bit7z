@@ -509,6 +509,15 @@ class BitInputArchive {
         void extractTo( ItemBufferCallback callback, BitIndicesView indices = {} ) const;
 
         /**
+         * @brief Extracts to the buffers provided by the given ItemBufferCallback
+         *        all the items that satisfy the given filtering criteria.
+         *
+         * @param callback          the function providing the buffers.
+         * @param filterCallback    the filtering callback that specifies whether to extract an item or not.
+         */
+        void extractTo( ItemBufferCallback callback, FilterCallback filterCallback ) const;
+
+        /**
          * @brief Extracts the content of the archive to the buffers provided by the given BufferCallback.
          *
          * @param callback the function providing the buffers (receives the item index and its archive path).

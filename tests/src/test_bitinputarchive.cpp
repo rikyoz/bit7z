@@ -2013,6 +2013,106 @@ TEMPLATE_TEST_CASE(
 
 // NOLINTNEXTLINE(*-err58-cpp)
 TEMPLATE_TEST_CASE(
+    "BitInputArchive: Extracting to buffers via ItemBufferCallback with FilterCallback",
+    "[bitinputarchive]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
+
+#ifdef BIT7Z_BUILD_FOR_P7ZIP
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "iso", BitFormat::Iso },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
+#else
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "iso", BitFormat::Iso },
+        TestInputFormat{ "rar4.rar", BitFormat::Rar },
+        TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
+#endif
+
+    DYNAMIC_SECTION( "Archive format: " << testArchive.extension ) {
+        const fs::path arcFileName = "multiple_items." + testArchive.extension;
+
+        TestType inputArchive{};
+        getInputArchive( arcFileName, inputArchive );
+        BitArchiveReader info( test::sevenzipLib(), inputArchive, testArchive.format );
+
+        std::unordered_map< tstring, buffer_t > bufferMap;
+
+        const auto bufferCallback = [ &bufferMap ]( const BitArchiveItem&, const tstring& path ) -> buffer_t& {
+            return bufferMap[ path ];
+        };
+
+        SECTION( "Processing all items extracts all files with correct content" ) {
+            REQUIRE_NOTHROW( info.extractTo( bufferCallback, []( const BitArchiveItem& ) -> FilterResult {
+                return FilterResult::ProcessItem;
+            } ) );
+
+            REQUIRE( bufferMap.size() == info.filesCount() );
+            for ( const auto& expectedItem : multipleItemsContent().items ) {
+                INFO( "Checking item: " << toUtf8String( expectedItem.inArchivePath ) )
+                if ( expectedItem.fileInfo.type != fs::file_type::directory ) {
+                    const auto it = bufferMap.find( to_tstring( expectedItem.inArchivePath ) );
+                    REQUIRE( it != bufferMap.end() );
+                    REQUIRE( crc32( it->second ) == expectedItem.fileInfo.crc32 );
+                }
+            }
+        }
+
+        SECTION( "Skipping all items extracts nothing" ) {
+            REQUIRE_NOTHROW( info.extractTo( bufferCallback, []( const BitArchiveItem& ) -> FilterResult {
+                return FilterResult::SkipItem;
+            } ) );
+            REQUIRE( bufferMap.empty() );
+        }
+
+        SECTION( "Skipping items in subdirectories extracts only root-level files" ) {
+            REQUIRE_NOTHROW( info.extractTo( bufferCallback, []( const BitArchiveItem& item ) -> FilterResult {
+                return item.nativePath().find_first_of( BIT7Z_NATIVE_STRING( "\\/" ) ) == native_string::npos
+                    ? FilterResult::ProcessItem
+                    : FilterResult::SkipItem;
+            } ) );
+
+            for ( const auto& expectedItem : multipleItemsContent().items ) {
+                INFO( "Checking item: " << toUtf8String( expectedItem.inArchivePath ) )
+                const auto isRootLevel = expectedItem.inArchivePath.parent_path().empty();
+                const auto isFile = expectedItem.fileInfo.type != fs::file_type::directory;
+                const auto it = bufferMap.find( to_tstring( expectedItem.inArchivePath ) );
+                if ( isRootLevel && isFile ) {
+                    REQUIRE( it != bufferMap.end() );
+                    REQUIRE( crc32( it->second ) == expectedItem.fileInfo.crc32 );
+                } else {
+                    REQUIRE( it == bufferMap.end() );
+                }
+            }
+        }
+
+        SECTION( "Returning AbortOperation from FilterCallback throws" ) {
+            REQUIRE_THROWS_CODE(
+                info.extractTo( bufferCallback, []( const BitArchiveItem& ) -> FilterResult {
+                    return FilterResult::AbortOperation;
+                } ),
+                std::errc::operation_canceled
+            );
+        }
+    }
+}
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEMPLATE_TEST_CASE(
     "BitInputArchive: Aborting the extraction via the progress callback",
     "[bitinputarchive]",
     tstring,
