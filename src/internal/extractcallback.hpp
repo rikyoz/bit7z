@@ -11,11 +11,14 @@
 #define EXTRACTCALLBACK_HPP
 
 #include "bitabstractarchivehandler.hpp"
+#include "bitarchiveitem.hpp"
 #include "bitdefines.hpp"
 #include "bitpropvariant.hpp"
 #include "bittypes.hpp"
 #include "internal/callback.hpp"
+#include "internal/fsutil.hpp"
 #include "internal/macros.hpp"
+#include "internal/optional.hpp"
 #include "internal/operationresult.hpp"
 
 #include <7zip/Archive/IArchive.h>
@@ -31,6 +34,20 @@ class BitInputArchive;
 
 constexpr auto kEmptyFileAlias = BIT7Z_STRING( "[Content]" );
 constexpr auto kEmptyFileWideAlias = L"[Content]";
+
+inline auto itemExtractionPath( const BitArchiveItem& item, bool retainDirectories = true ) -> Optional< tstring > {
+    const BitPropVariant prop = item.itemProperty( BitProperty::Path );
+    if ( prop.isEmpty() ) {
+        return tstring{ kEmptyFileAlias };
+    }
+    if ( !prop.isString() ) {
+        return nullopt;
+    }
+    if ( retainDirectories ) {
+        return prop.getString();
+    }
+    return pathToTstring( fs::path{ prop.getNativeString() }.filename() );
+}
 
 enum struct ExtractMode : std::uint8_t {
     Extract = NArchive::NExtract::NAskMode::kExtract,

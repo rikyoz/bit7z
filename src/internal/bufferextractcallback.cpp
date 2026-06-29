@@ -14,11 +14,8 @@
 #include "bitabstractarchivehandler.hpp"
 #include "bitexception.hpp"
 #include "bitinputarchive.hpp"
-#include "bitpropvariant.hpp"
-#include "bittypes.hpp"
 #include "internal/cbufferoutstream.hpp"
 #include "internal/extractcallback.hpp"
-#include "internal/fs.hpp"
 #include "internal/fsutil.hpp"
 #include "internal/util.hpp"
 
@@ -48,27 +45,16 @@ auto BufferExtractCallback::getOutStream(
         return S_OK;
     }
 
-    // Get Name
-    const BitPropVariant prop = item.itemProperty( BitProperty::Path );
-    tstring fullPath;
-
-    if ( prop.isEmpty() ) {
-        fullPath = kEmptyFileAlias;
-    } else if ( prop.isString() ) {
-        if ( !mHandler.retainDirectories() ) {
-            fullPath = pathToTstring( fs::path{ prop.getNativeString() }.filename() );
-        } else {
-            fullPath = prop.getString();
-        }
-    } else {
+    const auto fullPath = itemExtractionPath( item, mHandler.retainDirectories() );
+    if ( !fullPath ) {
         return E_FAIL;
     }
 
     if ( mHandler.fileCallback() ) {
-        mHandler.fileCallback()( fullPath );
+        mHandler.fileCallback()( *fullPath );
     }
 
-    auto& outBuffer = mBufferCallback( item.index(), fullPath );
+    auto& outBuffer = mBufferCallback( item.index(), *fullPath );
     if ( !outBuffer.empty() ) {
         switch ( mHandler.overwriteMode() ) {
             case OverwriteMode::None: {

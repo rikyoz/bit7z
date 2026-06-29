@@ -14,7 +14,6 @@
 
 #include "bitabstractarchivehandler.hpp"
 #include "bitarchiveitem.hpp"
-#include "bitpropvariant.hpp"
 #include "bittypes.hpp"
 #include "internal/cfixedbufferoutstream.hpp"
 #include "internal/extractcallback.hpp"
@@ -38,19 +37,11 @@ auto FixedBufferExtractCallback::getOutStream( const BitArchiveItem& item, ISequ
     }
 
     if ( mHandler.fileCallback() ) {
-        // Get Name
-        const BitPropVariant prop = item.itemProperty( BitProperty::Path );
-        tstring fullPath;
-
-        if ( prop.isEmpty() ) {
-            fullPath = kEmptyFileAlias;
-        } else if ( prop.isString() ) {
-            fullPath = prop.getString();
-        } else {
+        const auto fullPath = itemExtractionPath( item );
+        if ( !fullPath ) {
             return E_FAIL;
         }
-
-        mHandler.fileCallback()( fullPath );
+        mHandler.fileCallback()( *fullPath );
     }
 
     auto outStreamLoc = bit7z::make_com< CFixedBufferOutStream, ISequentialOutStream >( mBuffer, mSize );

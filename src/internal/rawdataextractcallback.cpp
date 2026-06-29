@@ -13,7 +13,6 @@
 #include "internal/rawdataextractcallback.hpp"
 
 #include "bitinputarchive.hpp"
-#include "bitpropvariant.hpp"
 #include "internal/crawoutstream.hpp"
 #include "internal/extractcallback.hpp"
 #include "internal/util.hpp"
@@ -39,19 +38,11 @@ auto RawDataExtractCallback::getOutStream( const BitArchiveItem& item, ISequenti
     }
 
     if ( mHandler.fileCallback() ) {
-        // Get Name
-        const BitPropVariant prop = item.itemProperty( BitProperty::Path );
-        tstring fullPath;
-
-        if ( prop.isEmpty() ) {
-            fullPath = kEmptyFileAlias;
-        } else if ( prop.isString() ) {
-            fullPath = prop.getString();
-        } else {
+        const auto fullPath = itemExtractionPath( item );
+        if ( !fullPath ) {
             return E_FAIL;
         }
-
-        mHandler.fileCallback()( fullPath );
+        mHandler.fileCallback()( *fullPath );
     }
 
     auto outStreamLoc = bit7z::make_com< CRawOutStream, ISequentialOutStream >( mCallback );
