@@ -29,9 +29,9 @@ struct nullopt_t {
 
 static constexpr nullopt_t nullopt{ 0 };
 
-constexpr struct empty_init_t {} empty_init{};
+constexpr struct empty_init_t {} empty_init{}; // NOSONAR
 
-constexpr struct in_place_t {} in_place{};
+constexpr struct in_place_t {} in_place{}; // NOSONAR
 
 template< typename T, bool = std::is_trivially_destructible< T >::value >
 union OptionalStorage { // NOLINT(*-special-member-functions) //-V2514
@@ -41,7 +41,7 @@ union OptionalStorage { // NOLINT(*-special-member-functions) //-V2514
     explicit constexpr OptionalStorage( empty_init_t /* unused */ ) noexcept : mEmptyByte{} {}
 
     template< typename... Args >
-    explicit constexpr OptionalStorage( Args&&... args ) : mValue( std::forward< Args >( args )... ) {}
+    explicit constexpr OptionalStorage( Args&&... args ) : mValue( std::forward< Args >( args )... ) {} // NOSONAR
 
     // Using the default destructor to make OptionalStorage trivially-destructible (as the type T).
     ~OptionalStorage() noexcept = default;
@@ -55,12 +55,12 @@ union OptionalStorage< T, false > { // NOLINT(*-special-member-functions) //-V25
     explicit constexpr OptionalStorage( empty_init_t /* unused */ ) noexcept : mEmptyByte{} {}
 
     template< typename... Args >
-    explicit constexpr OptionalStorage( Args&&... args ) : mValue( std::forward< Args >( args )... ) {}
+    explicit constexpr OptionalStorage( Args&&... args ) : mValue( std::forward< Args >( args )... ) {} // NOSONAR
 
     // Non-trivially-destructible types need the destructor body; OptionalStorage will not be trivially-destructible.
     // Note: we do nothing in the destructor, as the destruction of an eventual value in the storage is performed
     // by OptionalBase's destructor (which performs it based on whether the Optional is engaged or not).
-    ~OptionalStorage() noexcept {}
+    ~OptionalStorage() noexcept {} // NOSONAR
 };
 
 template< typename T >
@@ -105,7 +105,8 @@ class Optional final : OptionalBase< T > {
             }
         }
 
-        /* implicit */ Optional( Optional&& other ) noexcept( std::is_nothrow_move_constructible< T >::value )
+        /* implicit */ Optional( Optional&& other ) // NOSONAR
+            noexcept( std::is_nothrow_move_constructible< T >::value )
             : mEngaged{ other.mEngaged }, mStorage{ empty_init } {
             if ( other.mEngaged ) {
                 new( data() ) T( std::move( *other ) );
@@ -143,7 +144,7 @@ class Optional final : OptionalBase< T > {
             return *this;
         }
 
-        auto operator=( Optional&& other ) noexcept( is_movable< T >::value ) -> Optional& {
+        auto operator=( Optional&& other ) noexcept( is_movable< T >::value ) -> Optional& { // NOSONAR
             if ( this != &other ) {
                 if ( !other.mEngaged ) {
                     reset();
