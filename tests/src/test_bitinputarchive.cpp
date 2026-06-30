@@ -37,6 +37,7 @@
 #include <numeric>
 #include <random>
 #include <sstream>
+#include <unordered_map>
 
 using namespace bit7z;
 using namespace bit7z::test;
