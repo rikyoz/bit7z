@@ -20,8 +20,10 @@
 
 namespace bit7z {
 template< typename T >
-using is_movable = cpp17::bool_constant< std::is_move_constructible< T >::value &&
-                                         std::is_nothrow_move_constructible< T >::value >;
+using is_movable = cpp17::bool_constant<
+    std::is_move_constructible< T >::value &&
+    std::is_nothrow_move_constructible< T >::value
+>;
 
 struct nullopt_t {
     constexpr explicit nullopt_t( int /*unused*/ ) noexcept {}
@@ -63,65 +65,89 @@ union OptionalStorage< T, false > { // NOLINT(*-special-member-functions) //-V25
     ~OptionalStorage() noexcept {} // NOSONAR
 };
 
-template< typename T >
-class Optional;
-
-// CRTP base for conditional destruction
+// Base class holding the engaged flag and storage, providing conditional destruction.
+// Both members live here so the destructor can access them directly without any cast,
+// allowing the compiler to track the "engaged ↔ mValue initialized" invariant.
 template< typename T, bool = std::is_trivially_destructible< T >::value >
-struct OptionalBase {
-    // Trivially destructible: default destructor
+struct OptionalBase { // NOLINT(*-special-member-functions) NOSONAR
+    protected:
+        bool mEngaged; // NOLINT(*-non-private-member-variables-in-classes)
+        OptionalStorage< T > mStorage; // NOLINT(*-non-private-member-variables-in-classes)
+
+    public:
+        constexpr OptionalBase() noexcept : mEngaged{ false }, mStorage{ empty_init } {}
+
+        template< typename... Args >
+        constexpr explicit OptionalBase( in_place_t /*tag*/, Args&&... args )
+            : mEngaged{ true }, mStorage{ std::forward< Args >( args )... } {}
+
+        // Trivially destructible T: use default destructor.
+        ~OptionalBase() = default;
 };
 
 template< typename T >
-struct OptionalBase< T, false > { // NOLINT(*-special-member-functions)
-    // Non-trivial destructor: destroy stored T if engaged
-    ~OptionalBase() noexcept {
-        auto& self = static_cast< Optional< T >& >( *this );
-        if ( self.mEngaged ) {
-            self.stored_value().~T();
+struct OptionalBase< T, false > { // NOLINT(*-special-member-functions) NOSONAR
+    protected:
+        bool mEngaged; // NOLINT(*-non-private-member-variables-in-classes)
+        OptionalStorage< T > mStorage; // NOLINT(*-non-private-member-variables-in-classes)
+
+    public:
+        constexpr OptionalBase() noexcept : mEngaged{ false }, mStorage{ empty_init } {}
+
+        template< typename... Args >
+        constexpr explicit OptionalBase( in_place_t /*tag*/, Args&&... args )
+            : mEngaged{ true }, mStorage{ std::forward< Args >( args )... } {}
+
+        // Non-trivially destructible T: destroy the stored value if engaged.
+        // Direct member access (no cast) lets the compiler track the invariant.
+        ~OptionalBase() noexcept {
+            if ( mEngaged ) {
+                mStorage.mValue.~T(); // NOSONAR
+            }
         }
-    }
 };
 
 // (Incomplete/stripped-down) implementation of std::optional for older compilers.
 // It will be replaced with std::optional once the library will be fully written in C++17.
 template< typename T >
 class Optional final : OptionalBase< T > {
+        using Base = OptionalBase< T >;
+        using Base::mEngaged;
+        using Base::mStorage;
+
     public:
         using value_type = T;
-        using base_type = OptionalBase< T >;
 
-        friend struct OptionalBase< T >;
-
-        constexpr Optional() noexcept : mEngaged{ false }, mStorage{ empty_init } {}
+        constexpr Optional() noexcept : Base{} {}
 
         //NOLINTNEXTLINE(*-explicit-conversions)
-        /* implicit */ constexpr Optional( nullopt_t /* unused */ ) noexcept // NOSONAR
-            : mEngaged{ false }, mStorage{ empty_init } {}
+        /* implicit */ constexpr Optional( nullopt_t /* unused */ ) noexcept : Base{} {} // NOSONAR
 
-        /* implicit */ Optional( const Optional& other ) : mEngaged{ other.mEngaged }, mStorage{ empty_init } {
+        /* implicit */ Optional( const Optional& other ) : Base{} {
             if ( other.mEngaged ) {
                 new( data() ) T( *other );
+                mEngaged = true;
             }
         }
 
         /* implicit */ Optional( Optional&& other ) // NOSONAR
             noexcept( std::is_nothrow_move_constructible< T >::value )
-            : mEngaged{ other.mEngaged }, mStorage{ empty_init } {
+            : Base{} {
             if ( other.mEngaged ) {
                 new( data() ) T( std::move( *other ) );
+                mEngaged = true;
             }
         }
 
         //NOLINTNEXTLINE(*-explicit-conversions)
-        /* implicit */ constexpr Optional( const T& value ) : mEngaged{ true }, mStorage{ value } {} // NOSONAR
+        /* implicit */ constexpr Optional( const T& value ) : Base{ in_place, value } {} // NOSONAR
 
         //NOLINTNEXTLINE(*-explicit-conversions)
-        /* implicit */ constexpr Optional( T&& value ) : mEngaged{ true }, mStorage{ std::move( value ) } {} // NOSONAR
+        /* implicit */ constexpr Optional( T&& value ) : Base{ in_place, std::move( value ) } {} // NOSONAR
 
         template< class... Args >
-        constexpr explicit Optional( in_place_t /*unused*/, Args&&... args )
-            : mEngaged{ true }, mStorage{ std::forward< Args >( args )... } {}
+        constexpr explicit Optional( in_place_t tag, Args&&... args )
+            : Base{ tag, std::forward< Args >( args )... } {}
 
         ~Optional() = default;
 
@@ -256,9 +282,6 @@ class Optional final : OptionalBase< T > {
         constexpr auto stored_value() const & noexcept -> const T& {
             return mStorage.mValue;
         }
-
-        bool mEngaged;
-        OptionalStorage< T > mStorage;
 };
 
 } // namespace bit7z
