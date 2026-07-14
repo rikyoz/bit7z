@@ -26,6 +26,7 @@
 
 #include <bit7z/bitarchivereader.hpp>
 #include <bit7z/bitarchivewriter.hpp>
+#include <bit7z/biterror.hpp>
 #include <bit7z/bitexception.hpp>
 #include <bit7z/bitformat.hpp>
 #include <bit7z/bittypes.hpp>
@@ -2008,6 +2009,48 @@ TEMPLATE_TEST_CASE(
         REQUIRE_NOTHROW( info.extractTo( [ &outBuffer ]( std::uint32_t, const tstring& ) -> buffer_t& {
             return outBuffer;
         } ) );
+        REQUIRE( crc32( outBuffer ) == clouds.crc32 );
+    }
+}
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEMPLATE_TEST_CASE(
+    "BitInputArchive: Extracting via ItemBufferCallback validates the given indices",
+    "[bitinputarchive][regression]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "single_file" };
+
+    const auto arcFileName = fs::path{ clouds.name }.concat( ".7z" );
+
+    TestType inputArchive{};
+    getInputArchive( arcFileName, inputArchive );
+    const BitArchiveReader info( test::sevenzipLib(), inputArchive, BitFormat::SevenZip );
+
+    buffer_t outBuffer;
+    const auto bufferCallback = [ &outBuffer ]( const BitArchiveItem&, const tstring& ) -> buffer_t& {
+        return outBuffer;
+    };
+
+    SECTION( "An out-of-range index must be rejected with BitError::InvalidIndex" ) {
+        REQUIRE_THROWS_CODE( info.extractTo( bufferCallback, { 999 } ), BitError::InvalidIndex );
+        REQUIRE( outBuffer.empty() );
+    }
+
+    SECTION( "The sibling RawDataCallback overload rejects the same out-of-range index" ) {
+        const auto rawDataCallback = []( const byte_t*, std::size_t ) -> bool {
+            return true;
+        };
+        REQUIRE_THROWS_CODE( info.extractTo( rawDataCallback, { 999 } ), BitError::InvalidIndex );
+    }
+
+    SECTION( "A valid index extracts correctly" ) {
+        /* Note: passing a plain 0 here would be ambiguous between the BitIndicesView
+         * and FilterCallback overloads, so we need to explicitly use a BitIndicesView. */
+        const std::uint32_t index = 0;
+        REQUIRE_NOTHROW( info.extractTo( bufferCallback, BitIndicesView( index ) ) );
         REQUIRE( crc32( outBuffer ) == clouds.crc32 );
     }
 }
