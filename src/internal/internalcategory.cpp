@@ -77,6 +77,8 @@ auto InternalCategory::message( int errorValue ) const -> std::string {
             return "The item has an absolute path.";
         case BitError::InvalidItemPath:
             return "The item has an invalid path.";
+        case BitError::NullCallback:
+            return "Null callback.";
         default:
             return "Unknown internal error (code " + std::to_string( errorValue ) + ").";
     }
@@ -97,6 +99,7 @@ auto InternalCategory::default_error_condition( int errorValue ) const noexcept 
         case BitError::ItemIsAFolder:
         case BitError::NonEmptyOutputBuffer:
         case BitError::NullOutputBuffer:
+        case BitError::NullCallback:
         case BitError::InvalidZipPassword:
             return std::make_error_condition( std::errc::invalid_argument );
         case BitError::NoMatchingItems:

@@ -47,7 +47,8 @@ enum struct BitError : std::uint8_t {
     InvalidDirectoryPath,            ///< Invalid directory path.
     ItemPathOutsideOutputDirectory,  ///< The extracted item path would be outside the output directory.
     ItemHasAbsolutePath,             ///< The item has an absolute path.
-    InvalidItemPath                  ///< The item has an invalid path.
+    InvalidItemPath,                 ///< The item has an invalid path.
+    NullCallback                     ///< The given callback is empty.
 };
 
 /**

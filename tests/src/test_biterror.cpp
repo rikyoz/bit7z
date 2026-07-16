@@ -55,7 +55,8 @@ TEST_CASE( "BitError: Checking that error values correspond to the correct failu
         ERROR_SOURCE( UnsupportedOperation, OperationNotSupported ),
         ERROR_SOURCE( UnsupportedVariantType, OperationNotSupported ),
         ERROR_SOURCE( WrongUpdateMode, OperationNotPermitted ),
-        ERROR_SOURCE( InvalidZipPassword, InvalidArgument )
+        ERROR_SOURCE( InvalidZipPassword, InvalidArgument ),
+        ERROR_SOURCE( NullCallback, InvalidArgument )
     );
 
     DYNAMIC_SECTION( errorSource.errorName << " vs " << errorSource.sourceName ) {

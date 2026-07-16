@@ -892,6 +892,13 @@ void BitInputArchive::extractTo( std::map< tstring, buffer_t >& outMap ) const {
 }
 
 void BitInputArchive::extractTo( ItemBufferCallback callback, BitIndicesView indices ) const {
+    if ( !callback ) {
+        throw BitException(
+            "Cannot extract the archive using an empty callback",
+            make_error_code( BitError::NullCallback )
+        );
+    }
+
     // Find if any index passed by the user is not in the valid range [0, itemsCount() - 1]
     const auto invalidIndex = findInvalidIndex( indices );
     if ( invalidIndex != indices.cend() ) {
@@ -908,6 +915,13 @@ void BitInputArchive::extractTo( ItemBufferCallback callback, BitIndicesView ind
 }
 
 void BitInputArchive::extractTo( ItemBufferCallback callback, FilterCallback filterCallback ) const {
+    if ( !callback ) {
+        throw BitException(
+            "Cannot extract the archive using an empty callback",
+            make_error_code( BitError::NullCallback )
+        );
+    }
+
     const auto extractCallback = bit7z::make_com< BufferExtractCallback, ExtractCallback >(
         *this,
         std::move( callback ),
@@ -917,6 +931,14 @@ void BitInputArchive::extractTo( ItemBufferCallback callback, FilterCallback fil
 }
 
 void BitInputArchive::extractTo( BufferCallback callback, BitIndicesView indices ) const {
+    // Checked here since the delegated overload can't detect the wrapped callback being empty.
+    if ( !callback ) {
+        throw BitException(
+            "Cannot extract the archive using an empty callback",
+            make_error_code( BitError::NullCallback )
+        );
+    }
+
     extractTo(
         [ legacyCallback = std::move( callback ) ]( const BitArchiveItem& item, const tstring& path ) -> buffer_t& {
             return legacyCallback( item.index(), path );
@@ -926,6 +948,13 @@ void BitInputArchive::extractTo( BufferCallback callback, BitIndicesView indices
 }
 
 void BitInputArchive::extractTo( RawDataCallback callback, BitIndicesView indices ) const {
+    if ( !callback ) {
+        throw BitException(
+            "Cannot extract the archive using an empty callback",
+            make_error_code( BitError::NullCallback )
+        );
+    }
+
     // Find if any index passed by the user is not in the valid range [0, itemsCount() - 1]
     const auto invalidIndex = findInvalidIndex( indices );
     if ( invalidIndex != indices.cend() ) {

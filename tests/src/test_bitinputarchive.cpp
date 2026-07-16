@@ -2056,6 +2056,32 @@ TEMPLATE_TEST_CASE(
 }
 
 // NOLINTNEXTLINE(*-err58-cpp)
+TEST_CASE( "BitInputArchive: Extracting via an empty callback must fail gracefully", "[bitinputarchive]" ) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "single_file" };
+
+    const auto arcFileName = fs::path{ clouds.name }.concat( ".7z" );
+
+    tstring inputArchive;
+    getInputArchive( arcFileName, inputArchive );
+    const BitArchiveReader info( test::sevenzipLib(), inputArchive, BitFormat::SevenZip );
+
+    SECTION( "An empty ItemBufferCallback must be rejected with BitError::NullCallback" ) {
+        REQUIRE_THROWS_CODE( info.extractTo( ItemBufferCallback{} ), BitError::NullCallback );
+        REQUIRE_THROWS_CODE( info.extractTo( ItemBufferCallback{}, []( const BitArchiveItem& ) -> FilterResult {
+            return FilterResult::ProcessItem;
+        } ), BitError::NullCallback );
+    }
+
+    SECTION( "An empty BufferCallback must be rejected with BitError::NullCallback" ) {
+        REQUIRE_THROWS_CODE( info.extractTo( BufferCallback{} ), BitError::NullCallback );
+    }
+
+    SECTION( "An empty RawDataCallback must be rejected with BitError::NullCallback" ) {
+        REQUIRE_THROWS_CODE( info.extractTo( RawDataCallback{} ), BitError::NullCallback );
+    }
+}
+
+// NOLINTNEXTLINE(*-err58-cpp)
 TEMPLATE_TEST_CASE(
     "BitInputArchive: Extracting to buffers via ItemBufferCallback with FilterCallback",
     "[bitinputarchive]",
