@@ -2048,11 +2048,58 @@ TEMPLATE_TEST_CASE(
     }
 
     SECTION( "A valid index extracts correctly" ) {
-        /* Note: passing a plain 0 here would be ambiguous between the BitIndicesView
-         * and FilterCallback overloads, so we need to explicitly use a BitIndicesView. */
-        const std::uint32_t index = 0;
-        REQUIRE_NOTHROW( info.extractTo( bufferCallback, BitIndicesView( index ) ) );
+        REQUIRE_NOTHROW( info.extractTo( bufferCallback, 0 ) );
         REQUIRE( crc32( outBuffer ) == clouds.crc32 );
+    }
+}
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEST_CASE( "BitInputArchive: Single-index extractTo overloads resolve unambiguously for plain index values",
+           "[bitinputarchive]" ) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "single_file" };
+
+    const auto arcFileName = fs::path{ clouds.name }.concat( ".7z" );
+
+    tstring inputArchive;
+    getInputArchive( arcFileName, inputArchive );
+    const BitArchiveReader info( test::sevenzipLib(), inputArchive, BitFormat::SevenZip );
+
+    buffer_t outBuffer;
+    const auto bufferCallback = [ &outBuffer ]( const BitArchiveItem&, const tstring& ) -> buffer_t& {
+        return outBuffer;
+    };
+
+    SECTION( "Extracting via ItemBufferCallback using a plain index" ) {
+        /* Regression check: previously, a plain 0 was ambiguous between
+         * the BitIndicesView and FilterCallback overloads. */
+        REQUIRE_NOTHROW( info.extractTo( bufferCallback, 0 ) );
+        REQUIRE( crc32( outBuffer ) == clouds.crc32 );
+
+        /* Note: MSVC treats const-zero variables as null pointer constants,
+         * so this also used to be ambiguous. */
+        const std::uint32_t index = 0;
+        REQUIRE_NOTHROW( info.extractTo( bufferCallback, index ) );
+        REQUIRE( crc32( outBuffer ) == clouds.crc32 );
+    }
+
+    SECTION( "Extracting to a directory using a plain index" ) {
+        /* Regression check: previously, a plain 0 was ambiguous between the BitIndicesView,
+         * FilterCallback, RenameCallback, and LegacyRenameCallback overloads. */
+        const TempTestDirectory outputDir{ "test_bitinputarchive" };
+        INFO( "Test directory: " << outputDir )
+
+        REQUIRE_NOTHROW( info.extractTo( outputDir, 0 ) );
+        for ( const auto& expectedItem : singleFileContent().items ) {
+            REQUIRE_FILESYSTEM_ITEM( expectedItem );
+        }
+        REQUIRE( fs::is_empty( outputDir.path() ) );
+    }
+
+    SECTION( "An out-of-range plain index must be rejected with BitError::InvalidIndex" ) {
+        REQUIRE_THROWS_CODE( info.extractTo( bufferCallback, 999 ), BitError::InvalidIndex );
+
+        const TempTestDirectory outputDir{ "test_bitinputarchive" };
+        REQUIRE_THROWS_CODE( info.extractTo( outputDir, 999 ), BitError::InvalidIndex );
     }
 }
 

@@ -562,6 +562,16 @@ void BitInputArchive::extractMatchingTo( const tstring& outDir, const tregex& re
 
 #endif
 
+/* Note: even though BitIndicesView is implicitly constructible from a single index, this overload is needed
+ * because plain zero indices (e.g., a literal 0) are also null pointer constants: without it, they would be
+ * ambiguously convertible to both BitIndicesView and the std::function-based callbacks of the sibling
+ * overloads. A std::uint32_t argument instead binds here via a standard conversion,
+ * which takes precedence over the user-defined ones. */
+void BitInputArchive::extractTo( const tstring& outDir, std::uint32_t index ) const {
+    // Note: the explicit BitIndicesView is needed to avoid recursing into this same overload.
+    extractTo( outDir, BitIndicesView{ index } );
+}
+
 void BitInputArchive::extractTo( const tstring& outDir, FilterCallback filterCallback ) const {
     const auto callback = bit7z::make_com< FileExtractCallback, ExtractCallback >(
         *this,
@@ -912,6 +922,16 @@ void BitInputArchive::extractTo( ItemBufferCallback callback, BitIndicesView ind
         std::move( callback )
     );
     extractArchive( extractCallback, ExtractMode::Extract, indices );
+}
+
+/* Note: even though BitIndicesView is implicitly constructible from a single index, this overload is needed
+ * because plain zero indices (e.g., a literal 0) are also null pointer constants: without it, they would be
+ * ambiguously convertible to both BitIndicesView and the FilterCallback of the sibling overload.
+ * A std::uint32_t argument instead binds here via a standard conversion,
+ * which takes precedence over the user-defined ones. */
+void BitInputArchive::extractTo( ItemBufferCallback callback, std::uint32_t index ) const {
+    // Note: the explicit BitIndicesView is needed to avoid recursing into this same overload.
+    extractTo( std::move( callback ), BitIndicesView{ index } );
 }
 
 void BitInputArchive::extractTo( ItemBufferCallback callback, FilterCallback filterCallback ) const {

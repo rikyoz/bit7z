@@ -256,6 +256,14 @@ class BitInputArchive {
         void extractTo( const tstring& outDir, BitIndicesView indices = {} ) const;
 
         /**
+         * @brief Extracts the item at the given index to the chosen directory.
+         *
+         * @param outDir  the output directory where the extracted file will be put.
+         * @param index   the index of the item to be extracted.
+         */
+        void extractTo( const tstring& outDir, std::uint32_t index ) const;
+
+        /**
          * @brief Extracts to the output directory all the items whose paths match the given wildcard pattern.
          *
          * @param outDir       the output directory where extracted files will be put.
@@ -507,6 +515,14 @@ class BitInputArchive {
          * @param indices  (optional) the indices of the files in the archive that must be extracted.
          */
         void extractTo( ItemBufferCallback callback, BitIndicesView indices = {} ) const;
+
+        /**
+         * @brief Extracts the item at the given index to the buffer provided by the given ItemBufferCallback.
+         *
+         * @param callback  the function providing the buffer.
+         * @param index     the index of the item to be extracted.
+         */
+        void extractTo( ItemBufferCallback callback, std::uint32_t index ) const;
 
         /**
          * @brief Extracts to the buffers provided by the given ItemBufferCallback
