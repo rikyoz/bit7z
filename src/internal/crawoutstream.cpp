@@ -28,13 +28,19 @@ STDMETHODIMP CRawOutStream::Write( const void* data, UInt32 size, UInt32* proces
         return S_OK;
     }
 
-    const bool callbackResult = mOutputCallback( static_cast< const byte_t* >( data ), size ); //-V2571
+    try {
+        const bool callbackResult = mOutputCallback( static_cast< const byte_t* >( data ), size ); //-V2571
 
-    if ( processedSize != nullptr ) {
-        *processedSize = size;
+        if ( processedSize != nullptr ) {
+            *processedSize = size;
+        }
+
+        return callbackResult ? S_OK : E_ABORT;
+    } catch ( ... ) {
+        // The exception must not escape this noexcept COM method;
+        // a throwing callback aborts the extraction, like a callback returning false.
+        return E_ABORT;
     }
-
-    return callbackResult ? S_OK : E_ABORT;
 }
 
 } // namespace bit7z

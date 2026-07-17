@@ -100,6 +100,12 @@ try {
         BitException( "Failed to get the stream", make_hresult_code( E_ABORT ) )
     );
     return E_ABORT;
+} catch ( ... ) {
+    /* E.g., a user-provided callback threw an exception not derived from std::runtime_error;
+     * the exception must not escape this noexcept COM method, so we store it
+     * for extractArchive to rethrow it to the user. */
+    mErrorException = std::current_exception();
+    return E_ABORT;
 }
 
 ExtractCallback::ExtractCallback( const BitInputArchive& inputArchive, FilterCallback filterCallback )

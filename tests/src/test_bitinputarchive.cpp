@@ -38,6 +38,7 @@
 #include <numeric>
 #include <random>
 #include <sstream>
+#include <stdexcept>
 #include <unordered_map>
 
 using namespace bit7z;
@@ -2078,6 +2079,31 @@ TEST_CASE( "BitInputArchive: Extracting via an empty callback must fail graceful
 
     SECTION( "An empty RawDataCallback must be rejected with BitError::NullCallback" ) {
         REQUIRE_THROWS_CODE( info.extractTo( RawDataCallback{} ), BitError::NullCallback );
+    }
+}
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEST_CASE( "BitInputArchive: Callbacks throwing arbitrary exceptions must not terminate the program",
+           "[bitinputarchive]" ) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "single_file" };
+
+    const auto arcFileName = fs::path{ clouds.name }.concat( ".7z" );
+
+    tstring inputArchive;
+    getInputArchive( arcFileName, inputArchive );
+    const BitArchiveReader info( test::sevenzipLib(), inputArchive, BitFormat::SevenZip );
+
+    SECTION( "An ItemBufferCallback throwing an exception not derived from std::runtime_error" ) {
+        // The user's original exception must be rethrown to the caller.
+        REQUIRE_THROWS_AS( info.extractTo( []( const BitArchiveItem&, const tstring& ) -> buffer_t& {
+            throw std::logic_error{ "failing user callback" };
+        } ), std::logic_error );
+    }
+
+    SECTION( "A RawDataCallback throwing an exception aborts the extraction" ) {
+        REQUIRE_THROWS_AS( info.extractTo( []( const byte_t*, std::size_t ) -> bool {
+            throw std::logic_error{ "failing user callback" };
+        } ), BitException );
     }
 }
 
