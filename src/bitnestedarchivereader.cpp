@@ -85,6 +85,36 @@ auto validateFormat( const BitInFormat& format ) -> const BitInFormat& {
 #else
 #define VALIDATE_FORMAT(x) x
 #endif
+
+/* Detects reentrant calls into the same BitNestedArchiveReader instance (e.g., a user
+ * FilterCallback/RenameCallback/ItemBufferCallback, or a FileCallback/ProgressCallback
+ * registered on the object, calling back into it) while an operation is already in progress.
+ * Reentering would make needReopen()/openSequentially() reinitialize the underlying sequential
+ * stream while mNestedArchive's own Extract()/Open() call is still active further up the stack. */
+class ReentrancyGuard {
+    public:
+        explicit ReentrancyGuard( bool& flag ) : mFlag{ flag } {
+            if ( mFlag ) {
+                throw BitException(
+                    "BitNestedArchiveReader does not support reentrant calls on the same instance",
+                    BitError::Fail
+                );
+            }
+            mFlag = true;
+        }
+
+        ~ReentrancyGuard() {
+            mFlag = false;
+        }
+
+        ReentrancyGuard( const ReentrancyGuard& ) = delete;
+        auto operator=( const ReentrancyGuard& ) -> ReentrancyGuard& = delete;
+        ReentrancyGuard( ReentrancyGuard&& ) = delete;
+        auto operator=( ReentrancyGuard&& ) -> ReentrancyGuard& = delete;
+
+    private:
+        bool& mFlag;
+};
 } // namespace
 
 BitNestedArchiveReader::BitNestedArchiveReader(
@@ -100,7 +130,8 @@ BitNestedArchiveReader::BitNestedArchiveReader(
     mMaxMemoryUsage{ std::max( getFreeRam() / 4, kMinMaxMemoryUsage ) },
     mCachedItemsCount{ 0 },
     mLastReadItem{ std::numeric_limits< decltype( mLastReadItem ) >::max() },
-    mOpenCount{ 0 } {}
+    mOpenCount{ 0 },
+    mOperationInProgress{ false } {}
 
 BitNestedArchiveReader::BitNestedArchiveReader(
     const Bit7zLibrary& lib,
@@ -122,6 +153,7 @@ auto BitNestedArchiveReader::archiveProperty( BitProperty property ) const -> Bi
 }
 
 auto BitNestedArchiveReader::itemProperty( std::uint32_t index, BitProperty property ) const -> BitPropVariant {
+    const ReentrancyGuard reentrancyGuard{ mOperationInProgress };
     if ( needReopen( index ) ) {
         openSequentially();
     }
@@ -137,6 +169,8 @@ auto BitNestedArchiveReader::itemsCount() const -> std::uint32_t {
         return mCachedItemsCount;
     }
 
+    const ReentrancyGuard reentrancyGuard{ mOperationInProgress };
+
     // BitInputArchive::itemsCount() and calculateItemsCount() can both throw;
     // mCachedItemsCount must stay 0 on failure so the next call retries instead of caching a poisoned value.
     auto count = mNestedArchive.itemsCount();
@@ -148,6 +182,7 @@ auto BitNestedArchiveReader::itemsCount() const -> std::uint32_t {
 }
 
 auto BitNestedArchiveReader::items() const -> std::vector< BitArchiveItemInfo > {
+    const ReentrancyGuard reentrancyGuard{ mOperationInProgress };
     if ( needReopen() ) {
         openSequentially();
     }
@@ -183,6 +218,7 @@ auto BitNestedArchiveReader::items() const -> std::vector< BitArchiveItemInfo > 
 }
 
 void BitNestedArchiveReader::extractTo( const tstring& outDir ) const {
+    const ReentrancyGuard reentrancyGuard{ mOperationInProgress };
     if ( needReopen() ) {
         openSequentially();
     }
@@ -194,6 +230,7 @@ void BitNestedArchiveReader::extractTo( const tstring& outDir ) const {
 }
 
 void BitNestedArchiveReader::extractTo( const tstring& outDir, FilterCallback filterCallback ) const {
+    const ReentrancyGuard reentrancyGuard{ mOperationInProgress };
     if ( needReopen() ) {
         openSequentially();
     }
@@ -202,6 +239,7 @@ void BitNestedArchiveReader::extractTo( const tstring& outDir, FilterCallback fi
 }
 
 void BitNestedArchiveReader::extractTo( const tstring& outDir, RenameCallback renameCallback ) const {
+    const ReentrancyGuard reentrancyGuard{ mOperationInProgress };
     if ( needReopen() ) {
         openSequentially();
     }
@@ -210,6 +248,7 @@ void BitNestedArchiveReader::extractTo( const tstring& outDir, RenameCallback re
 }
 
 void BitNestedArchiveReader::extractTo( std::map< tstring, buffer_t >& outMap ) const {
+    const ReentrancyGuard reentrancyGuard{ mOperationInProgress };
     if ( needReopen() ) {
         openSequentially();
     }
@@ -218,6 +257,7 @@ void BitNestedArchiveReader::extractTo( std::map< tstring, buffer_t >& outMap ) 
 }
 
 void BitNestedArchiveReader::extractTo( ItemBufferCallback callback, FilterCallback filterCallback ) const {
+    const ReentrancyGuard reentrancyGuard{ mOperationInProgress };
     if ( needReopen() ) {
         openSequentially();
     }
@@ -226,6 +266,7 @@ void BitNestedArchiveReader::extractTo( ItemBufferCallback callback, FilterCallb
 }
 
 void BitNestedArchiveReader::test() const {
+    const ReentrancyGuard reentrancyGuard{ mOperationInProgress };
     if ( needReopen() ) {
         openSequentially();
     }

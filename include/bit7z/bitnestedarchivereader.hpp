@@ -26,6 +26,12 @@ namespace bit7z {
  * interleaved with extraction; passing it an explicit index list reads past the end of its
  * (still empty) item table. Only extract-everything and FilterCallback/RenameCallback-based
  * extraction are safe under this opening mode, so those are the only overloads offered here.
+ *
+ * @note This class does not support reentrant calls on the same instance: calling any of its
+ * operations (including indirectly, e.g., from a FilterCallback/RenameCallback/ItemBufferCallback,
+ * or from a FileCallback/ProgressCallback registered on this object) while another operation on
+ * the same instance is already in progress throws a BitException, instead of silently reopening
+ * or reading from the underlying sequential stream while it is still in use further up the stack.
  */
 class BitNestedArchiveReader final : public BitAbstractArchiveOpener {
     public:
@@ -194,6 +200,7 @@ class BitNestedArchiveReader final : public BitAbstractArchiveOpener {
         mutable std::uint32_t mCachedItemsCount;
         mutable std::uint32_t mLastReadItem; // TODO: Use std::optional< std::uint32_t > once we move to C++17
         mutable std::size_t mOpenCount;
+        mutable bool mOperationInProgress; // Reentrancy guard: see the class-level @note above.
 
         void openSequentially() const;
 
