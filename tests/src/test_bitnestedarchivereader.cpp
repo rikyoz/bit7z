@@ -678,3 +678,70 @@ TEMPLATE_TEST_CASE(
     REQUIRE_NOTHROW( innerArchive.itemProperty( 0, BitProperty::Path ) );
     REQUIRE( innerArchive.openCount() == 2 );
 }
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEMPLATE_TEST_CASE(
+    "BitNestedArchiveReader: itemsCount() result is cached across calls",
+    "[bitnestedarchivereader][regression]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "nested" };
+
+    const fs::path arcFileName = "nested.tar.gz";
+
+    TestType inputArchive{};
+    getInputArchive( arcFileName, inputArchive );
+    const BitArchiveReader outerArchive( test::sevenzipLib(), inputArchive, BitFormat::GZip );
+    const BitNestedArchiveReader innerArchive( test::sevenzipLib(), outerArchive, BitFormat::Tar );
+
+    REQUIRE( innerArchive.itemsCount() == multipleFilesContent().fileCount );
+    REQUIRE( innerArchive.openCount() == 1 );
+
+    // A second call must hit the cache: no recomputation, no extra reopen of the sequential stream.
+    REQUIRE( innerArchive.itemsCount() == multipleFilesContent().fileCount );
+    REQUIRE( innerArchive.openCount() == 1 );
+}
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEMPLATE_TEST_CASE(
+    "BitNestedArchiveReader: itemsCount() of an empty nested archive is cached across calls",
+    "[bitnestedarchivereader][regression]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "nested" };
+
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "gz", BitFormat::GZip },
+        TestInputFormat{ "bz2", BitFormat::BZip2 },
+        TestInputFormat{ "xz", BitFormat::Xz },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
+
+    DYNAMIC_SECTION( "Archive format: " << testArchive.extension ) {
+        const fs::path arcFileName = "empty_nested.tar." + testArchive.extension;
+
+        TestType inputArchive{};
+        getInputArchive( arcFileName, inputArchive );
+        const BitArchiveReader outerArchive( test::sevenzipLib(), inputArchive, testArchive.format );
+        const BitNestedArchiveReader innerArchive( test::sevenzipLib(), outerArchive, BitFormat::Tar );
+
+        // Regression test: a legitimately empty item count must still be cached
+        // (it must not be mistaken for "not cached yet" and recomputed every time).
+        REQUIRE( innerArchive.itemsCount() == emptyContent().fileCount );
+        REQUIRE( innerArchive.openCount() == 1 );
+
+        // Poisons mLastReadItem via an unrelated operation, so that only a truly cached
+        // itemsCount() (not a recomputed one) can avoid forcing a further reopen below.
+        require_extracts_to_filesystem( innerArchive, emptyContent().items );
+        REQUIRE( innerArchive.openCount() == 1 );
+
+        REQUIRE( innerArchive.itemsCount() == emptyContent().fileCount );
+        REQUIRE( innerArchive.openCount() == 1 );
+    }
+}

@@ -197,7 +197,8 @@ class BitNestedArchiveReader final : public BitAbstractArchiveOpener {
         std::uint32_t mIndexInParent;
         std::uint64_t mMaxMemoryUsage;
 
-        mutable std::uint32_t mCachedItemsCount;
+        // max() means "not cached yet": 0 is a legitimate item count (an empty nested archive).
+        mutable std::uint32_t mCachedItemsCount; // TODO: Use std::optional< std::uint32_t > once we move to C++17.
         mutable std::uint32_t mLastReadItem; // TODO: Use std::optional< std::uint32_t > once we move to C++17
         mutable std::size_t mOpenCount;
         mutable bool mOperationInProgress; // Reentrancy guard: see the class-level @note above.

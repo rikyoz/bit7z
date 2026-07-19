@@ -128,7 +128,7 @@ BitNestedArchiveReader::BitNestedArchiveReader(
     mParentArchive{ parentArchive },
     mIndexInParent{ index },
     mMaxMemoryUsage{ std::max( getFreeRam() / 4, kMinMaxMemoryUsage ) },
-    mCachedItemsCount{ 0 },
+    mCachedItemsCount{ std::numeric_limits< decltype( mCachedItemsCount ) >::max() },
     mLastReadItem{ std::numeric_limits< decltype( mLastReadItem ) >::max() },
     mOpenCount{ 0 },
     mOperationInProgress{ false } {}
@@ -161,14 +161,15 @@ auto BitNestedArchiveReader::itemProperty( std::uint32_t index, BitProperty prop
 }
 
 auto BitNestedArchiveReader::itemsCount() const -> std::uint32_t {
-    if ( mCachedItemsCount > 0 ) {
+    if ( mCachedItemsCount != std::numeric_limits< decltype( mCachedItemsCount ) >::max() ) {
         return mCachedItemsCount;
     }
 
     const ReentrancyGuard reentrancyGuard{ mOperationInProgress };
 
     // BitInputArchive::itemsCount() and calculateItemsCount() can both throw;
-    // mCachedItemsCount must stay 0 on failure so the next call retries instead of caching a poisoned value.
+    // mCachedItemsCount must stay unset (max()) on failure so the next call retries
+    // instead of caching a poisoned value.
     auto count = mNestedArchive.itemsCount();
     if ( count == std::numeric_limits< std::uint32_t >::max() ) {
         count = calculateItemsCount();
@@ -278,9 +279,7 @@ auto BitNestedArchiveReader::needReopen( std::uint32_t index ) const noexcept ->
 }
 
 auto BitNestedArchiveReader::calculateItemsCount() const -> std::uint32_t {
-    if ( needReopen() ) {
-        openSequentially();
-    }
+    reopenIfNeeded();
 
     for ( std::uint32_t index = 0; index < std::numeric_limits< std::uint32_t >::max(); ++index ) {
         /* All archive formats provide BitProperty::IsDir for _valid_ items,
