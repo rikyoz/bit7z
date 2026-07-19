@@ -886,19 +886,11 @@ void BitInputArchive::extractTo( std::ostream& outStream, std::uint32_t index ) 
 }
 
 void BitInputArchive::extractTo( std::map< tstring, buffer_t >& outMap ) const {
-    const std::uint32_t numberItems = itemsCount();
-    IndicesVector filesIndices;
-    for ( std::uint32_t i = 0; i < numberItems; ++i ) {
-        if ( !isItemFolder( i ) ) { // Consider only files, not folders
-            filesIndices.push_back( i );
-        }
-    }
-
     // Note: the [] operator creates the buffer if it does not already exist.
     auto bufferCallback = [ &outMap ] ( const BitArchiveItem&, const tstring& path ) -> buffer_t& {
         return outMap[ path ];
     };
-    extractTo( std::move( bufferCallback ), filesIndices );
+    extractTo( std::move( bufferCallback ) );
 }
 
 void BitInputArchive::extractTo( ItemBufferCallback callback, BitIndicesView indices ) const {

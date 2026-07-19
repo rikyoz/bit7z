@@ -13,6 +13,7 @@
 #include <catch2/catch.hpp>
 
 #include "utils/archive.hpp"
+#include "utils/crc.hpp"
 #include "utils/shared_lib.hpp"
 
 #include <bit7z/bitnestedarchivereader.hpp>
@@ -30,6 +31,18 @@ void require_extracts_to_filesystem( const BitNestedArchiveReader& info, const E
     REQUIRE_NOTHROW( info.extractTo( testDir ) );
     for ( const auto& expectedItem : expectedItems ) {
         REQUIRE_FILESYSTEM_ITEM( expectedItem );
+    }
+}
+
+void require_extracts_to_map( const BitNestedArchiveReader& info, const ExpectedItems& expectedItems ) {
+    std::map< tstring, buffer_t > bufferMap;
+    REQUIRE_NOTHROW( info.extractTo( bufferMap ) );
+    REQUIRE( bufferMap.size() == expectedItems.size() );
+    for ( const auto& expectedItem : expectedItems ) {
+        INFO( "Failed while checking expected item '" << toUtf8String( expectedItem.inArchivePath ) << "'" )
+        const auto& extractedItem = bufferMap.find( to_tstring( expectedItem.inArchivePath ) );
+        REQUIRE( extractedItem != bufferMap.end() );
+        REQUIRE( crc32( extractedItem->second ) == expectedItem.fileInfo.crc32 );
     }
 }
 } // namespace
@@ -157,6 +170,40 @@ TEMPLATE_TEST_CASE(
 
         // TODO: Test all kind of extraction targets (buffers, streams, etc.)
         require_extracts_to_filesystem( innerArchive, multipleFilesContent().items );
+        REQUIRE( innerArchive.openCount() == 1 );
+    }
+}
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEMPLATE_TEST_CASE(
+    "BitNestedArchiveReader: Extracting nested archives to a map of buffers",
+    "[bitnestedarchivereader][regression]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "nested" };
+
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "gz", BitFormat::GZip },
+        TestInputFormat{ "bz2", BitFormat::BZip2 },
+        TestInputFormat{ "xz", BitFormat::Xz },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
+
+    DYNAMIC_SECTION( "Archive format: " << testArchive.extension ) {
+        const fs::path arcFileName = "nested.tar." + testArchive.extension;
+
+        TestType inputArchive{};
+        getInputArchive( arcFileName, inputArchive );
+        const BitArchiveReader outerArchive( test::sevenzipLib(), inputArchive, testArchive.format );
+        const BitNestedArchiveReader innerArchive( test::sevenzipLib(), outerArchive, BitFormat::Tar );
+
+        // Regression test: for a TAR opened sequentially, itemsCount() reports UINT32_MAX,
+        // so extractTo(outMap) must not pre-enumerate indices via itemsCount()/isItemFolder().
+        require_extracts_to_map( innerArchive, multipleFilesContent().items );
         REQUIRE( innerArchive.openCount() == 1 );
     }
 }
