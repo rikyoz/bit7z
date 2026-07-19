@@ -204,6 +204,8 @@ class BitNestedArchiveReader final : public BitAbstractArchiveOpener {
 
         void openSequentially() const;
 
+        void reopenIfNeeded( std::uint32_t index = 0 ) const;
+
         BIT7Z_NODISCARD
         auto needReopen( std::uint32_t index = 0 ) const noexcept -> bool;
 

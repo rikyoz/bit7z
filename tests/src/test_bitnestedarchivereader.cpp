@@ -645,3 +645,36 @@ TEMPLATE_TEST_CASE(
     // so the instance remains usable for subsequent, non-reentrant operations.
     require_extracts_to_filesystem( innerArchive, multipleFilesContent().items );
 }
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEMPLATE_TEST_CASE(
+    "BitNestedArchiveReader: Reading items in non-decreasing index order should not reopen the nested archive",
+    "[bitnestedarchivereader][regression]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "nested" };
+
+    const fs::path arcFileName = "nested.tar.gz";
+
+    TestType inputArchive{};
+    getInputArchive( arcFileName, inputArchive );
+    const BitArchiveReader outerArchive( test::sevenzipLib(), inputArchive, BitFormat::GZip );
+    const BitNestedArchiveReader innerArchive( test::sevenzipLib(), outerArchive, BitFormat::Tar );
+
+    REQUIRE_NOTHROW( innerArchive.itemProperty( 0, BitProperty::Path ) );
+    REQUIRE( innerArchive.openCount() == 1 );
+
+    // Reading a later index than the last one read must not force a reopen.
+    REQUIRE_NOTHROW( innerArchive.itemProperty( 1, BitProperty::Path ) );
+    REQUIRE( innerArchive.openCount() == 1 );
+
+    // Re-reading the same index must not force a reopen either.
+    REQUIRE_NOTHROW( innerArchive.itemProperty( 1, BitProperty::Path ) );
+    REQUIRE( innerArchive.openCount() == 1 );
+
+    // Reading an earlier index than the last one read must force a reopen.
+    REQUIRE_NOTHROW( innerArchive.itemProperty( 0, BitProperty::Path ) );
+    REQUIRE( innerArchive.openCount() == 2 );
+}

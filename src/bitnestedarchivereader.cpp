@@ -154,11 +154,7 @@ auto BitNestedArchiveReader::archiveProperty( BitProperty property ) const -> Bi
 
 auto BitNestedArchiveReader::itemProperty( std::uint32_t index, BitProperty property ) const -> BitPropVariant {
     const ReentrancyGuard reentrancyGuard{ mOperationInProgress };
-    if ( needReopen( index ) ) {
-        openSequentially();
-    }
-
-    mLastReadItem = std::numeric_limits< decltype( mLastReadItem ) >::max();
+    reopenIfNeeded( index );
     const auto result = mNestedArchive.itemProperty( index, property );
     mLastReadItem = index;
     return result;
@@ -183,13 +179,7 @@ auto BitNestedArchiveReader::itemsCount() const -> std::uint32_t {
 
 auto BitNestedArchiveReader::items() const -> std::vector< BitArchiveItemInfo > {
     const ReentrancyGuard reentrancyGuard{ mOperationInProgress };
-    if ( needReopen() ) {
-        openSequentially();
-    }
-
-    // Poisoning mLastReadItem before anything below can throw, so a failure forces
-    // the next operation to reopen instead of reusing a possibly-advanced stream.
-    mLastReadItem = std::numeric_limits< decltype( mLastReadItem ) >::max();
+    reopenIfNeeded();
 
     std::vector< BitArchiveItemInfo > result;
 
@@ -219,58 +209,37 @@ auto BitNestedArchiveReader::items() const -> std::vector< BitArchiveItemInfo > 
 
 void BitNestedArchiveReader::extractTo( const tstring& outDir ) const {
     const ReentrancyGuard reentrancyGuard{ mOperationInProgress };
-    if ( needReopen() ) {
-        openSequentially();
-    }
-    // The nested reader's state after the extraction call is unknown regardless of the outcome
-    // (success, or a failure that may have left the sequential stream partially consumed),
-    // so any further indexed access must reopen the archive from scratch.
-    mLastReadItem = std::numeric_limits< decltype( mLastReadItem ) >::max();
+    reopenIfNeeded();
     mNestedArchive.extractTo( outDir );
 }
 
 void BitNestedArchiveReader::extractTo( const tstring& outDir, FilterCallback filterCallback ) const {
     const ReentrancyGuard reentrancyGuard{ mOperationInProgress };
-    if ( needReopen() ) {
-        openSequentially();
-    }
-    mLastReadItem = std::numeric_limits< decltype( mLastReadItem ) >::max();
+    reopenIfNeeded();
     mNestedArchive.extractTo( outDir, std::move( filterCallback ) );
 }
 
 void BitNestedArchiveReader::extractTo( const tstring& outDir, RenameCallback renameCallback ) const {
     const ReentrancyGuard reentrancyGuard{ mOperationInProgress };
-    if ( needReopen() ) {
-        openSequentially();
-    }
-    mLastReadItem = std::numeric_limits< decltype( mLastReadItem ) >::max();
+    reopenIfNeeded();
     mNestedArchive.extractTo( outDir, std::move( renameCallback ) );
 }
 
 void BitNestedArchiveReader::extractTo( std::map< tstring, buffer_t >& outMap ) const {
     const ReentrancyGuard reentrancyGuard{ mOperationInProgress };
-    if ( needReopen() ) {
-        openSequentially();
-    }
-    mLastReadItem = std::numeric_limits< decltype( mLastReadItem ) >::max();
+    reopenIfNeeded();
     mNestedArchive.extractTo( outMap );
 }
 
 void BitNestedArchiveReader::extractTo( ItemBufferCallback callback, FilterCallback filterCallback ) const {
     const ReentrancyGuard reentrancyGuard{ mOperationInProgress };
-    if ( needReopen() ) {
-        openSequentially();
-    }
-    mLastReadItem = std::numeric_limits< decltype( mLastReadItem ) >::max();
+    reopenIfNeeded();
     mNestedArchive.extractTo( std::move( callback ), std::move( filterCallback ) );
 }
 
 void BitNestedArchiveReader::test() const {
     const ReentrancyGuard reentrancyGuard{ mOperationInProgress };
-    if ( needReopen() ) {
-        openSequentially();
-    }
-    mLastReadItem = std::numeric_limits< decltype( mLastReadItem ) >::max();
+    reopenIfNeeded();
     mNestedArchive.test();
 }
 
@@ -292,6 +261,16 @@ void BitNestedArchiveReader::openSequentially() const {
     mNestedArchive.openArchiveSeqStream( stream );
     mLastReadItem = 0;
     ++mOpenCount;
+}
+
+void BitNestedArchiveReader::reopenIfNeeded( std::uint32_t index ) const {
+    if ( needReopen( index ) ) {
+        openSequentially();
+    }
+
+    // Poisoning mLastReadItem before anything after this function call can throw, so a failure forces
+    // the next operation to reopen instead of reusing a possibly-advanced stream.
+    mLastReadItem = std::numeric_limits< decltype( mLastReadItem ) >::max();
 }
 
 auto BitNestedArchiveReader::needReopen( std::uint32_t index ) const noexcept -> bool {
