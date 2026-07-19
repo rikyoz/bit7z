@@ -210,6 +210,33 @@ TEMPLATE_TEST_CASE(
 
 // NOLINTNEXTLINE(*-err58-cpp)
 TEMPLATE_TEST_CASE(
+    "BitNestedArchiveReader: Operations after a failed itemProperty should reopen the nested archive",
+    "[bitnestedarchivereader][regression]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "nested" };
+
+    const fs::path arcFileName = "nested.tar.gz";
+
+    TestType inputArchive{};
+    getInputArchive( arcFileName, inputArchive );
+    const BitArchiveReader outerArchive( test::sevenzipLib(), inputArchive, BitFormat::GZip );
+    const BitNestedArchiveReader innerArchive( test::sevenzipLib(), outerArchive, BitFormat::Tar );
+
+    // A far out-of-range index forces the sequential TAR handler to read past the end of the
+    // (small) stream while looking for it, failing cleanly instead of finding the item.
+    REQUIRE_THROWS( innerArchive.itemProperty( 999999, BitProperty::Path ) );
+    REQUIRE( innerArchive.openCount() == 1 );
+
+    // The next operation must not reuse the now-exhausted stream.
+    require_extracts_to_filesystem( innerArchive, multipleFilesContent().items );
+    REQUIRE( innerArchive.openCount() == 2 );
+}
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEMPLATE_TEST_CASE(
     "BitNestedArchiveReader: Reading items of nested archives",
     "[bitnestedarchivereader]",
     tstring,

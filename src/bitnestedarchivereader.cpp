@@ -126,6 +126,7 @@ auto BitNestedArchiveReader::itemProperty( std::uint32_t index, BitProperty prop
         openSequentially();
     }
 
+    mLastReadItem = std::numeric_limits< decltype( mLastReadItem ) >::max();
     const auto result = mNestedArchive.itemProperty( index, property );
     mLastReadItem = index;
     return result;
@@ -136,10 +137,13 @@ auto BitNestedArchiveReader::itemsCount() const -> std::uint32_t {
         return mCachedItemsCount;
     }
 
-    mCachedItemsCount = mNestedArchive.itemsCount();
-    if ( mCachedItemsCount == std::numeric_limits< std::uint32_t >::max() ) {
-        mCachedItemsCount = calculateItemsCount();
+    // BitInputArchive::itemsCount() and calculateItemsCount() can both throw;
+    // mCachedItemsCount must stay 0 on failure so the next call retries instead of caching a poisoned value.
+    auto count = mNestedArchive.itemsCount();
+    if ( count == std::numeric_limits< std::uint32_t >::max() ) {
+        count = calculateItemsCount();
     }
+    mCachedItemsCount = count;
     return mCachedItemsCount;
 }
 
@@ -147,6 +151,10 @@ auto BitNestedArchiveReader::items() const -> std::vector< BitArchiveItemInfo > 
     if ( needReopen() ) {
         openSequentially();
     }
+
+    // Poisoning mLastReadItem before anything below can throw, so a failure forces
+    // the next operation to reopen instead of reusing a possibly-advanced stream.
+    mLastReadItem = std::numeric_limits< decltype( mLastReadItem ) >::max();
 
     std::vector< BitArchiveItemInfo > result;
 
@@ -171,7 +179,6 @@ auto BitNestedArchiveReader::items() const -> std::vector< BitArchiveItemInfo > 
 
         result.emplace_back( item );
     }
-    mLastReadItem = std::numeric_limits< decltype( mLastReadItem ) >::max();
     return result;
 }
 
@@ -179,24 +186,27 @@ void BitNestedArchiveReader::extractTo( const tstring& outDir ) const {
     if ( needReopen() ) {
         openSequentially();
     }
-    mNestedArchive.extractTo( outDir );
+    // The nested reader's state after the extraction call is unknown regardless of the outcome
+    // (success, or a failure that may have left the sequential stream partially consumed),
+    // so any further indexed access must reopen the archive from scratch.
     mLastReadItem = std::numeric_limits< decltype( mLastReadItem ) >::max();
+    mNestedArchive.extractTo( outDir );
 }
 
 void BitNestedArchiveReader::extractTo( std::map< tstring, buffer_t >& outMap ) const {
     if ( needReopen() ) {
         openSequentially();
     }
-    mNestedArchive.extractTo( outMap );
     mLastReadItem = std::numeric_limits< decltype( mLastReadItem ) >::max();
+    mNestedArchive.extractTo( outMap );
 }
 
 void BitNestedArchiveReader::test() const {
     if ( needReopen() ) {
         openSequentially();
     }
-    mNestedArchive.test();
     mLastReadItem = std::numeric_limits< decltype( mLastReadItem ) >::max();
+    mNestedArchive.test();
 }
 
 auto BitNestedArchiveReader::openCount() const -> std::size_t {
@@ -219,7 +229,7 @@ void BitNestedArchiveReader::openSequentially() const {
     ++mOpenCount;
 }
 
-auto BitNestedArchiveReader::needReopen( std::uint32_t index ) const -> bool {
+auto BitNestedArchiveReader::needReopen( std::uint32_t index ) const noexcept -> bool {
     return index < mLastReadItem;
 }
 
@@ -237,7 +247,10 @@ auto BitNestedArchiveReader::calculateItemsCount() const -> std::uint32_t {
             return index;
         }
     }
-    return 0;
+    throw BitException(
+        "Could not determine the number of items in the nested archive",
+        BitError::Fail
+    );
 }
 
 } // namespace bit7z

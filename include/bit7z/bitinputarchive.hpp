@@ -168,7 +168,7 @@ class BitInputArchive {
          *
          * @return true if the item has the property, false otherwise.
          */
-        BIT7Z_NODISCARD auto itemHasProperty( std::uint32_t index, BitProperty property ) const -> bool;
+        BIT7Z_NODISCARD auto itemHasProperty( std::uint32_t index, BitProperty property ) const noexcept -> bool;
 
         /**
          * @return the number of items contained in the archive.

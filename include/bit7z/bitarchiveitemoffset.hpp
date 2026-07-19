@@ -50,7 +50,7 @@ class BitArchiveItemOffset final : public BitArchiveItem {
          *
          * @return true if the item has the property, false otherwise.
          */
-        BIT7Z_NODISCARD auto hasProperty( BitProperty property ) const -> bool;
+        BIT7Z_NODISCARD auto hasProperty( BitProperty property ) const noexcept -> bool;
 
     private:
         /* Note: we use a std::reference_wrapper to make this class, and hence BitInputArchive::ConstIterator,

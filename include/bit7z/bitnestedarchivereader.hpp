@@ -100,6 +100,8 @@ class BitNestedArchiveReader final : public BitAbstractArchiveOpener {
 
         /**
          * @return the number of items contained in the archive.
+         *
+         * @throws BitException if the number of items could not be determined.
          */
         BIT7Z_NODISCARD
         auto itemsCount() const -> std::uint32_t;
@@ -158,7 +160,7 @@ class BitNestedArchiveReader final : public BitAbstractArchiveOpener {
         void openSequentially() const;
 
         BIT7Z_NODISCARD
-        auto needReopen( std::uint32_t index = 0 ) const -> bool;
+        auto needReopen( std::uint32_t index = 0 ) const noexcept -> bool;
 
         BIT7Z_NODISCARD
         auto calculateItemsCount() const -> std::uint32_t;

@@ -43,7 +43,7 @@ auto BitArchiveItemOffset::itemProperty( BitProperty property ) const -> BitProp
     return mArc.get().itemProperty( mItemIndex, property );
 }
 
-auto BitArchiveItemOffset::hasProperty( BitProperty property ) const -> bool {
+auto BitArchiveItemOffset::hasProperty( BitProperty property ) const noexcept -> bool {
     return mArc.get().itemHasProperty( mItemIndex, property );
 }
 

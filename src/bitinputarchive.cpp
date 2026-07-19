@@ -342,7 +342,7 @@ auto BitInputArchive::itemProperty( std::uint32_t index, BitProperty property ) 
     return itemProperty;
 }
 
-auto BitInputArchive::itemHasProperty( std::uint32_t index, BitProperty property ) const -> bool {
+auto BitInputArchive::itemHasProperty( std::uint32_t index, BitProperty property ) const noexcept -> bool {
     BitPropVariant itemProperty;
     return mInArchive->GetProperty( index, static_cast< PROPID >( property ), &itemProperty ) == S_OK;
 }
