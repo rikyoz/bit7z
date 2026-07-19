@@ -19,6 +19,13 @@ namespace bit7z {
 /**
  * @brief The BitNestedArchiveReader class allows reading and extracting nested archives
  *        (e.g., the tarball inside a .tar.gz archive).
+ *
+ * @note Unlike BitInputArchive, this class intentionally does not expose index-based
+ * extractTo/test overloads. The nested archive is opened through a forward-only sequential
+ * stream, and at least one supported nested format (TAR) only discovers its items lazily,
+ * interleaved with extraction; passing it an explicit index list reads past the end of its
+ * (still empty) item table. Only extract-everything and FilterCallback/RenameCallback-based
+ * extraction are safe under this opening mode, so those are the only overloads offered here.
  */
 class BitNestedArchiveReader final : public BitAbstractArchiveOpener {
     public:
@@ -120,12 +127,43 @@ class BitNestedArchiveReader final : public BitAbstractArchiveOpener {
         void extractTo( const tstring& outDir ) const;
 
         /**
+         * @brief Extracts to the output directory all the items that satisfy the given filtering criteria.
+         *
+         * @param outDir            the output directory where extracted files will be put.
+         * @param filterCallback    the filtering callback that specifies whether to extract an item or not.
+         */
+        void extractTo( const tstring& outDir, FilterCallback filterCallback ) const;
+
+        /**
+         * @brief Extracts the archive to the chosen directory,
+         * specifying the names of the extracted items via a RenameCallback.
+         *
+         * @note The callback receives the archive item being extracted and must return the path
+         * that the extracted item must have on the filesystem.
+         * If the path of the item must not change, simply return the item's path in the callback.
+         * If the item must not be extracted, return an empty string in the callback.
+         *
+         * @param outDir            the output directory where the extracted files will be put.
+         * @param renameCallback    the callback that returns the names for the extracted files.
+         */
+        void extractTo( const tstring& outDir, RenameCallback renameCallback ) const;
+
+        /**
          * @brief Extracts the content of the archive to a map of memory buffers, where the keys are the paths
          * of the files (inside the archive), and the values are their decompressed contents.
          *
          * @param outMap   the output map.
          */
         void extractTo( std::map< tstring, buffer_t >& outMap ) const;
+
+        /**
+         * @brief Extracts to the buffers provided by the given ItemBufferCallback
+         *        all the items that satisfy the given filtering criteria.
+         *
+         * @param callback          the function providing the buffers.
+         * @param filterCallback    the filtering callback that specifies whether to extract an item or not.
+         */
+        void extractTo( ItemBufferCallback callback, FilterCallback filterCallback ) const;
 
         /**
          * @brief Tests the archive without extracting its content.

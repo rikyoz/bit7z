@@ -19,6 +19,8 @@
 #include <bit7z/bitnestedarchivereader.hpp>
 #include <bit7z/bittypes.hpp>
 
+#include <stdexcept>
+
 using namespace bit7z;
 using namespace bit7z::test;
 using namespace bit7z::test::filesystem;
@@ -480,4 +482,131 @@ TEMPLATE_TEST_CASE(
 
     require_extracts_to_filesystem( layer4, multipleFilesContent().items );
     REQUIRE( layer4.openCount() == 2 );
+}
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEMPLATE_TEST_CASE(
+    "BitNestedArchiveReader: Operations after a failed extraction should reopen the nested archive",
+    "[bitnestedarchivereader]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "nested" };
+
+    const fs::path arcFileName = "nested.tar.gz";
+
+    TestType inputArchive{};
+    getInputArchive( arcFileName, inputArchive );
+    const BitArchiveReader outerArchive( test::sevenzipLib(), inputArchive, BitFormat::GZip );
+    const BitNestedArchiveReader innerArchive( test::sevenzipLib(), outerArchive, BitFormat::Tar );
+
+    // The user callback extracts the first item, and then throws mid-extraction,
+    // leaving the sequential stream partially consumed.
+    buffer_t dummyBuffer;
+    std::size_t extractedCount = 0;
+    REQUIRE_THROWS( innerArchive.extractTo(
+        [ &dummyBuffer, &extractedCount ]( const BitArchiveItem&, const tstring& ) -> buffer_t& {
+            if ( ++extractedCount > 1 ) {
+                throw std::runtime_error{ "failing user callback" };
+            }
+            return dummyBuffer;
+        },
+        []( const BitArchiveItem& ) -> FilterResult {
+            return FilterResult::ProcessItem;
+        }
+    ) );
+    REQUIRE( innerArchive.openCount() == 1 );
+
+    // The next operation must not reuse the partially consumed stream.
+    require_extracts_to_filesystem( innerArchive, multipleFilesContent().items );
+    REQUIRE( innerArchive.openCount() == 2 );
+}
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEMPLATE_TEST_CASE(
+    "BitNestedArchiveReader: Extracting nested archives to a directory with a filter callback",
+    "[bitnestedarchivereader]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "nested" };
+
+    const fs::path arcFileName = "nested.tar.gz";
+
+    TestType inputArchive{};
+    getInputArchive( arcFileName, inputArchive );
+    const BitArchiveReader outerArchive( test::sevenzipLib(), inputArchive, BitFormat::GZip );
+    const BitNestedArchiveReader innerArchive( test::sevenzipLib(), outerArchive, BitFormat::Tar );
+
+    const TempTestDirectory outputDir{ "test_bitnestedarchivereader" };
+    REQUIRE_NOTHROW( innerArchive.extractTo( outputDir, []( const BitArchiveItem& item ) -> FilterResult {
+        return item.name() == italy.name ? FilterResult::ProcessItem : FilterResult::SkipItem;
+    } ) );
+
+    REQUIRE_FILESYSTEM_ITEM( ( ExpectedItem{ italy, italy.name, false } ) );
+    REQUIRE_FALSE( fs::exists( fs::path{ loremIpsum.name } ) );
+}
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEMPLATE_TEST_CASE(
+    "BitNestedArchiveReader: Extracting nested archives to a directory with a rename callback",
+    "[bitnestedarchivereader]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "nested" };
+
+    const fs::path arcFileName = "nested.tar.gz";
+
+    TestType inputArchive{};
+    getInputArchive( arcFileName, inputArchive );
+    const BitArchiveReader outerArchive( test::sevenzipLib(), inputArchive, BitFormat::GZip );
+    const BitNestedArchiveReader innerArchive( test::sevenzipLib(), outerArchive, BitFormat::Tar );
+
+    const TempTestDirectory outputDir{ "test_bitnestedarchivereader" };
+    const ExpectedItem renamedItem{ italy, BIT7Z_NATIVE_STRING( "renamed.svg" ), false };
+    REQUIRE_NOTHROW( innerArchive.extractTo( outputDir, [ &renamedItem ]( const BitArchiveItem& item ) -> tstring {
+        if ( item.name() == italy.name ) {
+            return to_tstring( renamedItem.inArchivePath.native() ); // Renaming italy.svg...
+        }
+        return {}; // ...and skipping Lorem Ipsum.pdf.
+    } ) );
+    REQUIRE_FILESYSTEM_ITEM( renamedItem );
+    REQUIRE_FALSE( fs::exists( fs::path{ italy.name } ) );
+    REQUIRE_FALSE( fs::exists( fs::path{ loremIpsum.name } ) );
+}
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEMPLATE_TEST_CASE(
+    "BitNestedArchiveReader: Extracting nested archives to buffers with a filter callback",
+    "[bitnestedarchivereader]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "nested" };
+
+    const fs::path arcFileName = "nested.tar.gz";
+
+    TestType inputArchive{};
+    getInputArchive( arcFileName, inputArchive );
+    const BitArchiveReader outerArchive( test::sevenzipLib(), inputArchive, BitFormat::GZip );
+    const BitNestedArchiveReader innerArchive( test::sevenzipLib(), outerArchive, BitFormat::Tar );
+
+    std::map< tstring, buffer_t > bufferMap;
+    auto bufferCallback = [ &bufferMap ]( const BitArchiveItem&, const tstring& path ) -> buffer_t& {
+        return bufferMap[ path ];
+    };
+    REQUIRE_NOTHROW( innerArchive.extractTo(
+        std::move( bufferCallback ),
+        []( const BitArchiveItem& item ) -> FilterResult {
+            return item.name() == italy.name ? FilterResult::ProcessItem : FilterResult::SkipItem;
+        }
+    ) );
+
+    REQUIRE( bufferMap.size() == 1 );
+    REQUIRE( crc32( bufferMap.begin()->second ) == italy.crc32 );
 }

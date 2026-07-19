@@ -193,12 +193,36 @@ void BitNestedArchiveReader::extractTo( const tstring& outDir ) const {
     mNestedArchive.extractTo( outDir );
 }
 
+void BitNestedArchiveReader::extractTo( const tstring& outDir, FilterCallback filterCallback ) const {
+    if ( needReopen() ) {
+        openSequentially();
+    }
+    mLastReadItem = std::numeric_limits< decltype( mLastReadItem ) >::max();
+    mNestedArchive.extractTo( outDir, std::move( filterCallback ) );
+}
+
+void BitNestedArchiveReader::extractTo( const tstring& outDir, RenameCallback renameCallback ) const {
+    if ( needReopen() ) {
+        openSequentially();
+    }
+    mLastReadItem = std::numeric_limits< decltype( mLastReadItem ) >::max();
+    mNestedArchive.extractTo( outDir, std::move( renameCallback ) );
+}
+
 void BitNestedArchiveReader::extractTo( std::map< tstring, buffer_t >& outMap ) const {
     if ( needReopen() ) {
         openSequentially();
     }
     mLastReadItem = std::numeric_limits< decltype( mLastReadItem ) >::max();
     mNestedArchive.extractTo( outMap );
+}
+
+void BitNestedArchiveReader::extractTo( ItemBufferCallback callback, FilterCallback filterCallback ) const {
+    if ( needReopen() ) {
+        openSequentially();
+    }
+    mLastReadItem = std::numeric_limits< decltype( mLastReadItem ) >::max();
+    mNestedArchive.extractTo( std::move( callback ), std::move( filterCallback ) );
 }
 
 void BitNestedArchiveReader::test() const {
