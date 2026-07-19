@@ -37,6 +37,11 @@ namespace bit7z {
 // Minimum value for the maximum memory usage allowed for the BufferQueue.
 constexpr std::uint64_t kMinMaxMemoryUsage = 4ULL * 1024 * 1024; // 4 MiB //-V112
 
+// Sentinels: IInArchive::GetNumberOfItems/GetProperty/Extract all index items via UInt32,
+// so no archive can ever report more items than max() in the first place; safe to reserve as "unset".
+constexpr std::uint32_t kItemsCountUnset = std::numeric_limits< std::uint32_t >::max();
+constexpr std::uint32_t kNoItemRead = std::numeric_limits< std::uint32_t >::max();
+
 namespace {
 auto getFreeRam() -> std::uint64_t {
 #if defined( _WIN64 ) || defined( _WIN32 )
@@ -128,8 +133,8 @@ BitNestedArchiveReader::BitNestedArchiveReader(
     mParentArchive{ parentArchive },
     mIndexInParent{ index },
     mMaxMemoryUsage{ std::max( getFreeRam() / 4, kMinMaxMemoryUsage ) },
-    mCachedItemsCount{ std::numeric_limits< decltype( mCachedItemsCount ) >::max() },
-    mLastReadItem{ std::numeric_limits< decltype( mLastReadItem ) >::max() },
+    mCachedItemsCount{ kItemsCountUnset },
+    mLastReadItem{ kNoItemRead },
     mOpenCount{ 0 },
     mOperationInProgress{ false } {}
 
@@ -161,7 +166,7 @@ auto BitNestedArchiveReader::itemProperty( std::uint32_t index, BitProperty prop
 }
 
 auto BitNestedArchiveReader::itemsCount() const -> std::uint32_t {
-    if ( mCachedItemsCount != std::numeric_limits< decltype( mCachedItemsCount ) >::max() ) {
+    if ( mCachedItemsCount != kItemsCountUnset ) {
         return mCachedItemsCount;
     }
 
@@ -271,7 +276,7 @@ void BitNestedArchiveReader::reopenIfNeeded( std::uint32_t index ) const {
 
     // Poisoning mLastReadItem before anything after this function call can throw, so a failure forces
     // the next operation to reopen instead of reusing a possibly-advanced stream.
-    mLastReadItem = std::numeric_limits< decltype( mLastReadItem ) >::max();
+    mLastReadItem = kNoItemRead;
 }
 
 auto BitNestedArchiveReader::needReopen( std::uint32_t index ) const noexcept -> bool {
