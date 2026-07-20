@@ -14,11 +14,14 @@
 
 #include "utils/archive.hpp"
 #include "utils/crc.hpp"
+#include "utils/exception.hpp"
 #include "utils/shared_lib.hpp"
 
+#include <bit7z/biterror.hpp>
 #include <bit7z/bitnestedarchivereader.hpp>
 #include <bit7z/bittypes.hpp>
 
+#include <limits>
 #include <stdexcept>
 
 using namespace bit7z;
@@ -235,6 +238,34 @@ TEMPLATE_TEST_CASE(
     // The next operation must not reuse the now-exhausted stream.
     require_extracts_to_filesystem( innerArchive, multipleFilesContent().items );
     REQUIRE( innerArchive.openCount() == 2 );
+}
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEMPLATE_TEST_CASE(
+    "BitNestedArchiveReader: itemProperty should reject the reserved sentinel index value",
+    "[bitnestedarchivereader][regression]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "nested" };
+
+    const fs::path arcFileName = "nested.tar.gz";
+
+    TestType inputArchive{};
+    getInputArchive( arcFileName, inputArchive );
+    const BitArchiveReader outerArchive( test::sevenzipLib(), inputArchive, BitFormat::GZip );
+    const BitNestedArchiveReader innerArchive( test::sevenzipLib(), outerArchive, BitFormat::Tar );
+
+    // UINT32_MAX doubles as the internal "not positioned yet" sentinel; no real archive item can
+    // ever legitimately sit at that index, so it must be rejected outright, without even attempting
+    // to open the nested archive (which would otherwise mistake the index for "already past it" and
+    // read from a never-opened underlying archive).
+    REQUIRE_THROWS_CODE(
+        innerArchive.itemProperty( std::numeric_limits< std::uint32_t >::max(), BitProperty::Path ),
+        BitError::InvalidIndex
+    );
+    REQUIRE( innerArchive.openCount() == 0 );
 }
 
 // NOLINTNEXTLINE(*-err58-cpp)

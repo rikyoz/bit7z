@@ -158,6 +158,16 @@ auto BitNestedArchiveReader::archiveProperty( BitProperty property ) const -> Bi
 }
 
 auto BitNestedArchiveReader::itemProperty( std::uint32_t index, BitProperty property ) const -> BitPropVariant {
+    // kNoItemRead is reserved internally to mean "not positioned yet"; no real archive item can
+    // ever legitimately sit at that index (see the Sentinels comment above), so reject it here
+    // before it can be mistaken by needReopen() for "already past it, no reopen needed".
+    if ( index == kNoItemRead ) {
+        throw BitException(
+            "Cannot retrieve the property of the item at the index " + std::to_string( index ),
+            make_error_code( BitError::InvalidIndex )
+        );
+    }
+
     const ReentrancyGuard reentrancyGuard{ mOperationInProgress };
     reopenIfNeeded( index );
     const auto result = mNestedArchive.itemProperty( index, property );
