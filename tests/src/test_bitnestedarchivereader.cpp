@@ -710,6 +710,43 @@ TEMPLATE_TEST_CASE(
 
 // NOLINTNEXTLINE(*-err58-cpp)
 TEMPLATE_TEST_CASE(
+    "BitNestedArchiveReader: Reentrant archiveProperty calls into the same instance should be rejected",
+    "[bitnestedarchivereader][regression]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "nested" };
+
+    const fs::path arcFileName = "nested.tar.gz";
+
+    TestType inputArchive{};
+    getInputArchive( arcFileName, inputArchive );
+    const BitArchiveReader outerArchive( test::sevenzipLib(), inputArchive, BitFormat::GZip );
+    const BitNestedArchiveReader innerArchive( test::sevenzipLib(), outerArchive, BitFormat::Tar );
+
+    buffer_t dummyBuffer;
+    // A FilterCallback calling archiveProperty() back into the same instance while extraction is
+    // still in progress must be rejected too, instead of silently returning a possibly-incomplete
+    // archive-level property (e.g., BitProperty::Characts for TAR is populated incrementally as
+    // items are parsed during extraction, so a reentrant read could return a stale/partial value).
+    REQUIRE_THROWS_AS( innerArchive.extractTo(
+        [ &dummyBuffer ]( const BitArchiveItem&, const tstring& ) -> buffer_t& {
+            return dummyBuffer;
+        },
+        [ &innerArchive ]( const BitArchiveItem& ) -> FilterResult {
+            ( void ) innerArchive.archiveProperty( BitProperty::PhySize );
+            return FilterResult::ProcessItem;
+        }
+    ), BitException );
+
+    // The guard must be released even though the reentrant call failed,
+    // so the instance remains usable for subsequent, non-reentrant operations.
+    require_extracts_to_filesystem( innerArchive, multipleFilesContent().items );
+}
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEMPLATE_TEST_CASE(
     "BitNestedArchiveReader: Reading items in non-decreasing index order should not reopen the nested archive",
     "[bitnestedarchivereader][regression]",
     tstring,

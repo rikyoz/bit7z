@@ -154,6 +154,10 @@ auto BitNestedArchiveReader::detectedFormat() const noexcept -> const BitInForma
 }
 
 auto BitNestedArchiveReader::archiveProperty( BitProperty property ) const -> BitPropVariant {
+    // Some archive-level properties (e.g., BitProperty::Characts for TAR) are populated
+    // incrementally as items are parsed during extraction; reentering this call while another
+    // operation is in progress could silently return an incomplete/stale value.
+    const ReentrancyGuard reentrancyGuard{ mOperationInProgress };
     return mNestedArchive.archiveProperty( property );
 }
 
