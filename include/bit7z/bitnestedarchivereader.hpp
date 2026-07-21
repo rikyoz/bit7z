@@ -217,6 +217,12 @@ class BitNestedArchiveReader final : public BitAbstractArchiveOpener {
 
         void reopenIfNeeded( std::uint32_t index = 0 ) const;
 
+        // Guards operation, reopening the nested archive first if needed, and returns its result
+        // (if any). Used by itemProperty() and the extractTo overloads/test(), which share this
+        // exact "guard, reopen, delegate" shape.
+        template< typename Operation >
+        auto withReentrancyGuard( Operation&& operation, std::uint32_t index = 0 ) const -> decltype( operation() );
+
         BIT7Z_NODISCARD
         auto needReopen( std::uint32_t index = 0 ) const noexcept -> bool;
 
