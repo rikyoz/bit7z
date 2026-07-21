@@ -289,7 +289,6 @@ void BitNestedArchiveReader::openSequentially() const {
         mIndexInParent
     );
     mNestedArchive.openArchiveSeqStream( stream );
-    mLastReadItem = 0;
     ++mOpenCount;
 }
 
