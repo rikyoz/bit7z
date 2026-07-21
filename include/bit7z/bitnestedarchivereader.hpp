@@ -28,10 +28,14 @@ namespace bit7z {
  * extraction are safe under this opening mode, so those are the only overloads offered here.
  *
  * @note This class does not support reentrant calls on the same instance: calling any of its
- * operations (including indirectly, e.g., from a FilterCallback/RenameCallback/ItemBufferCallback,
- * or from a FileCallback/ProgressCallback registered on this object) while another operation on
- * the same instance is already in progress throws a BitException, instead of silently reopening
- * or reading from the underlying sequential stream while it is still in use further up the stack.
+ * operations that may need to access the underlying sequential stream (including indirectly,
+ * e.g., from a FilterCallback/RenameCallback/ItemBufferCallback, or from a FileCallback/
+ * ProgressCallback registered on this object) while another such operation on the same instance
+ * is already in progress throws a BitException, instead of silently reopening or reading from the
+ * stream while it is still in use further up the stack. The only exception is a call that can be
+ * answered entirely from a result already cached by a prior successful call (e.g., itemsCount()
+ * once it has been computed once): since that touches no shared state, it is always safe to call,
+ * including reentrantly.
  */
 class BitNestedArchiveReader final : public BitAbstractArchiveOpener {
     public:
@@ -113,6 +117,11 @@ class BitNestedArchiveReader final : public BitAbstractArchiveOpener {
 
         /**
          * @return the number of items contained in the archive.
+         *
+         * @note Once successfully computed, the result is cached: further calls return it
+         * immediately without touching the underlying stream, so, unlike this class's other
+         * operations, they remain safe to call even while another operation on this instance
+         * is already in progress (see the class-level @note above).
          *
          * @throws BitException if the number of items could not be determined.
          */
@@ -198,6 +207,7 @@ class BitNestedArchiveReader final : public BitAbstractArchiveOpener {
         std::uint64_t mMaxMemoryUsage;
 
         // max() means "not cached yet": 0 is a legitimate item count (an empty nested archive).
+        // We can't use our internal Optional because these are value variables in the public API.
         mutable std::uint32_t mCachedItemsCount; // TODO: Use std::optional< std::uint32_t > once we move to C++17.
         mutable std::uint32_t mLastReadItem; // TODO: Use std::optional< std::uint32_t > once we move to C++17
         mutable std::size_t mOpenCount;
