@@ -190,7 +190,7 @@ auto BitNestedArchiveReader::itemsCount() const -> std::uint32_t {
     // mCachedItemsCount must stay unset (max()) on failure so the next call retries
     // instead of caching a poisoned value.
     auto count = mNestedArchive.itemsCount();
-    if ( count == std::numeric_limits< std::uint32_t >::max() ) {
+    if ( count == kItemsCountUnset ) {
         count = calculateItemsCount();
     }
     mCachedItemsCount = count;
@@ -212,7 +212,7 @@ auto BitNestedArchiveReader::items() const -> std::vector< BitArchiveItemInfo > 
      *   and we stop when we encounter the first item not reporting the BitProperty::IsDir property.
      * - For other archives, we stop when we reach itemsCount() (most likely one) items added to the vector. */
     const auto itemsCount = mNestedArchive.itemsCount();
-    if ( itemsCount < std::numeric_limits< std::uint32_t >::max() ) {
+    if ( itemsCount < kItemsCountUnset ) {
         result.reserve( static_cast< std::size_t >( itemsCount ) );
     }
 
