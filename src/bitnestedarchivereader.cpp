@@ -248,6 +248,16 @@ void BitNestedArchiveReader::extractTo( std::map< tstring, buffer_t >& outMap ) 
 }
 
 void BitNestedArchiveReader::extractTo( ItemBufferCallback callback, FilterCallback filterCallback ) const {
+    // Checked here, before touching the stream, so an empty callback fails fast instead of paying
+    // for a reopen first. filterCallback isn't checked: unlike callback (the only source of output
+    // buffers), an empty FilterCallback is a valid "extract every item, skip none" default.
+    if ( !callback ) {
+        throw BitException(
+            "Cannot extract the archive using an empty callback",
+            make_error_code( BitError::NullCallback )
+        );
+    }
+
     const ReentrancyGuard reentrancyGuard{ mOperationInProgress };
     reopenIfNeeded();
     mNestedArchive.extractTo( std::move( callback ), std::move( filterCallback ) );

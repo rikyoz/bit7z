@@ -644,6 +644,37 @@ TEMPLATE_TEST_CASE(
 
 // NOLINTNEXTLINE(*-err58-cpp)
 TEMPLATE_TEST_CASE(
+    "BitNestedArchiveReader: extractTo with an empty ItemBufferCallback should reject without reopening",
+    "[bitnestedarchivereader][regression]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "nested" };
+
+    const fs::path arcFileName = "nested.tar.gz";
+
+    TestType inputArchive{};
+    getInputArchive( arcFileName, inputArchive );
+    const BitArchiveReader outerArchive( test::sevenzipLib(), inputArchive, BitFormat::GZip );
+    const BitNestedArchiveReader innerArchive( test::sevenzipLib(), outerArchive, BitFormat::Tar );
+
+    // An empty callback is guaranteed to fail regardless of stream state, so it must be rejected
+    // before reopening the nested archive, not after.
+    REQUIRE_THROWS_CODE(
+        innerArchive.extractTo(
+            ItemBufferCallback{},
+            []( const BitArchiveItem& ) -> FilterResult {
+                return FilterResult::ProcessItem;
+            }
+        ),
+        BitError::NullCallback
+    );
+    REQUIRE( innerArchive.openCount() == 0 );
+}
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEMPLATE_TEST_CASE(
     "BitNestedArchiveReader: Reentrant calls into the same instance should be rejected",
     "[bitnestedarchivereader]",
     tstring,
