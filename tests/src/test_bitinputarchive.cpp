@@ -35,11 +35,14 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <new>
 #include <numeric>
 #include <random>
 #include <sstream>
 #include <stdexcept>
+#include <system_error>
 #include <unordered_map>
+#include <vector>
 
 using namespace bit7z;
 using namespace bit7z::test;
@@ -2129,6 +2132,12 @@ TEST_CASE( "BitInputArchive: Extracting via an empty callback must fail graceful
     }
 }
 
+namespace {
+// Deliberately not derived from std::exception at all, to exercise ExtractCallback::GetStream()'s
+// catch(...) branch -- the true last resort, for exceptions the std::exception tier can't see.
+struct ExoticExtractionFailure {};
+} // namespace
+
 // NOLINTNEXTLINE(*-err58-cpp)
 TEST_CASE( "BitInputArchive: Callbacks throwing arbitrary exceptions must not terminate the program",
            "[bitinputarchive]" ) {
@@ -2140,11 +2149,48 @@ TEST_CASE( "BitInputArchive: Callbacks throwing arbitrary exceptions must not te
     getInputArchive( arcFileName, inputArchive );
     const BitArchiveReader info( test::sevenzipLib(), inputArchive, BitFormat::SevenZip );
 
-    SECTION( "An ItemBufferCallback throwing an exception not derived from std::runtime_error" ) {
-        // The user's original exception must be rethrown to the caller.
-        REQUIRE_THROWS_AS( info.extractTo( []( const BitArchiveItem&, const tstring& ) -> buffer_t& {
+    SECTION( "An ItemBufferCallback throwing a std::exception-derived error" ) {
+        // The exception is wrapped into a BitException, preserving its original message.
+        REQUIRE_THROWS_WITH( info.extractTo( []( const BitArchiveItem&, const tstring& ) -> buffer_t& {
             throw std::logic_error{ "failing user callback" };
-        } ), std::logic_error );
+        } ), Catch::Matchers::Contains( "failing user callback" ) );
+    }
+
+    SECTION( "An ItemBufferCallback throwing a non-std::exception type should propagate instead of crashing" ) {
+        // The user's original exception must be rethrown to the caller, unmodified.
+        REQUIRE_THROWS_AS( info.extractTo( []( const BitArchiveItem&, const tstring& ) -> buffer_t& {
+            throw ExoticExtractionFailure{};
+        } ), ExoticExtractionFailure );
+    }
+
+    SECTION( "An ItemBufferCallback throwing std::bad_alloc should propagate it unwrapped" ) {
+        // std::bad_alloc is caught by its own tier in ExtractCallback::GetStream(), separate from the
+        // general std::exception tier: wrapping it would require the same kind of allocation that may
+        // have just failed, so it is stored and rethrown as-is instead of being wrapped into a BitException.
+        REQUIRE_THROWS_AS( info.extractTo( []( const BitArchiveItem&, const tstring& ) -> buffer_t& {
+            throw std::bad_alloc{};
+        } ), std::bad_alloc );
+    }
+
+    SECTION( "An ItemBufferCallback throwing std::system_error should preserve its error code" ) {
+        // The original std::error_code must survive the round trip through ExtractCallback::GetStream(),
+        // instead of being flattened to a generic E_ABORT-derived code.
+        REQUIRE_THROWS_CODE( info.extractTo( []( const BitArchiveItem&, const tstring& ) -> buffer_t& {
+            throw std::system_error( std::make_error_code( std::errc::no_space_on_device ), "disk full" );
+        } ), std::errc::no_space_on_device );
+    }
+
+    SECTION( "An ItemBufferCallback throwing std::out_of_range should be wrapped, not propagated as-is" ) {
+        // std::out_of_range (e.g. from a plain std::vector/std::map::at() call inside a callback) is a
+        // std::logic_error, a sibling of std::runtime_error under std::exception (NOT a descendant of it)
+        // so it must still be caught by the general std::exception tier and wrapped into a BitException,
+        // rather than propagating as its own type.
+        static buffer_t dummyBuffer;
+        const std::vector< int > empty;
+        REQUIRE_THROWS_AS( info.extractTo( [ &empty ]( const BitArchiveItem&, const tstring& ) -> buffer_t& {
+            ( void ) empty.at( 0 );
+            return dummyBuffer;
+        } ), BitException );
     }
 
     SECTION( "A RawDataCallback throwing an exception aborts the extraction" ) {

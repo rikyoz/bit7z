@@ -17,6 +17,7 @@
 #include "bitinputarchive.hpp"
 #include "bitpropvariant.hpp"
 #include "internal/callback.hpp"
+#include "internal/exceptionutil.hpp"
 #include "internal/operationresult.hpp"
 #include "internal/stringutil.hpp"
 
@@ -24,8 +25,9 @@
 
 #include <cstdint>
 #include <exception>
-#include <stdexcept>
+#include <new>
 #include <string>
+#include <system_error>
 
 namespace bit7z {
 
@@ -95,15 +97,24 @@ try {
 } catch ( const BitException& exception ) {
     mErrorException = std::make_exception_ptr( exception );
     return exception.hresultCode();
-} catch ( const std::runtime_error& ) {
-    mErrorException = std::make_exception_ptr(
-        BitException( "Failed to get the stream", make_hresult_code( E_ABORT ) )
-    );
+} catch ( const std::system_error& exception ) {
+    // exception.what() already embeds its category's message, and BitException's own
+    // std::system_error base would append that same message again if reused here, so only the
+    // error code is preserved, not the original message.
+    mErrorException = std::make_exception_ptr( BitException( "Failed to get the stream", exception.code() ) );
+    return E_ABORT;
+} catch ( const std::bad_alloc& ) {
+    // Avoid allocating while already handling an out-of-memory condition: unlike toBitException()
+    // (which needs a new string + BitException), current_exception() only bumps a refcount on the
+    // exception object the runtime already allocated when it was thrown.
+    mErrorException = std::current_exception();
+    return E_OUTOFMEMORY;
+} catch ( const std::exception& exception ) {
+    mErrorException = std::make_exception_ptr( toBitException( "Failed to get the stream", exception ) );
     return E_ABORT;
 } catch ( ... ) {
-    /* E.g., a user-provided callback threw an exception not derived from std::runtime_error;
-     * the exception must not escape this noexcept COM method, so we store it
-     * for extractArchive to rethrow it to the user. */
+    /* E.g., a user-provided callback threw an exception not derived from std::exception;
+     * the exception must not escape this noexcept COM method, so we store it for extractArchive to rethrow it. */
     mErrorException = std::current_exception();
     return E_ABORT;
 }

@@ -86,6 +86,7 @@ set(
         src/internal/csynchronizedoutstream.hpp
         src/internal/cvolumeoutstream.hpp
         src/internal/dateutil.hpp
+        src/internal/exceptionutil.hpp
         src/internal/extractcallback.hpp
         src/internal/failuresourcecategory.hpp
         src/internal/fileextractcallback.hpp
