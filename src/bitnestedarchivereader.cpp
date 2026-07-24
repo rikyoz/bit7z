@@ -15,6 +15,7 @@
 #include "biterror.hpp"
 #include "bitexception.hpp"
 #include "internal/csynchronizedinstream.hpp"
+#include "internal/exceptionutil.hpp"
 #include <internal/util.hpp>
 
 #ifdef _WIN32
@@ -251,12 +252,7 @@ void BitNestedArchiveReader::extractTo( ItemBufferCallback callback, FilterCallb
     // Checked here, before touching the stream, so an empty callback fails fast instead of paying
     // for a reopen first. filterCallback isn't checked: unlike callback (the only source of output
     // buffers), an empty FilterCallback is a valid "extract every item, skip none" default.
-    if ( !callback ) {
-        throw BitException(
-            "Cannot extract the archive using an empty callback",
-            make_error_code( BitError::NullCallback )
-        );
-    }
+    requireCallbackForExtraction( callback );
 
     withReentrancyGuard( [ this, &callback, &filterCallback ]() -> void {
         mNestedArchive.extractTo( std::move( callback ), std::move( filterCallback ) );

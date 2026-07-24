@@ -10,6 +10,7 @@
 #ifndef EXCEPTIONUTIL_HPP
 #define EXCEPTIONUTIL_HPP
 
+#include "biterror.hpp"
 #include "bitexception.hpp"
 #include "bitwindows.hpp"
 
@@ -24,6 +25,19 @@ namespace bit7z {
 // directly instead, to preserve its code and avoid duplicating its already-suffixed what().
 inline auto toBitException( const std::string& context, const std::exception& error ) -> BitException {
     return BitException( context + ": " + error.what(), make_hresult_code( E_ABORT ) );
+}
+
+// Throws BitError::NullCallback if callback is empty. Callback is a template rather than a fixed
+// type since callers pass different std::function specializations (ItemBufferCallback,
+// BufferCallback, RawDataCallback, ...); all that's required is a bool-testable callable.
+template< typename Callback >
+void requireCallbackForExtraction( const Callback& callback ) {
+    if ( !callback ) {
+        throw BitException(
+            "Cannot extract the archive using an empty callback",
+            make_error_code( BitError::NullCallback )
+        );
+    }
 }
 
 } // namespace bit7z
