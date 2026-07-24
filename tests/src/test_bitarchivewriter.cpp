@@ -27,7 +27,9 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <exception>
 #include <functional>
+#include <new>
 #include <system_error>
 #include <vector>
 
@@ -584,4 +586,178 @@ TEST_CASE( "BitArchiveWriter: Aborting the compression via the progress callback
         // and not have failed for some other reason.
         REQUIRE( progressCalled );
     }
+}
+
+namespace {
+// Derives from std::exception (per the general "always throw std::exception-derived types" best
+// practice) but not from std::system_error/BitException, so it is caught by the general
+// std::exception tier of UpdateCallback::GetStream() -- wrapped into a BitException with its
+// message preserved, the same treatment a std::runtime_error gets.
+struct CustomFileCallbackFailure : std::exception {
+    BIT7Z_NODISCARD
+    auto what() const noexcept -> const char* override {
+        return "custom file callback failure";
+    }
+};
+
+// Deliberately not derived from std::exception at all, to exercise UpdateCallback::GetStream()'s
+// catch(...) branch -- the true last resort, for exceptions the std::exception tier can't see.
+struct ExoticFileCallbackFailure {};
+} // namespace
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEST_CASE(
+    "BitArchiveWriter: A FileCallback throwing a custom std::exception should be wrapped, not propagated as-is",
+    "[bitarchivewriter][regression]"
+) {
+    static const TestDirectory testDir{ test_filesystem_dir };
+
+    BitArchiveWriter writer{ test::sevenzipLib(), BitFormat::SevenZip };
+    REQUIRE_NOTHROW( writer.addFile( italy.name ) );
+    REQUIRE_NOTHROW( writer.addFile( loremIpsum.name ) );
+
+    // Any std::exception-derived FileCallback failure -- even one bit7z has never seen before --
+    // must come back as a catchable BitException with the original message preserved, instead of
+    // propagating as its original, unrelated type (or, before the fix, crashing the process).
+    writer.setFileCallback( []( const tstring& ) -> void {
+        throw CustomFileCallbackFailure{};
+    } );
+
+    buffer_t outBuffer;
+    REQUIRE_THROWS_WITH( writer.compressTo( outBuffer ), Catch::Matchers::Contains( "custom file callback failure" ) );
+}
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEST_CASE(
+    "BitArchiveWriter: A FileCallback throwing a non-std::exception type should propagate instead of crashing",
+    "[bitarchivewriter]"
+) {
+    static const TestDirectory testDir{ test_filesystem_dir };
+
+    BitArchiveWriter writer{ test::sevenzipLib(), BitFormat::SevenZip };
+    REQUIRE_NOTHROW( writer.addFile( italy.name ) );
+    REQUIRE_NOTHROW( writer.addFile( loremIpsum.name ) );
+
+    // A FileCallback throwing something that isn't even a std::exception must still propagate as
+    // a catchable exception (its own original type, via the catch(...) safety net) instead of
+    // escaping UpdateCallback::GetStream() -- a noexcept COM method -- and crashing the process.
+    writer.setFileCallback( []( const tstring& ) -> void {
+        throw ExoticFileCallbackFailure{}; // NOLINT(*-exception-baseclass)
+    } );
+
+    buffer_t outBuffer;
+    REQUIRE_THROWS_AS( writer.compressTo( outBuffer ), ExoticFileCallbackFailure );
+}
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEST_CASE(
+    "BitArchiveWriter: A FileCallback throwing std::bad_alloc should propagate it unwrapped",
+    "[bitarchivewriter][regression]"
+) {
+    static const TestDirectory testDir{ test_filesystem_dir };
+
+    BitArchiveWriter writer{ test::sevenzipLib(), BitFormat::SevenZip };
+    REQUIRE_NOTHROW( writer.addFile( italy.name ) );
+    REQUIRE_NOTHROW( writer.addFile( loremIpsum.name ) );
+
+    // std::bad_alloc is caught by its own tier in UpdateCallback::GetStream(), separate from the
+    // general std::exception tier: wrapping it would require the same kind of allocation that may
+    // have just failed, so it is stored and rethrown as-is instead of being wrapped into a BitException.
+    writer.setFileCallback( []( const tstring& ) -> void {
+        throw std::bad_alloc{};
+    } );
+
+    buffer_t outBuffer;
+    REQUIRE_THROWS_AS( writer.compressTo( outBuffer ), std::bad_alloc );
+}
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEST_CASE(
+    "BitArchiveWriter: A FileCallback throwing std::system_error should preserve its error code",
+    "[bitarchivewriter]"
+) {
+    static const TestDirectory testDir{ test_filesystem_dir };
+
+    BitArchiveWriter writer{ test::sevenzipLib(), BitFormat::SevenZip };
+    REQUIRE_NOTHROW( writer.addFile( italy.name ) );
+
+    // The original std::error_code must survive the round trip through UpdateCallback::GetStream(),
+    // instead of being flattened to a generic E_ABORT-derived code.
+    writer.setFileCallback( []( const tstring& ) -> void {
+        throw std::system_error( std::make_error_code( std::errc::no_space_on_device ), "disk full" );
+    } );
+
+    buffer_t outBuffer;
+    REQUIRE_THROWS_CODE( writer.compressTo( outBuffer ), std::errc::no_space_on_device );
+}
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEST_CASE(
+    "BitArchiveWriter: A FileCallback throwing std::runtime_error should preserve its message",
+    "[bitarchivewriter]"
+) {
+    static const TestDirectory testDir{ test_filesystem_dir };
+
+    BitArchiveWriter writer{ test::sevenzipLib(), BitFormat::SevenZip };
+    REQUIRE_NOTHROW( writer.addFile( italy.name ) );
+
+    // A plain std::runtime_error (unlike std::system_error) carries no error code to preserve,
+    // but its message must still survive the round trip through UpdateCallback::GetStream()'s
+    // general std::exception tier, instead of being replaced by a generic, detail-free message.
+    writer.setFileCallback( []( const tstring& ) -> void {
+        throw std::runtime_error( "something went wrong in the callback" ); // NOSONAR
+    } );
+
+    buffer_t outBuffer;
+    REQUIRE_THROWS_WITH(
+        writer.compressTo( outBuffer ),
+        Catch::Matchers::Contains( "something went wrong in the callback" )
+    );
+}
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEST_CASE(
+    "BitArchiveWriter: A FileCallback throwing std::out_of_range should be wrapped, not propagated as-is",
+    "[bitarchivewriter]"
+) {
+    static const TestDirectory testDir{ test_filesystem_dir };
+
+    BitArchiveWriter writer{ test::sevenzipLib(), BitFormat::SevenZip };
+    REQUIRE_NOTHROW( writer.addFile( italy.name ) );
+
+    // std::out_of_range (e.g. from a plain std::vector/std::map::at() call inside a FileCallback)
+    // is a std::logic_error, a sibling of std::runtime_error under std::exception -- NOT a
+    // descendant of it. Before widening the catch tier to std::exception, this would have skipped
+    // straight to catch(...) and propagated as a raw std::out_of_range instead of the BitException
+    // callers of a compression API would reasonably expect.
+    const std::vector< int > empty;
+    writer.setFileCallback( [ &empty ]( const tstring& ) -> void {
+        ( void ) empty.at( 0 );
+    } );
+
+    buffer_t outBuffer;
+    REQUIRE_THROWS_AS( writer.compressTo( outBuffer ), BitException );
+}
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEST_CASE(
+    "BitArchiveWriter: A FileCallback throwing a BitException coded as E_NOTIMPL should surface it, "
+    "not the generic \"unsupported operation\" message",
+    "[bitarchivewriter]"
+) {
+    static const TestDirectory testDir{ test_filesystem_dir };
+
+    BitArchiveWriter writer{ test::sevenzipLib(), BitFormat::SevenZip };
+    REQUIRE_NOTHROW( writer.addFile( italy.name ) );
+
+    // std::errc::function_not_supported maps to E_NOTIMPL, the same HRESULT compressOut()'s "format
+    // doesn't support updating" fast path checks; before the fix, that check ran first and replaced the
+    // callback's exception with a generic message. A BitException (not std::system_error) is used here
+    // because only its catch tier in GetStream() preserves the original hresultCode().
+    writer.setFileCallback( []( const tstring& ) -> void {
+        throw BitException( "custom callback failure", std::make_error_code( std::errc::function_not_supported ) );
+    } );
+
+    buffer_t outBuffer;
+    REQUIRE_THROWS_WITH( writer.compressTo( outBuffer ), Catch::Matchers::Contains( "custom callback failure" ) );
 }

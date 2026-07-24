@@ -10,6 +10,7 @@
 #ifndef UPDATECALLBACK_HPP
 #define UPDATECALLBACK_HPP
 
+#include "bitdefines.hpp"
 #include "internal/callback.hpp"
 #include "internal/com.hpp"
 #include "internal/macros.hpp"
@@ -17,6 +18,8 @@
 #include <7zip/Archive/IArchive.h>
 #include <7zip/ICoder.h>
 #include <7zip/IPassword.h>
+
+#include <exception>
 
 namespace bit7z {
 
@@ -74,9 +77,15 @@ class UpdateCallback final : public Callback,
         // NOLINTNEXTLINE(modernize-use-noexcept, modernize-use-trailing-return-type, readability-identifier-length)
         MY_UNKNOWN_IMP3( IArchiveUpdateCallback2, ICompressProgressInfo, ICryptoGetTextPassword2 ) //-V2507 //-V2511 //-V835 //-V3504
 
+        // The exception (if any) a user-provided FileCallback threw from GetStream(), stored so it
+        // must not escape that noexcept COM method; compressOut() rethrows it after UpdateItems() returns.
+        BIT7Z_NODISCARD
+        auto errorException() const -> const std::exception_ptr&;
+
     private:
         const BitOutputArchive& mOutputArchive;
         bool mNeedBeClosed;
+        std::exception_ptr mErrorException;
 };
 
 } // namespace bit7z

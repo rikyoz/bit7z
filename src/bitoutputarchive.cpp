@@ -34,6 +34,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <exception>
 #include <istream>
 #include <map>
 #include <memory>
@@ -400,13 +401,18 @@ void BitOutputArchive::compressOut(
 
     const HRESULT result = outArc->UpdateItems( outStream, itemsCount(), updateCallback );
 
+    if ( result == S_OK ) {
+        return;
+    }
+
+    const auto& errorException = updateCallback->errorException();
+    if ( errorException ) {
+        std::rethrow_exception( errorException );
+    }
     if ( result == E_NOTIMPL ) {
         throw BitException( "Unsupported operation", bit7z::make_hresult_code( result ) );
     }
-
-    if ( result != S_OK ) {
-        throw BitException( "Error while compressing files", make_hresult_code( result ), std::move( mFailedFiles ) );
-    }
+    throw BitException( "Error while compressing files", make_hresult_code( result ), std::move( mFailedFiles ) );
 }
 
 void BitOutputArchive::setArchiveProperties( IOutArchive* outArchive ) const {

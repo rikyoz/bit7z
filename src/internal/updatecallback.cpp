@@ -19,8 +19,13 @@
 #include "bitwindows.hpp"
 #include "internal/callback.hpp"
 #include "internal/cfileoutstream.hpp"
+#include "internal/exceptionutil.hpp"
 #include "internal/stringutil.hpp"
 #include "internal/util.hpp"
+
+#include <new>
+#include <string>
+#include <system_error>
 
 namespace bit7z {
 
@@ -84,7 +89,8 @@ STDMETHODIMP UpdateCallback::GetProperty( UInt32 index, PROPID propId, PROPVARIA
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP UpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStream ) noexcept {
+STDMETHODIMP UpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStream ) noexcept
+try {
     RINOK( finalize() ) //-V3504
 
     if ( mHandler.fileCallback() ) {
@@ -95,6 +101,29 @@ STDMETHODIMP UpdateCallback::GetStream( UInt32 index, ISequentialInStream** inSt
     }
 
     return mOutputArchive.outputItemStream( index, inStream );
+} catch ( const BitException& exception ) {
+    mErrorException = std::make_exception_ptr( exception );
+    return exception.hresultCode();
+} catch ( const std::system_error& exception ) {
+    // exception.what() already embeds its category's message, and BitException's own
+    // std::system_error base would append that same message again if reused here, so only the
+    // error code is preserved, not the original message.
+    mErrorException = std::make_exception_ptr( BitException( "Failed to get the stream", exception.code() ) );
+    return E_ABORT;
+} catch ( const std::bad_alloc& ) {
+    // Avoid allocating while already handling an out-of-memory condition: unlike toBitException()
+    // (which needs a new string + BitException), current_exception() only bumps a refcount on the
+    // exception object the runtime already allocated when it was thrown.
+    mErrorException = std::current_exception();
+    return E_OUTOFMEMORY;
+} catch ( const std::exception& exception ) {
+    mErrorException = std::make_exception_ptr( toBitException( "Failed to get the stream", exception ) );
+    return E_ABORT;
+} catch ( ... ) {
+    // E.g., a user-provided FileCallback threw an exception not derived from std::exception;
+    // the exception must not escape this noexcept COM method, so we store it for compressOut() to rethrow to the user.
+    mErrorException = std::current_exception();
+    return E_ABORT;
 }
 
 COM_DECLSPEC_NOTHROW
@@ -151,6 +180,10 @@ COM_DECLSPEC_NOTHROW
 STDMETHODIMP UpdateCallback::CryptoGetTextPassword2( Int32* passwordIsDefined, BSTR* password ) noexcept {
     *passwordIsDefined = ( mHandler.isPasswordDefined() ? 1 : 0 );
     return StringToBstr( WIDEN( mHandler.password() ).c_str(), password );
+}
+
+auto UpdateCallback::errorException() const -> const std::exception_ptr& {
+    return mErrorException;
 }
 
 } // namespace bit7z
