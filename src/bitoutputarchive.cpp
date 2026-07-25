@@ -34,7 +34,6 @@
 
 #include <cstddef>
 #include <cstdint>
-#include <exception>
 #include <istream>
 #include <map>
 #include <memory>
@@ -405,10 +404,7 @@ void BitOutputArchive::compressOut(
         return;
     }
 
-    const auto& errorException = updateCallback->errorException();
-    if ( errorException ) {
-        std::rethrow_exception( errorException );
-    }
+    updateCallback->rethrowStoredException();
     if ( result == E_NOTIMPL ) {
         throw BitException( "Unsupported operation", bit7z::make_hresult_code( result ) );
     }

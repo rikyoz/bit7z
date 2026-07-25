@@ -12,8 +12,28 @@
 
 #include "internal/callback.hpp"
 
+#include <exception>
+
 namespace bit7z {
 
+void Callback::rethrowStoredException() const {
+    if ( mErrorException ) {
+        std::rethrow_exception( mErrorException );
+    }
+}
+
 Callback::Callback( const BitAbstractArchiveHandler& handler ) : mHandler( handler ) {}
+
+void Callback::setErrorException( const char* message, std::error_code code ) noexcept {
+    mErrorException = std::make_exception_ptr( BitException( message, code ) );
+}
+
+void Callback::setErrorException( const BitException& exception ) noexcept {
+    mErrorException = std::make_exception_ptr( exception );
+}
+
+void Callback::setErrorException( const std::exception_ptr& exception ) noexcept {
+    mErrorException = exception;
+}
 
 } // namespace bit7z

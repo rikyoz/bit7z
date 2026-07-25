@@ -95,27 +95,27 @@ try {
 
     return getOutStream( item, outStream );
 } catch ( const BitException& exception ) {
-    mErrorException = std::make_exception_ptr( exception );
+    setErrorException( exception );
     return exception.hresultCode();
 } catch ( const std::system_error& exception ) {
     // exception.what() already embeds its category's message, and BitException's own
     // std::system_error base would append that same message again if reused here, so only the
     // error code is preserved, not the original message.
-    mErrorException = std::make_exception_ptr( BitException( "Failed to get the stream", exception.code() ) );
+    setErrorException( "Failed to get the stream", exception.code() );
     return E_ABORT;
 } catch ( const std::bad_alloc& ) {
     // Avoid allocating while already handling an out-of-memory condition: unlike toBitException()
     // (which needs a new string + BitException), current_exception() only bumps a refcount on the
     // exception object the runtime already allocated when it was thrown.
-    mErrorException = std::current_exception();
+    setErrorException( std::current_exception() );
     return E_OUTOFMEMORY;
 } catch ( const std::exception& exception ) {
-    mErrorException = std::make_exception_ptr( toBitException( "Failed to get the stream", exception ) );
+    setErrorException( toBitException( "Failed to get the stream", exception ) );
     return E_ABORT;
 } catch ( ... ) {
     /* E.g., a user-provided callback threw an exception not derived from std::exception;
      * the exception must not escape this noexcept COM method, so we store it for extractArchive to rethrow it. */
-    mErrorException = std::current_exception();
+    setErrorException( std::current_exception() );
     return E_ABORT;
 }
 
@@ -160,7 +160,7 @@ STDMETHODIMP ExtractCallback::SetOperationResult( Int32 operationResult ) noexce
     if ( result != OperationResult::Success ) {
         const auto* msg = mExtractMode == ExtractMode::Test ? kTestFailed : kExtractFailed;
         const auto error = make_error_code( result );
-        mErrorException = std::make_exception_ptr( BitException( msg, error ) );
+        setErrorException( msg, error );
     }
 
     return finishOperation( result );
@@ -177,7 +177,7 @@ STDMETHODIMP ExtractCallback::CryptoGetTextPassword( BSTR* password ) noexcept {
         if ( pass.empty() ) {
             const auto* msg = mExtractMode == ExtractMode::Test ? kTestFailed : kExtractFailed;
             const auto error = make_error_code( OperationResult::EmptyPassword );
-            mErrorException = std::make_exception_ptr( BitException( msg, error ) );
+            setErrorException( msg, error );
             return E_FAIL;
         }
     } else {
@@ -189,10 +189,6 @@ STDMETHODIMP ExtractCallback::CryptoGetTextPassword( BSTR* password ) noexcept {
 
 auto ExtractCallback::inputArchive() const -> const BitInputArchive& {
     return mInputArchive;
-}
-
-auto ExtractCallback::errorException() const -> const std::exception_ptr& {
-    return mErrorException;
 }
 
 auto ExtractCallback::extractionAttempted() const -> bool {

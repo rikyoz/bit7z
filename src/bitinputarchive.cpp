@@ -1153,14 +1153,11 @@ void BitInputArchive::extractArchive( ExtractCallback* callback, ExtractMode mod
         return;
     }
 
-    const auto& errorException = callback->errorException();
-    if ( !errorException ) {
-        throw BitException(
-            mode == ExtractMode::Test ? "Could not test the archive" : "Could not extract the archive",
-            make_hresult_code( res )
-        );
-    }
-    std::rethrow_exception( errorException );
+    callback->rethrowStoredException();
+    throw BitException(
+        mode == ExtractMode::Test ? "Could not test the archive" : "Could not extract the archive",
+        make_hresult_code( res )
+    );
 }
 
 auto BitInputArchive::isInvalidIndex( std::uint32_t index ) const -> bool {

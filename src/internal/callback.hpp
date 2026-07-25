@@ -10,6 +10,7 @@
 #ifndef CALLBACK_HPP
 #define CALLBACK_HPP
 
+#include "bitexception.hpp"
 #include "internal/com.hpp"
 #include "internal/guids.hpp"
 
@@ -41,10 +42,27 @@ class Callback : protected CMyUnknownImp {
 
         CALLBACK_DESTRUCTOR( ~Callback() ) = default;
 
+        // If an exception was stored (via setErrorException()/guardStream()), rethrows it and never
+        // returns; otherwise does nothing. Called by the driving loop (BitInputArchive::extractArchive(),
+        // BitOutputArchive::compressOut()) once the 7-Zip call that invoked this callback returns.
+        void rethrowStoredException() const;
+
     protected:
         explicit Callback( const BitAbstractArchiveHandler& handler ); // Abstract class
 
+        // Constructs a BitException from message and code and stores it as the last error.
+        void setErrorException( const char* message, std::error_code code ) noexcept;
+
+        // Wraps exception via std::make_exception_ptr() and stores it as the last error.
+        void setErrorException( const BitException& exception ) noexcept;
+
+        void setErrorException( const std::exception_ptr& exception ) noexcept;
+
         const BitAbstractArchiveHandler& mHandler;
+
+    private:
+
+        std::exception_ptr mErrorException;
 };
 
 } // namespace bit7z

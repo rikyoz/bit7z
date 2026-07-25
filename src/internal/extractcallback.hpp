@@ -90,9 +90,6 @@ class ExtractCallback : public Callback,
         BIT7Z_STDMETHOD( SetOperationResult, Int32 operationResult );
 
         BIT7Z_NODISCARD
-        auto errorException() const -> const std::exception_ptr&;
-
-        BIT7Z_NODISCARD
         virtual auto extractionAttempted() const -> bool;
 
         // NOLINTNEXTLINE(modernize-use-noexcept, modernize-use-trailing-return-type, readability-identifier-length)
@@ -117,7 +114,6 @@ class ExtractCallback : public Callback,
         const BitInputArchive& mInputArchive;
         ExtractMode mExtractMode;
         bool mIsLastItemEncrypted;
-        std::exception_ptr mErrorException;
         FilterCallback mFilterCallback;
 };
 
