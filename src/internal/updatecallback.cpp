@@ -145,7 +145,7 @@ STDMETHODIMP UpdateCallback::GetVolumeStream( UInt32 index, ISequentialOutStream
         auto stream = bit7z::make_com< CFileOutStream >( fileName );
         *volumeStream = stream.Detach();
     } catch ( const BitException& exception ) {
-        return exception.nativeCode();
+        return exception.hresultCode();
     }
     return S_OK;
 }

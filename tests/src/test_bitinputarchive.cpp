@@ -22,6 +22,8 @@
 
 #ifndef _WIN32
 #include "utils/datetime.hpp"
+
+#include <unistd.h> // for geteuid
 #endif
 
 #include <bit7z/bitarchivereader.hpp>
@@ -712,6 +714,60 @@ TEST_CASE( "BitInputArchive: Testing and extracting multi-volume archives", "[bi
         REQUIRE_ARCHIVE_EXTRACTS( info, singleFileContent().items );
     }
 }
+
+#ifndef _WIN32
+TEST_CASE(
+    "BitInputArchive: Opening a split archive reports the real error when a volume can't be read",
+    "[bitinputarchive]"
+) {
+    /* Regression test for OpenCallback::GetStream() returning exception.hresultCode() rather than
+     * exception.nativeCode() when CFileInStream fails to open a volume.
+     *
+     * This must use a split archive rather than a plain one: OpenCallback::GetStream() is only called
+     * by the format handler mid-Open() to fetch an *additional* volume by name (e.g. "clouds.jpg.7z.002"
+     * below). The primary archive file never goes through it -- BitInputArchive opens that one directly
+     * via its own make_com<CFileInStream>() call (see bitinputarchive.cpp), so a permission-denied plain
+     * archive would throw from a different, unrelated code path and would pass identically whether or
+     * not this fix is applied.
+     *
+     * nativeCode() == hresultCode() on Windows, so the bug -- and this test -- are POSIX-only: a raw,
+     * unwrapped errno returned as an HRESULT fails HRESULTCategory's FACILITY_CODE check and produces an
+     * opaque "Unknown HRESULT error" instead of translating back to std::errc::permission_denied. */
+    const auto arcDir = fs::path{ test_archives_dir } / "extraction" / "split";
+    const TempTestDirectory testDir{ "bitinputarchive_split_unreadable" };
+
+    REQUIRE_NOTHROW( fs::copy_file( arcDir / "clouds.jpg.7z.001", "clouds.jpg.7z.001" ) );
+    REQUIRE_NOTHROW( fs::copy_file( arcDir / "clouds.jpg.7z.002", "clouds.jpg.7z.002" ) );
+
+    if ( ::geteuid() == 0 ) {
+        SUCCEED( "Skipping: root bypasses file permissions" );
+        return;
+    }
+
+    const auto originalPerms = fs::status( "clouds.jpg.7z.002" ).permissions();
+    struct PermsRestorer {
+        fs::path target;
+        fs::perms perms;
+
+        ~PermsRestorer() {
+            std::error_code ignored;
+            fs::permissions( target, perms, fs::perm_options::replace, ignored );
+        }
+    } const restorer{ "clouds.jpg.7z.002", originalPerms };
+
+    std::error_code permError;
+    fs::permissions( "clouds.jpg.7z.002", fs::perms::none, fs::perm_options::replace, permError );
+    if ( permError ) {
+        SUCCEED( "Skipping: cannot restrict file permissions in this environment" );
+        return;
+    }
+
+    REQUIRE_THROWS_CODE(
+        BitArchiveReader( test::sevenzipLib(), BIT7Z_STRING( "clouds.jpg.7z.001" ), BitFormat::Split ),
+        std::errc::permission_denied
+    );
+}
+#endif
 
 // NOLINTNEXTLINE(*-err58-cpp)
 TEMPLATE_TEST_CASE(
