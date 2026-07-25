@@ -46,6 +46,7 @@ constexpr PortableErrorTest hresultTests[ ] = { // NOLINT(*-avoid-c-arrays)
         "Not enough memory resources are available to complete this operation.",
         std::errc::not_enough_memory
     },
+    { ERROR_TEST( E_ACCESSDENIED ), "Access is denied.", std::errc::permission_denied },
 #ifdef _WIN32
     {
         ERROR_TEST( E_PENDING ),

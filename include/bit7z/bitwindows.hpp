@@ -75,6 +75,7 @@ constexpr auto E_FAIL = static_cast< HRESULT >( 0x80004005L );
 constexpr auto STG_E_INVALIDFUNCTION = static_cast< HRESULT >( 0x80030001L );
 constexpr auto E_OUTOFMEMORY = static_cast< HRESULT >( 0x8007000EL );
 constexpr auto E_INVALIDARG = static_cast< HRESULT >( 0x80070057L );
+constexpr auto E_ACCESSDENIED = static_cast< HRESULT >( 0x80070005L );
 #endif
 
 #ifndef ERROR_ALREADY_EXISTS

@@ -66,6 +66,8 @@ auto HRESULTCategory::message( int errorValue ) const -> std::string {
             return "Unable to perform requested operation.";
         case E_OUTOFMEMORY:
             return "Not enough memory resources are available to complete this operation.";
+        case E_ACCESSDENIED:
+            return "Access is denied.";
         case HRESULT_FROM_WIN32( ERROR_DIRECTORY ):
             /* Note: p7zip does not use POSIX-equivalent error codes for ERROR_DIRECTORY and ERROR_NO_MORE_FILES
              *       so we need to handle also these cases here. */
@@ -119,6 +121,8 @@ auto HRESULTCategory::default_error_condition( int errorValue ) const noexcept -
             return std::make_error_condition( std::errc::not_a_directory );
         case E_OUTOFMEMORY:
             return std::make_error_condition( std::errc::not_enough_memory );
+        case E_ACCESSDENIED:
+            return std::make_error_condition( std::errc::permission_denied );
         default:
             if ( HRESULT_FACILITY( errorValue ) == FACILITY_CODE ) {
 #ifndef __MINGW32__

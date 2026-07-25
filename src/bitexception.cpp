@@ -129,11 +129,9 @@ auto BitException::hresultCode() const noexcept -> HRESULT {
     if ( error == std::errc::operation_canceled ) {
         return E_ABORT;
     }
-#ifdef _WIN32
     if ( error == std::errc::permission_denied ) {
         return E_ACCESSDENIED;
     }
-#endif
     return E_FAIL;
 }
 
