@@ -744,16 +744,7 @@ TEST_CASE(
         return;
     }
 
-    const auto originalPerms = fs::status( "clouds.jpg.7z.002" ).permissions();
-    struct PermsRestorer {
-        fs::path target;
-        fs::perms perms;
-
-        ~PermsRestorer() {
-            std::error_code ignored;
-            fs::permissions( target, perms, fs::perm_options::replace, ignored );
-        }
-    } const restorer{ "clouds.jpg.7z.002", originalPerms };
+    const PermissionsRestorer restorer{ "clouds.jpg.7z.002" };
 
     std::error_code permError;
     fs::permissions( "clouds.jpg.7z.002", fs::perms::none, fs::perm_options::replace, permError );

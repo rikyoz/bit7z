@@ -15,6 +15,7 @@
 #include "filesystem.hpp"
 
 #include <random>
+#include <utility>
 
 #ifdef _WIN32
 #ifdef __MINGW32__
@@ -449,6 +450,20 @@ TempDirectory::operator tstring() const {
 
 TempTestDirectory::TempTestDirectory( const std::string& dirName )
     : TempDirectory{ dirName }, TestDirectory{ path() } {}
+
+// mPerms depends on mTarget already being initialized, which relies on their declaration order
+// in the class (mTarget before mPerms) rather than on this initializer list's own order.
+PermissionsRestorer::PermissionsRestorer( fs::path target )
+    : mTarget{ std::move( target ) }, mPerms{ fs::status( mTarget ).permissions() } {}
+
+PermissionsRestorer::~PermissionsRestorer() {
+    restore();
+}
+
+void PermissionsRestorer::restore() const {
+    std::error_code ignored;
+    fs::permissions( mTarget, mPerms, fs::perm_options::replace, ignored );
+}
 
 } // namespace filesystem
 } // namespace test

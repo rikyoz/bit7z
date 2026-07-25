@@ -259,6 +259,31 @@ struct TempTestDirectory : TempDirectory, TestDirectory {
     explicit TempTestDirectory( const std::string& dirName );
 };
 
+// Snapshots a path's current permissions and restores them when the guard is destroyed.
+// Errors are ignored: this is best-effort cleanup, not a test assertion.
+class PermissionsRestorer final {
+    public:
+        explicit PermissionsRestorer( fs::path target );
+
+        explicit PermissionsRestorer( const PermissionsRestorer& ) = delete;
+
+        explicit PermissionsRestorer( PermissionsRestorer&& ) = delete;
+
+        auto operator=( const PermissionsRestorer& ) -> PermissionsRestorer& = delete;
+
+        auto operator=( PermissionsRestorer&& ) -> PermissionsRestorer& = delete;
+
+        ~PermissionsRestorer();
+
+        // Restores the permissions immediately; safe to call more than once (e.g. once explicitly,
+        // then again implicitly from the destructor).
+        void restore() const;
+
+    private:
+        fs::path mTarget;
+        fs::perms mPerms;
+};
+
 #endif
 
 } // namespace filesystem

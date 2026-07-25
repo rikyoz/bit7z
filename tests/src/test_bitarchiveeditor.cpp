@@ -563,16 +563,7 @@ TEST_CASE( "BitArchiveEditor: applyChanges does not follow a pre-placed <archive
         if ( ::geteuid() == 0 ) {
             SUCCEED( "Skipping: root bypasses directory permissions" );
         } else {
-            const auto originalPerms = fs::status( testDir.path() ).permissions();
-            struct PermsRestorer {
-                const fs::path& target;
-                fs::perms perms;
-
-                ~PermsRestorer() {
-                    std::error_code ignored;
-                    fs::permissions( target, perms, fs::perm_options::replace, ignored );
-                }
-            } const restorer{ testDir.path(), originalPerms };
+            const PermissionsRestorer restorer{ testDir.path() };
 
             std::error_code permError;
             fs::permissions(
@@ -592,7 +583,7 @@ TEST_CASE( "BitArchiveEditor: applyChanges does not follow a pre-placed <archive
 
                 /* Restore write permission so the reader can traverse and so
                  * TempTestDirectory's destructor can clean up afterward. */
-                fs::permissions( testDir.path(), originalPerms, fs::perm_options::replace );
+                restorer.restore();
 
                 const BitArchiveReader reader{ lib, archivePathStr, BitFormat::SevenZip };
                 REQUIRE( reader.itemsCount() == 1u );
