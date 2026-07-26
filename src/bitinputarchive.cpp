@@ -1108,13 +1108,16 @@ void BitInputArchive::openArchiveSeqStream( ISequentialInStream* inStream ) cons
 
     // NOLINTNEXTLINE(*-pro-type-reinterpret-cast)
     HRESULT res = mInArchive->QueryInterface( IID_IArchiveOpenSeq, reinterpret_cast< void** >( &inSeqArchive ) );
-    if ( res != S_OK ) { // TODO: Improve error message when format doesn't support sequentially opening of archives.
-        throw BitException( "Could not open the archive sequentially", make_hresult_code( res ) );
+    if ( res != S_OK ) {
+        // The format's handler doesn't implement IArchiveOpenSeq at all: a structural, permanent
+        // limitation of the format, not a transient failure of this particular call, so it gets
+        // its own error code instead of the raw (and, here, uninformative) HRESULT.
+        throw BitException( "Archive format not supported as a nested archive", BitError::UnsupportedOperation );
     }
 
     res = inSeqArchive->OpenSeq( inStream );
     if ( res != S_OK ) {
-        throw BitException( "Could not open the archive sequentially", make_hresult_code( res ) );
+        throw BitException( "Could not open the nested archive", make_hresult_code( res ) );
     }
 }
 

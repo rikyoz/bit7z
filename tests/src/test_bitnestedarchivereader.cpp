@@ -86,6 +86,29 @@ TEMPLATE_TEST_CASE(
 
 // NOLINTNEXTLINE(*-err58-cpp)
 TEMPLATE_TEST_CASE(
+    "BitNestedArchiveReader: Opening a nested archive with an unsupported format fails with UnsupportedOperation",
+    "[bitnestedarchivereader]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "nested" };
+
+    const fs::path arcFileName = "nested.tar.gz";
+
+    TestType inputArchive{};
+    getInputArchive( arcFileName, inputArchive );
+    const BitArchiveReader outerArchive( test::sevenzipLib(), inputArchive, BitFormat::GZip );
+    // BitFormat::Zip's handler doesn't implement IArchiveOpenSeq at all (unlike Tar), so opening
+    // it sequentially must fail structurally, regardless of what bytes are actually nested there.
+    const BitNestedArchiveReader innerArchive( test::sevenzipLib(), outerArchive, BitFormat::Zip );
+
+    REQUIRE_THROWS_CODE( innerArchive.test(), BitError::UnsupportedOperation );
+    REQUIRE( innerArchive.openCount() == 0 );
+}
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEMPLATE_TEST_CASE(
     "BitNestedArchiveReader: Reading nested archives",
     "[bitnestedarchivereader]",
     tstring,
