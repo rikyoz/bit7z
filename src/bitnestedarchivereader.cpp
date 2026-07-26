@@ -19,16 +19,20 @@
 #include <internal/util.hpp>
 
 #ifdef _WIN32
-#include <windows.h>
-#elif defined( __APPLE__ ) || defined( BSD ) || \
-      defined( __FreeBSD__ ) || defined( __NetBSD__ ) || defined( __OpenBSD__ ) || defined( __DragonFly__ )
-#include <sys/types.h>
-#include <sys/sysctl.h>
+#   include <windows.h>
+#elif defined( __APPLE__ ) ||\
+        defined( BSD ) || \
+        defined( __FreeBSD__ ) ||\
+        defined( __NetBSD__ ) ||\
+        defined( __OpenBSD__ ) ||\
+        defined( __DragonFly__ )
+#   include <sys/types.h>
+#   include <sys/sysctl.h>
 #else
-#include <unistd.h>
-#if !defined( _SC_AVPHYS_PAGES ) || !defined( _SC_PAGE_SIZE )
-# include <sys/sysinfo.h>
-#endif
+#   include <unistd.h>
+#   if !defined( _SC_AVPHYS_PAGES ) || !defined( _SC_PAGE_SIZE )
+#       include <sys/sysinfo.h>
+#   endif
 #endif
 
 #include <utility>
