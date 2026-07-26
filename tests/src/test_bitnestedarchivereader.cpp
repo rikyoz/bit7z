@@ -18,11 +18,13 @@
 #include "utils/shared_lib.hpp"
 
 #include <bit7z/biterror.hpp>
+#include <bit7z/bitfilecompressor.hpp>
 #include <bit7z/bitnestedarchivereader.hpp>
 #include <bit7z/bittypes.hpp>
 
 #include <limits>
 #include <stdexcept>
+#include <vector>
 
 using namespace bit7z;
 using namespace bit7z::test;
@@ -866,4 +868,52 @@ TEMPLATE_TEST_CASE(
         REQUIRE( innerArchive.itemsCount() == emptyContent().fileCount );
         REQUIRE( innerArchive.openCount() == 1 );
     }
+}
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEST_CASE(
+    "BitNestedArchiveReader: itemsCount() opens the archive before trusting the nested format's "
+    "reported item count",
+    "[bitnestedarchivereader]"
+) {
+    // SWF is the one nested-openable format whose handler reports 0 before Open() (a real,
+    // empty tag list) instead of a hardcoded constant or bit7z's kItemsCountUnset sentinel:
+    // exactly the case itemsCount() must open the archive to resolve correctly.
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "detection" / "valid" };
+    const TempDirectory outDir{ "test_bitnestedarchivereader" };
+
+    const auto outArchive = outDir.path() / "valid.swf.gz";
+    const BitFileCompressor compressor{ test::sevenzipLib(), BitFormat::GZip };
+    const std::vector< tstring > inPaths{ BIT7Z_STRING( "valid.swf" ) };
+    REQUIRE_NOTHROW( compressor.compress( inPaths, to_tstring( outArchive.native() ) ) );
+
+    const BitArchiveReader outerArchive( test::sevenzipLib(), to_tstring( outArchive.native() ), BitFormat::GZip );
+    const BitNestedArchiveReader innerArchive( test::sevenzipLib(), outerArchive, BitFormat::Swf );
+
+    // valid.swf has 20 tags; itemsCount() must return that, not a stale 0 cached before the archive was ever opened.
+    REQUIRE( innerArchive.itemsCount() == 20 );
+    REQUIRE( innerArchive.openCount() == 1 );
+}
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEST_CASE(
+    "BitNestedArchiveReader: itemsCount() doesn't open the archive when the nested format's "
+    "unopened handler already reports a trustworthy count",
+    "[bitnestedarchivereader]"
+) {
+    // Unlike SWF, GZip's handler hardcodes GetNumberOfItems() to 1 regardless of Open() state,
+    // so itemsCount() must not pay for an open to get an answer it already has for free.
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "detection" / "valid" };
+    const TempDirectory outDir{ "test_bitnestedarchivereader" };
+
+    const auto outArchive = outDir.path() / "valid.gz.gz";
+    const BitFileCompressor compressor{ test::sevenzipLib(), BitFormat::GZip };
+    const std::vector< tstring > inPaths{ BIT7Z_STRING( "valid.gz" ) };
+    REQUIRE_NOTHROW( compressor.compress( inPaths, to_tstring( outArchive.native() ) ) );
+
+    const BitArchiveReader outerArchive( test::sevenzipLib(), to_tstring( outArchive.native() ), BitFormat::GZip );
+    const BitNestedArchiveReader innerArchive( test::sevenzipLib(), outerArchive, BitFormat::GZip );
+
+    REQUIRE( innerArchive.itemsCount() == 1 );
+    REQUIRE( innerArchive.openCount() == 0 );
 }

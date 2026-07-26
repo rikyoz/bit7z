@@ -187,12 +187,22 @@ auto BitNestedArchiveReader::itemsCount() const -> std::uint32_t {
 
     const ReentrancyGuard reentrancyGuard{ mOperationInProgress };
 
-    // BitInputArchive::itemsCount() and calculateItemsCount() can both throw;
-    // mCachedItemsCount must stay unset (max()) on failure so the next call retries
-    // instead of caching a poisoned value.
+    // Both calls below can throw; mCachedItemsCount must stay unset on failure so the next
+    // call retries instead of caching a poisoned value.
     auto count = mNestedArchive.itemsCount();
-    if ( count == kItemsCountUnset ) {
-        count = calculateItemsCount();
+    if ( count == 0 || count == kItemsCountUnset ) {
+        // Ambiguous: some handlers (e.g. SWF) report 0 before Open() populates their real
+        // state, indistinguishable from a genuinely empty archive. Formats that report a
+        // reliable count unopened (e.g. single-stream formats, always 1) skip this entirely.
+        reopenIfNeeded();
+        if ( count == 0 ) {
+            // Re-checking only helps formats like SWF, which report the real count once
+            // opened; TAR stays kItemsCountUnset either way, so skip to the manual walk.
+            count = mNestedArchive.itemsCount();
+        }
+        if ( count == kItemsCountUnset ) {
+            count = calculateItemsCount();
+        }
     }
     mCachedItemsCount = count;
     return mCachedItemsCount;
@@ -307,7 +317,8 @@ auto BitNestedArchiveReader::needReopen( std::uint32_t index ) const noexcept ->
 }
 
 auto BitNestedArchiveReader::calculateItemsCount() const -> std::uint32_t {
-    reopenIfNeeded();
+    // No reopenIfNeeded() here: itemsCount() (this function's only caller) already reopened the
+    // archive; doing it again would discard an unread stream and bump openCount() for nothing.
 
     for ( std::uint32_t index = 0; index < std::numeric_limits< std::uint32_t >::max(); ++index ) {
         /* All archive formats provide BitProperty::IsDir for _valid_ items,
