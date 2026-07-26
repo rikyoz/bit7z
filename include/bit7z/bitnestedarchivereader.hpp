@@ -111,6 +111,9 @@ class BitNestedArchiveReader final : public BitAbstractArchiveOpener {
          *
          * @return the current value of the item property or an empty BitPropVariant if the item has no value for
          * the property.
+         *
+         * @throws BitException if index equals std::numeric_limits<std::uint32_t>::max(), a value
+         *                      reserved to mean "no item" and that no real item can ever have.
          */
         BIT7Z_NODISCARD
         auto itemProperty( std::uint32_t index, BitProperty property ) const -> BitPropVariant;
