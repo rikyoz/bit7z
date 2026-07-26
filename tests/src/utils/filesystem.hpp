@@ -260,7 +260,8 @@ struct TempTestDirectory : TempDirectory, TestDirectory {
 };
 
 // Snapshots a path's current permissions and restores them when the guard is destroyed.
-// Errors are ignored: this is best-effort cleanup, not a test assertion.
+// The constructor throws if the current permissions can't be determined, since there would be
+// nothing correct to restore; restoration itself is best-effort, and its errors are ignored.
 class PermissionsRestorer final {
     public:
         explicit PermissionsRestorer( fs::path target );
