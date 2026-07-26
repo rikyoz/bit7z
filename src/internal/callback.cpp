@@ -32,8 +32,4 @@ void Callback::setErrorException( const BitException& exception ) noexcept {
     mErrorException = std::make_exception_ptr( exception );
 }
 
-void Callback::setErrorException( const std::exception_ptr& exception ) noexcept {
-    mErrorException = exception;
-}
-
 } // namespace bit7z

@@ -10,7 +10,6 @@
 #ifndef UPDATECALLBACK_HPP
 #define UPDATECALLBACK_HPP
 
-#include "bitdefines.hpp"
 #include "internal/callback.hpp"
 #include "internal/com.hpp"
 #include "internal/macros.hpp"
@@ -18,8 +17,6 @@
 #include <7zip/Archive/IArchive.h>
 #include <7zip/ICoder.h>
 #include <7zip/IPassword.h>
-
-#include <exception>
 
 namespace bit7z {
 

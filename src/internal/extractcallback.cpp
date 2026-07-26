@@ -17,7 +17,6 @@
 #include "bitinputarchive.hpp"
 #include "bitpropvariant.hpp"
 #include "internal/callback.hpp"
-#include "internal/exceptionutil.hpp"
 #include "internal/operationresult.hpp"
 #include "internal/stringutil.hpp"
 
@@ -25,9 +24,7 @@
 
 #include <cstdint>
 #include <exception>
-#include <new>
 #include <string>
-#include <system_error>
 
 namespace bit7z {
 
@@ -64,59 +61,37 @@ STDMETHODIMP ExtractCallback::PrepareOperation( Int32 askExtractMode ) noexcept 
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP ExtractCallback::GetStream( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode ) noexcept
-try {
-    *outStream = nullptr;
-    releaseStream();
+STDMETHODIMP ExtractCallback::GetStream( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode ) noexcept {
+    return guardOperation( [ this, index, outStream, askExtractMode ]() -> HRESULT {
+        *outStream = nullptr;
+        releaseStream();
 
-    // The index comes from 7-Zip and is guaranteed valid, so we build the item once without
-    // re-validating it, and reuse it for the encrypted check, the filter callback, and getOutStream.
-    const auto item = mInputArchive.itemAtUnchecked( index );
+        // The index comes from 7-Zip and is guaranteed valid, so we build the item once without
+        // re-validating it, and reuse it for the encrypted check, the filter callback, and getOutStream.
+        const auto item = mInputArchive.itemAtUnchecked( index );
 
-    const auto isEncrypted = item.itemProperty( BitProperty::Encrypted );
-    if ( isEncrypted.isBool() ) {
-        mIsLastItemEncrypted = isEncrypted.getBool();
-    }
+        const auto isEncrypted = item.itemProperty( BitProperty::Encrypted );
+        if ( isEncrypted.isBool() ) {
+            mIsLastItemEncrypted = isEncrypted.getBool();
+        }
 
-    if ( askExtractMode != NArchive::NExtract::NAskMode::kExtract ) {
-        return S_OK;
-    }
-
-    if ( mFilterCallback ) {
-        const auto filterResult = mFilterCallback( item );
-        if ( filterResult == FilterResult::SkipItem ) {
+        if ( askExtractMode != NArchive::NExtract::NAskMode::kExtract ) {
             return S_OK;
         }
-        if ( filterResult == FilterResult::AbortOperation ) {
-            return E_ABORT;
-        }
-        // if filterResult == FilterResult::ProcessItem, continue.
-    }
 
-    return getOutStream( item, outStream );
-} catch ( const BitException& exception ) {
-    setErrorException( exception );
-    return exception.hresultCode();
-} catch ( const std::system_error& exception ) {
-    // exception.what() already embeds its category's message, and BitException's own
-    // std::system_error base would append that same message again if reused here, so only the
-    // error code is preserved, not the original message.
-    setErrorException( "Failed to get the stream", exception.code() );
-    return E_ABORT;
-} catch ( const std::bad_alloc& ) {
-    // Avoid allocating while already handling an out-of-memory condition: unlike toBitException()
-    // (which needs a new string + BitException), current_exception() only bumps a refcount on the
-    // exception object the runtime already allocated when it was thrown.
-    setErrorException( std::current_exception() );
-    return E_OUTOFMEMORY;
-} catch ( const std::exception& exception ) {
-    setErrorException( toBitException( "Failed to get the stream", exception ) );
-    return E_ABORT;
-} catch ( ... ) {
-    /* E.g., a user-provided callback threw an exception not derived from std::exception;
-     * the exception must not escape this noexcept COM method, so we store it for extractArchive to rethrow it. */
-    setErrorException( std::current_exception() );
-    return E_ABORT;
+        if ( mFilterCallback ) {
+            const auto filterResult = mFilterCallback( item );
+            if ( filterResult == FilterResult::SkipItem ) {
+                return S_OK;
+            }
+            if ( filterResult == FilterResult::AbortOperation ) {
+                return E_ABORT;
+            }
+            // if filterResult == FilterResult::ProcessItem, continue.
+        }
+
+        return getOutStream( item, outStream );
+    } );
 }
 
 ExtractCallback::ExtractCallback( const BitInputArchive& inputArchive, FilterCallback filterCallback )

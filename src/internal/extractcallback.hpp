@@ -26,7 +26,6 @@
 #include <7zip/IPassword.h>
 
 #include <cstdint>
-#include <exception>
 
 namespace bit7z {
 

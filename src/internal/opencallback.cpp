@@ -60,7 +60,7 @@ STDMETHODIMP OpenCallback::GetProperty( PROPID property, PROPVARIANT* value ) no
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP OpenCallback::GetStream( const wchar_t* name, IInStream** inStream ) noexcept {
-    try {
+    return guardOperation( [ this, name, inStream ]() -> HRESULT {
         *inStream = nullptr;
         if ( mSubArchiveMode ) {
             return S_FALSE;
@@ -76,16 +76,10 @@ STDMETHODIMP OpenCallback::GetStream( const wchar_t* name, IInStream** inStream 
             }
         }
 
-        try {
-            auto inStreamTemp = bit7z::make_com< CFileInStream >( streamPath.native() );
-            *inStream = inStreamTemp.Detach();
-        } catch ( const BitException& exception ) {
-            return exception.hresultCode();
-        }
+        auto inStreamTemp = bit7z::make_com< CFileInStream >( streamPath.native() );
+        *inStream = inStreamTemp.Detach();
         return S_OK;
-    } catch ( ... ) {
-        return E_OUTOFMEMORY;
-    }
+    } );
 }
 
 COM_DECLSPEC_NOTHROW
