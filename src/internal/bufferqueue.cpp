@@ -41,7 +41,10 @@ void BufferQueue::push( buffer_t&& item ) {
     mFullCondition.wait(
         lock,
         [ this, &item ]() -> bool {
-            return mMemoryUsage + item.size() < mMaxMemoryUsage;
+            // Also let a lone item through when the queue is empty, even if it alone exceeds
+            // mMaxMemoryUsage: otherwise, with nothing queued for pop() to ever shrink
+            // mMemoryUsage, the wait condition below would never become satisfiable again.
+            return mQueue.empty() || mMemoryUsage + item.size() < mMaxMemoryUsage;
         }
     );
     mMemoryUsage += item.size();
