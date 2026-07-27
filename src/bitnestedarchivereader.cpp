@@ -20,11 +20,27 @@
 
 #ifdef _WIN32
 #   include <windows.h>
-#elif defined( __APPLE__ ) ||\
-        defined( BSD ) || \
-        defined( __FreeBSD__ ) ||\
-        defined( __NetBSD__ ) ||\
-        defined( __OpenBSD__ ) ||\
+#elif defined( __APPLE__ )
+#   include <TargetConditionals.h>
+#   if defined( TARGET_OS_OSX ) && TARGET_OS_OSX
+#       include <mach/mach.h>
+#       include <mach/mach_host.h>
+#   else
+#       include <os/proc.h>
+#   endif
+#elif defined( __FreeBSD__ )
+#   include <sys/types.h>
+#   include <sys/sysctl.h>
+#elif defined( __OpenBSD__ )
+#   include <sys/types.h>
+#   include <sys/sysctl.h>
+#   include <uvm/uvmexp.h>
+#elif defined( __NetBSD__ )
+#   include <sys/types.h>
+#   include <sys/sysctl.h>
+#   include <uvm/uvm_extern.h>
+#   include <cstddef>
+#elif defined( BSD ) ||\
         defined( __DragonFly__ )
 #   include <sys/types.h>
 #   include <sys/sysctl.h>
@@ -54,16 +70,115 @@ auto getFreeRam() -> std::uint64_t {
     memStatus.dwLength = sizeof( memStatus );
     GlobalMemoryStatusEx( &memStatus );
     return memStatus.ullAvailPhys;
-#elif defined( __APPLE__ ) || defined( BSD ) || \
-      defined( __FreeBSD__ ) || defined( __NetBSD__ ) || defined( __OpenBSD__ ) || defined( __DragonFly__ )
+#elif defined( __APPLE__ )
+#   if defined( TARGET_OS_OSX ) && TARGET_OS_OSX
+    mach_port_t host = mach_host_self();
+    vm_size_t pageSize = 0;
+    vm_statistics64_data_t vmStats{};
+    mach_msg_type_number_t count = HOST_VM_INFO64_COUNT;
+
+    auto res = host_page_size( host, &pageSize );
+    if ( res != KERN_SUCCESS ) {
+        return 0;
+    }
+
+    res = host_statistics64(
+        host,
+        HOST_VM_INFO64,
+        reinterpret_cast< host_info64_t >( &vmStats ),
+        &count
+    );
+    if ( res != KERN_SUCCESS ) {
+        return 0;
+    }
+
+    // free_count: immediately usable pages; inactive_count: clean, cheaply reclaimable.
+    return ( static_cast< std::uint64_t >( vmStats.free_count ) + vmStats.inactive_count ) * pageSize;
+#   else
+    // iOS/tvOS/watchOS have no system-wide "free RAM" concept exposed to apps; instead,
+    // os_proc_available_memory() reports how much more *this process* can allocate before
+    // hitting its jetsam memory limit, which is the right analog for this platform family.
+    return os_proc_available_memory();
+#   endif
+#elif defined( __FreeBSD__ )
+    unsigned int freePages = 0;
+    std::size_t size = sizeof( freePages );
+    if (
+        sysctlbyname( "vm.stats.vm.v_free_count", &freePages, &size, nullptr, 0 ) != 0 ||
+        size != sizeof( freePages )
+    ) {
+        return 0;
+    }
+
+    unsigned int inactivePages = 0;
+    size = sizeof( inactivePages );
+    if (
+        sysctlbyname( "vm.stats.vm.v_inactive_count", &inactivePages, &size, nullptr, 0 ) != 0 ||
+        size != sizeof( inactivePages )
+    ) {
+        return 0;
+    }
+
+    unsigned int pageSize = 0;
+    size = sizeof( pageSize );
+    if (
+        sysctlbyname( "vm.stats.vm.v_page_size", &pageSize, &size, nullptr, 0 ) != 0 ||
+        size != sizeof( pageSize )
+    ) {
+        return 0;
+    }
+
+    return ( static_cast< std::uint64_t >( freePages ) + inactivePages ) * pageSize;
+#elif defined( __OpenBSD__ )
+    static int mib[] = { CTL_VM, VM_UVMEXP };
+    struct uvmexp usage{};
+    std::size_t length = sizeof( usage );
+
+    if (
+        sysctl( mib, 2, &usage, &length, nullptr, 0 ) != 0 ||
+        length != sizeof( usage ) ||
+        usage.free < 0 ||
+        usage.inactive < 0 ||
+        usage.pagesize < 0
+    ) {
+        return 0;
+    }
+    return ( static_cast< std::uint64_t >( usage.free ) + static_cast< std::uint64_t >( usage.inactive ) ) *
+            static_cast< std::uint64_t >( usage.pagesize );
+#elif defined( __NetBSD__ )
+    static int mib[] = { CTL_VM, VM_UVMEXP2 };
+    struct uvmexp_sysctl usage{};
+    std::size_t length = sizeof( usage );
+
+    // Unlike the other BSD branches, VM_UVMEXP2 is deliberately kernel-version independent:
+    // NetBSD's handler copies min(our buffer size, its own struct size), so a future NetBSD
+    // release appending trailing fields must not fail this check. It's enough that the fields
+    // we read below - pagesize, free, inactive, all within the struct's leading fields - were
+    // actually filled, rather than requiring the two sizes to match exactly.
+    const auto kRequiredLength = offsetof( struct uvmexp_sysctl, inactive ) + sizeof( usage.inactive );
+    if (
+        sysctl( mib, 2, &usage, &length, nullptr, 0 ) != 0 ||
+        length < kRequiredLength ||
+        usage.free < 0 ||
+        usage.inactive < 0 ||
+        usage.pagesize < 0
+    ) {
+        return 0;
+    }
+    return ( static_cast< std::uint64_t >( usage.free ) + static_cast< std::uint64_t >( usage.inactive ) ) *
+            static_cast< std::uint64_t >( usage.pagesize );
+#elif defined( BSD ) ||\
+        defined( __DragonFly__ )
     static int mib[] = { CTL_HW, HW_USERMEM };
     std::uint64_t value = 0;
     std::size_t length = sizeof( value );
 
-    if ( sysctl( mib, 2, &value, &length, nullptr, 0 ) == 0 ) {
-        return value;
+    // No portable "currently free" sysctl exists across these BSDs under CTL_HW;
+    // HW_USERMEM approximates non-kernel RAM (close to total, not actual free memory).
+    if ( sysctl( mib, 2, &value, &length, nullptr, 0 ) != 0 || length != sizeof( value ) ) {
+        return 0;
     }
-    return 0;
+    return value;
 #elif defined( _SC_AVPHYS_PAGES ) && defined( _SC_PAGE_SIZE )
     const long pages = sysconf( _SC_AVPHYS_PAGES );
     const long page_size = sysconf( _SC_PAGE_SIZE );
@@ -73,8 +188,10 @@ auto getFreeRam() -> std::uint64_t {
     return static_cast< std::uint64_t >( pages ) * static_cast< std::uint64_t >( page_size );
 #else
     struct sysinfo info{};
-    sysinfo (&info);
-    return ( info.freeram + info.bufferram ) * info.mem_unit;
+    if ( sysinfo( &info ) != 0 ) {
+        return 0;
+    }
+    return ( static_cast< std::uint64_t >( info.freeram ) + info.bufferram ) * info.mem_unit;
 #endif
 }
 
