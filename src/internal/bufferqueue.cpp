@@ -58,10 +58,6 @@ void BufferQueue::notifyFinished() {
     mEmptyCondition.notify_one();
 }
 
-void BufferQueue::reset() {
-    mFinished = false;
-}
-
 auto BufferQueue::empty() const -> bool {
     const std::lock_guard< std::mutex > lock( mMutex );
     return mQueue.empty();

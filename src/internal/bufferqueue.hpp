@@ -39,8 +39,6 @@ class BufferQueue final {
 
         void notifyFinished();
 
-        void reset();
-
         auto empty() const -> bool;
 
     private:
