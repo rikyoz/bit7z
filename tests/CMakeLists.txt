@@ -45,6 +45,7 @@ set(
 set(
     INTERNAL_API_SOURCE_FILES
         src/test_bititemsvector.cpp # BitItemsVector is not meant to be used by the user
+        src/test_bufferqueue.cpp
         src/test_cbufferinstream.cpp
         src/test_cbufferoutstream.cpp
         src/test_cfileinstream.cpp
