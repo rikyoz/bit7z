@@ -87,7 +87,6 @@ constexpr auto ERROR_FILE_NOT_FOUND = ENOENT;
 constexpr auto ERROR_INVALID_PARAMETER = EINVAL;
 constexpr auto ERROR_INVALID_FUNCTION = EINVAL;
 constexpr auto ERROR_INVALID_HANDLE = EBADF;
-constexpr auto ERROR_OPEN_FAILED = EIO;
 constexpr auto ERROR_PATH_NOT_FOUND = ENOENT;
 constexpr auto ERROR_SEEK = EIO;
 constexpr auto ERROR_READ_FAULT = EIO;

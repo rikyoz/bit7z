@@ -55,17 +55,6 @@ constexpr PortableErrorTest hresultTests[ ] = { // NOLINT(*-avoid-c-arrays)
     },
     { ERROR_TEST( E_POINTER ), "Invalid pointer", std::errc::invalid_argument },
 #endif
-    {
-        HRESULT_WIN32_TEST( ERROR_OPEN_FAILED ),
-#ifdef _WIN32
-        "The system cannot open the device or file specified.",
-#elif defined( __linux__ ) && !defined ( __GLIBC__ )
-        "I/O error",
-#else
-        "Input/output error",
-#endif
-        std::errc::io_error
-    },
 #ifdef _WIN32
     {
         HRESULT_WIN32_TEST( ERROR_FILE_NOT_FOUND ),
@@ -215,8 +204,8 @@ constexpr Win32ErrorTest win32Tests[ ] = { // NOLINT(*-avoid-c-arrays)
     { ERROR_TEST( ERROR_OUTOFMEMORY ) },
     // ERROR_DIRECTORY should correspond to errc::not_a_directory; however, MSVC maps it to errc::invalid_argument
     { ERROR_TEST( ERROR_NEGATIVE_SEEK ) }, //ERROR_NEGATIVE_SEEK is not POSIX on p7zip
+    { ERROR_TEST( ERROR_OPEN_FAILED ) }, // A genuine, distinct Win32 code; on Unix, bit7z has no alias for it.
 #endif
-    { ERROR_TEST( ERROR_OPEN_FAILED ) },
     { ERROR_TEST( ERROR_SEEK ) },
     { ERROR_TEST( ERROR_READ_FAULT ) },
     { ERROR_TEST( ERROR_WRITE_FAULT ) },
