@@ -167,7 +167,7 @@ auto FileHandle::seek(
         static_cast< DWORD >( origin )
     );
     if ( result == FALSE ) {
-        return HRESULT_FROM_WIN32( GetLastError() );
+        return HRESULT_FROM_SYSTEM_ERROR( GetLastError() );
     }
 
     newPosition = static_cast< std::uint64_t >( finalPosition.QuadPart );
@@ -178,7 +178,7 @@ auto FileHandle::seek(
     const auto result = lseek64( mHandle, distance, static_cast< int >( origin ) );
 #endif
     if ( result < 0 ) {
-        return HRESULT_FROM_WIN32( static_cast< DWORD >( errno ) );
+        return HRESULT_FROM_SYSTEM_ERROR( static_cast< DWORD >( errno ) );
     }
 
     newPosition = static_cast< std::uint64_t >( result );
@@ -235,7 +235,7 @@ auto OutputFile::write(
         DWORD bytesWritten = 0;
         const auto writeSuccessful = writeData( mHandle, data, size, bytesWritten );
         if ( !writeSuccessful ) {
-            return HRESULT_FROM_WIN32( GetLastError() );
+            return HRESULT_FROM_SYSTEM_ERROR( GetLastError() );
         }
         if ( bytesWritten == 0 ) {
             break;
@@ -325,7 +325,7 @@ auto InputFile::read(
         DWORD bytesRead = 0;
         const auto readSuccessful = readData( mHandle, data, size, bytesRead );
         if ( !readSuccessful ) {
-            return HRESULT_FROM_WIN32( GetLastError() );
+            return HRESULT_FROM_SYSTEM_ERROR( GetLastError() );
         }
         if ( bytesRead == 0 ) {
             break;

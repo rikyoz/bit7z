@@ -91,15 +91,31 @@ inline auto WINAPI GetLastError() -> DWORD {
 constexpr auto FACILITY_ERRNO = 0x800;
 constexpr auto FACILITY_WIN32 = 7;
 
+constexpr auto WIN32_ERROR_MASK = 0x0000FFFFu;
+constexpr auto FACILITY_SHIFT = 16u;
+
+// Shared bit-packing logic for HRESULT_FROM_SYSTEM_ERROR and HRESULT_FROM_WIN32.
+// Unix-only: on Windows, we use the native HRESULT_FROM_WIN32 WinAPI macro, not ours.
+constexpr auto asHRESULT( const unsigned int error, const unsigned int facility ) -> HRESULT {
+    return static_cast< HRESULT >( error ) > 0
+               ? static_cast< HRESULT >( ( error & WIN32_ERROR_MASK ) | ( facility << FACILITY_SHIFT ) | 0x80000000u )
+               : static_cast< HRESULT >( error );
+}
+
+// Function wrapping errno as an HRESULT under FACILITY_ERRNO rather than FACILITY_WIN32, since bit7z's own
+// "Win32" constants (e.g., ERROR_READ_FAULT) are just errno values in disguise (e.g., EIO), and on Unix
+// wrapping them via HRESULT_FROM_WIN32 could collide with a real Windows-shaped HRESULT that hardcodes
+// the same numeric value (e.g., EIO == 5 == ERROR_ACCESS_DENIED, hardcoded as E_ACCESSDENIED).
+constexpr auto HRESULT_FROM_SYSTEM_ERROR( const unsigned int error ) -> HRESULT {
+    return asHRESULT( error, FACILITY_ERRNO );
+}
+
 #ifndef HRESULT_FROM_WIN32 // for p7zip (7-zip declares HRESULT_FROM_WIN32 in C/7zTypes.h so there's no need for this).
 constexpr auto FACILITY_CODE = FACILITY_WIN32;
-constexpr auto WIN32_MASK = 0x0000FFFF;
 
 /* Note: p7zip uses FACILITY_WIN32, 7-zip version of HRESULT_FROM_WIN32 uses FACILITY_ERRNO. */
-inline constexpr auto HRESULT_FROM_WIN32( unsigned int x ) -> HRESULT {
-    return ( static_cast< HRESULT >( x ) > 0 )
-               ? static_cast< HRESULT >( ( x & WIN32_MASK ) | ( FACILITY_WIN32 << 16u ) | 0x80000000 )
-               : static_cast< HRESULT >( x );
+constexpr auto HRESULT_FROM_WIN32( const unsigned int error ) -> HRESULT {
+    return asHRESULT( error, FACILITY_WIN32 );
 }
 
 constexpr auto ERROR_NEGATIVE_SEEK = 0x100131;
@@ -166,6 +182,14 @@ auto SysStringLen( BSTR bstr ) -> UINT;
 
 #ifndef __HRESULT_FROM_WIN32
 #define __HRESULT_FROM_WIN32 HRESULT_FROM_WIN32 // NOLINT(bugprone-reserved-identifier,cert-dcl37-c,cert-dcl51-cpp)
+#endif
+
+#ifdef _WIN32
+// On Windows these are genuine Win32 error codes, not disguised errno values, so wrapping them
+// normally can't collide with anything.
+constexpr auto HRESULT_FROM_SYSTEM_ERROR( DWORD error ) -> HRESULT {
+    return __HRESULT_FROM_WIN32( error ); // Using the macro as we need to guarantee compile-time execution.
+}
 #endif
 
 /* For when we cannot include IStream.h */

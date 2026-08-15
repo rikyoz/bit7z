@@ -42,7 +42,10 @@ STDMETHODIMP CStdInStream::Read( void* data, UInt32 size, UInt32* processedSize 
         *processedSize = static_cast< std::uint32_t >( mInputStream.gcount() );
     }
 
-    return mInputStream.bad() ? HRESULT_FROM_WIN32( ERROR_READ_FAULT ) : S_OK;
+    // std::istream doesn't provide any specific error code in case of error.
+    // Hence, we use ERROR_READ_FAULT (Win32's error code for such cases, backported on Unix),
+    // so failures still map to a proper BitException instead of an uninformative E_FAIL.
+    return mInputStream.bad() ? HRESULT_FROM_SYSTEM_ERROR( ERROR_READ_FAULT ) : S_OK;
 }
 
 COM_DECLSPEC_NOTHROW
@@ -55,7 +58,7 @@ STDMETHODIMP CStdInStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPos
     mInputStream.seekg( static_cast< std::istream::off_type >( offset ), toSeekdir( origin ) );
 
     if ( mInputStream.bad() ) {
-        return HRESULT_FROM_WIN32( ERROR_SEEK );
+        return HRESULT_FROM_SYSTEM_ERROR( ERROR_SEEK );
     }
 
     if ( newPosition != nullptr ) {

@@ -43,7 +43,10 @@ STDMETHODIMP CStdOutStream::Write( const void* data, UInt32 size, UInt32* proces
         *processedSize = static_cast< std::uint32_t >( mOutputStream.tellp() - oldPos );
     }
 
-    return mOutputStream.bad() ? HRESULT_FROM_WIN32( ERROR_WRITE_FAULT ) : S_OK;
+    // std::ostream doesn't provide any specific error code in case of error.
+    // Hence, we use ERROR_WRITE_FAULT (Win32's error code for such cases, backported on Unix),
+    // so failures still map to a proper BitException instead of an uninformative E_FAIL.
+    return mOutputStream.bad() ? HRESULT_FROM_SYSTEM_ERROR( ERROR_WRITE_FAULT ) : S_OK;
 }
 
 COM_DECLSPEC_NOTHROW
@@ -54,7 +57,7 @@ STDMETHODIMP CStdOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPo
     mOutputStream.seekp( static_cast< std::ostream::off_type >( offset ), toSeekdir( origin ) );
 
     if ( mOutputStream.bad() ) {
-        return HRESULT_FROM_WIN32( ERROR_SEEK );
+        return HRESULT_FROM_SYSTEM_ERROR( ERROR_SEEK );
     }
 
     if ( newPosition != nullptr ) {

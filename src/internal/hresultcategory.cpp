@@ -22,6 +22,16 @@
 
 namespace bit7z {
 
+namespace {
+constexpr auto isSystemErrorHRESULT( const HRESULT errorValue ) -> bool {
+#if defined( _WIN32 ) || !defined( BIT7Z_BUILD_FOR_P7ZIP )
+    return HRESULT_FACILITY( errorValue ) == FACILITY_CODE;
+#else
+    return HRESULT_FACILITY( errorValue ) == FACILITY_CODE || HRESULT_FACILITY( errorValue ) == FACILITY_ERRNO;
+#endif
+}
+} // namespace
+
 auto HRESULTCategory::name() const noexcept -> const char* {
     return "HRESULT";
 }
@@ -84,8 +94,9 @@ auto HRESULTCategory::message( int errorValue ) const -> std::string {
         case E_FAIL:
             return "Unspecified error";
         default:
-            if ( HRESULT_FACILITY( errorValue ) == FACILITY_CODE ) {
-                // POSIX error code wrapped in a HRESULT value (e.g., through HRESULT_FROM_WIN32 macro)
+            if ( isSystemErrorHRESULT( errorValue ) ) {
+                // POSIX error wrapped in an HRESULT: FACILITY_CODE via HRESULT_FROM_WIN32 (7-zip/p7zip), or
+                // FACILITY_ERRNO via HRESULT_FROM_SYSTEM_ERROR (bit7z's own stream failure codes).
                 return std::system_category().message( HRESULT_CODE( errorValue ) );
             }
             return "Unknown HRESULT error (code " + std::to_string( errorValue ) + ").";
@@ -124,7 +135,7 @@ auto HRESULTCategory::default_error_condition( int errorValue ) const noexcept -
         case E_ACCESSDENIED:
             return std::make_error_condition( std::errc::permission_denied );
         default:
-            if ( HRESULT_FACILITY( errorValue ) == FACILITY_CODE ) {
+            if ( isSystemErrorHRESULT( errorValue ) ) {
 #ifndef __MINGW32__
                 /* MinGW's std::system_category expects POSIX error codes, but on Windows errorValue is a Win32
                  * error wrapped in an HRESULT (e.g., via HRESULT_FROM_WIN32). Using system_category here would
@@ -134,8 +145,10 @@ auto HRESULTCategory::default_error_condition( int errorValue ) const noexcept -
                  * that map to a POSIX equivalent, or std::system_category() otherwise.
                  *
                  * On Linux, p7zip/7-Zip wraps most error codes as POSIX values inside HRESULTs, so this line returns
-                 * the correct error_condition.
-                 * The few p7zip/7-Zip codes that match Windows error codes are handled in the other switch cases.
+                 * the correct error_condition. The few p7zip/7-Zip codes that match Windows error codes are handled
+                 * in the other switch cases. The FACILITY_ERRNO check also covers bit7z's own stream failure codes
+                 * (e.g., ERROR_WRITE_FAULT/ERROR_READ_FAULT), wrapped via HRESULT_FROM_SYSTEM_ERROR instead of
+                 * HRESULT_FROM_WIN32 to avoid colliding with a hardcoded Windows-shaped HRESULT on Unix.
                  */
                 return std::system_category().default_error_condition( HRESULT_CODE( errorValue ) );
 #else

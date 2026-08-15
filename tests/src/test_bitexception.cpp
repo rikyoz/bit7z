@@ -34,6 +34,7 @@ struct PortableErrorTest { //-V802
 
 #define ERROR_TEST( code ) #code, code
 #define HRESULT_WIN32_TEST( code ) #code, __HRESULT_FROM_WIN32( code )
+#define HRESULT_SYSTEM_ERROR_TEST( code ) #code, HRESULT_FROM_SYSTEM_ERROR( code )
 
 constexpr PortableErrorTest hresultTests[ ] = { // NOLINT(*-avoid-c-arrays)
     { ERROR_TEST( E_ABORT ), "Operation aborted", std::errc::operation_canceled },
@@ -73,7 +74,7 @@ constexpr PortableErrorTest hresultTests[ ] = { // NOLINT(*-avoid-c-arrays)
     },
 #endif
     {
-        HRESULT_WIN32_TEST( ERROR_SEEK ),
+        HRESULT_SYSTEM_ERROR_TEST( ERROR_SEEK ),
 #ifdef _WIN32
         "The drive cannot locate a specific area or track on the disk.",
 #elif defined( __linux__ ) && !defined ( __GLIBC__ )
@@ -84,7 +85,7 @@ constexpr PortableErrorTest hresultTests[ ] = { // NOLINT(*-avoid-c-arrays)
         std::errc::io_error
     },
     {
-        HRESULT_WIN32_TEST( ERROR_READ_FAULT ),
+        HRESULT_SYSTEM_ERROR_TEST( ERROR_READ_FAULT ),
 #ifdef _WIN32
         "The system cannot read from the specified device.",
 #elif defined( __linux__ ) && !defined ( __GLIBC__ )
@@ -95,7 +96,7 @@ constexpr PortableErrorTest hresultTests[ ] = { // NOLINT(*-avoid-c-arrays)
         std::errc::io_error
     },
     {
-        HRESULT_WIN32_TEST( ERROR_WRITE_FAULT ),
+        HRESULT_SYSTEM_ERROR_TEST( ERROR_WRITE_FAULT ),
 #ifdef _WIN32
         "The system cannot write to the specified device.",
 #elif defined( __linux__ ) && !defined ( __GLIBC__ )
