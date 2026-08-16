@@ -72,22 +72,24 @@ auto getFreeRam() -> std::uint64_t {
     return memStatus.ullAvailPhys;
 #elif defined( __APPLE__ )
 #   if defined( TARGET_OS_OSX ) && TARGET_OS_OSX
+    // mach_host_self() allocates a new port on every call (unlike the cached mach_task_self()), so it
+    // must be deallocated on every exit path, not just released implicitly at process end.
     mach_port_t host = mach_host_self();
     vm_size_t pageSize = 0;
     vm_statistics64_data_t vmStats{};
     mach_msg_type_number_t count = HOST_VM_INFO64_COUNT;
 
     auto res = host_page_size( host, &pageSize );
-    if ( res != KERN_SUCCESS ) {
-        return 0;
+    if ( res == KERN_SUCCESS ) {
+        res = host_statistics64(
+            host,
+            HOST_VM_INFO64,
+            reinterpret_cast< host_info64_t >( &vmStats ),
+            &count
+        );
     }
+    mach_port_deallocate( mach_task_self(), host );
 
-    res = host_statistics64(
-        host,
-        HOST_VM_INFO64,
-        reinterpret_cast< host_info64_t >( &vmStats ),
-        &count
-    );
     if ( res != KERN_SUCCESS ) {
         return 0;
     }
