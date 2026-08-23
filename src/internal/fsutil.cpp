@@ -56,22 +56,18 @@ auto fsutil::extension( const fs::path& path ) -> tstring {
 namespace {
 BIT7Z_NODISCARD
 BIT7Z_ALWAYS_INLINE
-auto pathRealFilename( const fs::path& filePath ) -> fs::path {
-    const auto normalPath = filePath.lexically_normal();
-    return normalPath.has_filename() ? normalPath.filename() : normalPath.parent_path().filename();
+auto pathFilename( const fs::path& filePath ) -> fs::path {
+    return filePath.has_filename() ? filePath.filename() : filePath.parent_path().filename();
 }
 } // namespace
 
 auto fsutil::inArchivePath( const fs::path& filePath, const fs::path& searchPath ) -> fs::path {
-    /* Note: the following algorithm tries to emulate the behavior of 7-zip when dealing with
-             paths of items in archives. */
+    // Note: the following algorithm tries to emulate 7-zip's behavior when dealing with paths of items in archives.
 
     const bool pathNeedsNormalization = containsDotReferences( filePath.native() );
     // Note: path normalization is computationally expensive,
     // so to obtain the filename of the given path we try to avoid it when possible.
-    auto filename = !pathNeedsNormalization
-                        ? ( filePath.has_filename() ? filePath.filename() : filePath.parent_path().filename() )
-                        : pathRealFilename( filePath );
+    auto filename = !pathNeedsNormalization ? pathFilename( filePath ) : pathFilename( filePath.lexically_normal() );
 
     if ( filename.native() == BIT7Z_NATIVE_STRING( "." ) || filename.native() == BIT7Z_NATIVE_STRING( ".." ) ) {
         return {};
@@ -84,7 +80,6 @@ auto fsutil::inArchivePath( const fs::path& filePath, const fs::path& searchPath
     }
 
     // Search path is empty, so the file was directly added by the user, not via indexing.
-
     if ( filePath.is_absolute() || pathNeedsNormalization ) {
         return filename;
     }
