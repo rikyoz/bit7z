@@ -21,6 +21,8 @@ set(
         src/test_bit7zlibrary.cpp
         src/test_bit7zlibraryloader.cpp
         src/test_bitabstractarchivecreator.cpp
+        src/test_bitabstractarchivehandler.cpp
+        src/test_bitabstractarchiveopener.cpp
         src/test_bitarchiveeditor.cpp
         src/test_bitarchiveiteminfo.cpp
         src/test_bitarchivereader.cpp

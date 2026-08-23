@@ -10,11 +10,12 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+#include "utils/format.hpp"
+
 #include <catch2/catch.hpp>
 
 #include "utils/shared_lib.hpp"
 
-#include <bit7z/bit7zlibrary.hpp>
 #include <bit7z/bitabstractarchivecreator.hpp>
 #include <bit7z/bitabstractarchivehandler.hpp>
 #include <bit7z/bitarchivewriter.hpp>
@@ -31,21 +32,29 @@
 #include <tuple>
 
 using namespace bit7z;
-using bit7z::Bit7zLibrary;
 using bit7z::BitArchiveWriter;
 using bit7z::BitFileCompressor;
 using bit7z::BitMemCompressor;
 using bit7z::BitStreamCompressor;
 using bit7z::BitInOutFormat;
-
-namespace {
-struct TestOutputFormat {
-    const char* name;
-    const BitInOutFormat& format; // NOLINT(cppcoreguidelines-avoid-const-or-ref-data-members)
-};
-} // namespace
+using test::TestOutputFormat;
 
 using CreatorTypes = std::tuple< BitArchiveWriter, BitFileCompressor, BitMemCompressor, BitStreamCompressor >;
+
+TEMPLATE_LIST_TEST_CASE(
+    "BitAbstractArchiveCreator: default handler settings",
+    "[bitabstractarchivecreator]",
+    CreatorTypes
+) {
+    const TestType compressor( test::sevenzipLib(), BitFormat::SevenZip );
+
+    // Archive creators do not overwrite any already existing output archive,
+    // unlike the archive openers, which default to OverwriteMode::Overwrite.
+    REQUIRE( compressor.overwriteMode() == OverwriteMode::None );
+
+    // Archive creators do not retain directories by default.
+    REQUIRE_FALSE( compressor.retainDirectories() );
+}
 
 TEMPLATE_LIST_TEST_CASE(
     "BitAbstractArchiveCreator: setPassword(...) / password() / cryptHeaders()",
@@ -61,6 +70,10 @@ TEMPLATE_LIST_TEST_CASE(
     REQUIRE( !compressor.cryptHeaders() );
 
     compressor.setPassword( BIT7Z_STRING( "mondo" ), true );
+    REQUIRE( compressor.password() == BIT7Z_STRING( "mondo" ) );
+    REQUIRE( compressor.cryptHeaders() );
+
+    compressor.setPassword( BIT7Z_STRING( "mondo" ), EncryptionScope::DataAndHeaders );
     REQUIRE( compressor.password() == BIT7Z_STRING( "mondo" ) );
     REQUIRE( compressor.cryptHeaders() );
 
@@ -81,12 +94,16 @@ TEMPLATE_LIST_TEST_CASE(
     handler.setPassword( BIT7Z_STRING( "" ) );
     REQUIRE( compressor.password().empty() );
     REQUIRE( !compressor.cryptHeaders() );
+
+    compressor.setPassword( BIT7Z_STRING( "foo" ), EncryptionScope::DataAndHeaders );
+    handler.setPassword( BIT7Z_STRING( "" ) );
+    REQUIRE( compressor.password().empty() );
+    REQUIRE( !compressor.cryptHeaders() );
 }
 
 #ifndef BIT7Z_DISABLE_ZIP_ASCII_PWD_CHECK
 TEMPLATE_LIST_TEST_CASE(
-    "BitAbstractArchiveCreator:"
-    "setPassword(...) with a non-ASCII string should throw when using the ZIP format",
+    "BitAbstractArchiveCreator: setPassword(...) with a non-ASCII string should throw when using the ZIP format",
     "[bitabstractarchivecreator]",
     CreatorTypes
 ) {
@@ -141,15 +158,15 @@ TEMPLATE_LIST_TEST_CASE(
     CreatorTypes
 ) {
     const auto testFormat = GENERATE( as< TestOutputFormat >(),
-        TestOutputFormat{ "ZIP", BitFormat::Zip },
-        TestOutputFormat{ "BZIP2", BitFormat::BZip2 },
-        TestOutputFormat{ "7Z", BitFormat::SevenZip },
-        TestOutputFormat{ "XZ", BitFormat::Xz },
-        TestOutputFormat{ "WIM", BitFormat::Wim },
-        TestOutputFormat{ "TAR", BitFormat::Tar },
-        TestOutputFormat{ "GZIP", BitFormat::GZip }
+        TestOutputFormat{ "zip", BitFormat::Zip },
+        TestOutputFormat{ "bz2", BitFormat::BZip2 },
+        TestOutputFormat{ "7z", BitFormat::SevenZip },
+        TestOutputFormat{ "xz", BitFormat::Xz },
+        TestOutputFormat{ "wim", BitFormat::Wim },
+        TestOutputFormat{ "tar", BitFormat::Tar },
+        TestOutputFormat{ "gz", BitFormat::GZip }
     );
-    DYNAMIC_SECTION( "Format: " << testFormat.name ) {
+    DYNAMIC_SECTION( "Format: " << testFormat.extension ) {
         const TestType compressor{ test::sevenzipLib(), testFormat.format };
         REQUIRE( compressor.compressionFormat() == testFormat.format );
         REQUIRE( compressor.format() == testFormat.format );
@@ -289,7 +306,7 @@ TEMPLATE_LIST_TEST_CASE(
     CreatorTypes
 ) {
     SECTION( "SevenZip format + Lzma/Lzma2 compression methods" ) {
-        constexpr auto kMaxLzmaDictionarySize = 1536 * ( 1LL << 20 ); // less than 1536 MiB
+        constexpr auto kMaxLzmaDictionarySize = 1536u * ( 1uLL << 20u ); // less than 1536 MiB
 
         TestType compressor( test::sevenzipLib(), BitFormat::SevenZip );
         REQUIRE( compressor.dictionarySize() == 0 );
@@ -310,7 +327,7 @@ TEMPLATE_LIST_TEST_CASE(
     }
 
     SECTION( "Zip format + Ppmd compression methods" ) {
-        constexpr std::uint32_t kMaxPpmdDictionarySize = ( 1ULL << 30 ); // less than 1 GiB, i.e., 2^30 bytes
+        constexpr std::uint32_t kMaxPpmdDictionarySize = ( 1uLL << 30u ); // less than 1 GiB, i.e., 2^30 bytes
 
         TestType compressor( test::sevenzipLib(), BitFormat::Zip );
         REQUIRE( compressor.dictionarySize() == 0 );
@@ -338,7 +355,7 @@ TEMPLATE_LIST_TEST_CASE(
     }
 
     SECTION( "BZip2 format and compression methods" ) {
-        constexpr auto kMaxBzip2DictionarySize = 900 * ( 1LL << 10 ); // less than 900 KiB
+        constexpr auto kMaxBzip2DictionarySize = 900u * ( 1uLL << 10u ); // less than 900 KiB
 
         TestType compressor( test::sevenzipLib(), BitFormat::BZip2 );
         REQUIRE( compressor.dictionarySize() == 0 );
