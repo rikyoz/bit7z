@@ -116,7 +116,7 @@ void requireExtractsItemsToFilesystem( const BitArchiveReader& info, const Expec
     for ( const auto& expectedItem : expectedItems ) {
         const auto item = archiveItem( info, expectedItem );
         REQUIRE( item != info.cend() );
-        REQUIRE_NOTHROW( info.extractTo( testDir, { item->index() } ) );
+        REQUIRE_NOTHROW( info.extractTo( testDir, item->index() ) );
         REQUIRE_FILESYSTEM_ITEM( expectedItem );
     }
     REQUIRE( fs::is_empty( testDir.path() ) );
