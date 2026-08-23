@@ -31,6 +31,6 @@ BitAbstractArchiveOpener::BitAbstractArchiveOpener(
     const Bit7zLibrary& lib,
     const BitInFormat& format,
     const tstring& password
-) : BitAbstractArchiveHandler{ lib, password, OverwriteMode::Overwrite }, mFormat{ format } {}
+) : BitAbstractArchiveHandler{ lib, password, OverwriteMode::Overwrite, true }, mFormat{ format } {}
 
 } // namespace bit7z

@@ -288,7 +288,8 @@ class BitAbstractArchiveHandler {
         explicit BitAbstractArchiveHandler(
             const Bit7zLibrary& lib,
             tstring password = {},
-            OverwriteMode overwriteMode = OverwriteMode::None
+            OverwriteMode overwriteMode = OverwriteMode::None,
+            bool retainDirectories = true
         );
 
     private:

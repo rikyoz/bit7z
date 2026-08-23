@@ -98,10 +98,11 @@ void BitAbstractArchiveHandler::setOverwriteMode( OverwriteMode mode ) {
 BitAbstractArchiveHandler::BitAbstractArchiveHandler(
     const Bit7zLibrary& lib,
     tstring password,
-    OverwriteMode overwriteMode
+    OverwriteMode overwriteMode,
+    bool retainDirectories
 ) : mLibrary{ lib },
     mPassword{ std::move( password ) },
-    mRetainDirectories{ true },
+    mRetainDirectories{ retainDirectories },
     mOverwriteMode{ overwriteMode } {}
 
 } // namespace bit7z

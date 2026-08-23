@@ -208,7 +208,7 @@ BitAbstractArchiveCreator::BitAbstractArchiveCreator(
     const BitInOutFormat& format,
     tstring password,
     UpdateMode updateMode
-) : BitAbstractArchiveHandler( lib, std::move( password ) ),
+) : BitAbstractArchiveHandler( lib, std::move( password ), OverwriteMode::None, false ),
     mFormat( format ),
     mUpdateMode( updateMode ),
     mCompressionLevel( BitCompressionLevel::Normal ),
@@ -221,9 +221,7 @@ BitAbstractArchiveCreator::BitAbstractArchiveCreator(
     mThreadsCount( 0 ),
     mStoreSymbolicLinks{ false },
     mStoreOpenFiles{ false },
-    mPreserveAccessTime{ false } {
-    setRetainDirectories( false );
-}
+    mPreserveAccessTime{ false } {}
 
 #ifndef BIT7Z_DISABLE_ZIP_ASCII_PWD_CHECK
 namespace {
