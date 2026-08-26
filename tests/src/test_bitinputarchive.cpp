@@ -1656,6 +1656,10 @@ TEMPLATE_TEST_CASE(
         getInputArchive( arcFileName, inputArchive );
         BitArchiveReader info( test::sevenzipLib(), inputArchive, testFormat.format );
 
+        // Note: unlike archive writers/creators, which default to OverwriteMode::None,
+        // archive readers (and openers in general) overwrite any existing output file by default.
+        REQUIRE( info.overwriteMode() == OverwriteMode::Overwrite );
+
         const TempTestDirectory testOutDir{ "test_bitinputarchive" };
         INFO( "Output directory: " << testOutDir )
 
@@ -1700,6 +1704,49 @@ TEMPLATE_TEST_CASE(
             REQUIRE( fs::is_empty( expectedFile ) );
         }
         REQUIRE( fs::remove( expectedFile ) );
+    }
+}
+
+TEST_CASE(
+    "BitInputArchive: Extracting to a map with a non-empty buffer respects the overwrite mode",
+    "[bitinputarchive]"
+) {
+    std::map< tstring, buffer_t > bufferMap;
+    {
+        // Preloading a file fixture in a buffer, so we can check whether the overwrite mode changes it or not.
+        const TestDirectory originalTestDir{ test_filesystem_dir };
+        bufferMap[ clouds.name ] = loadFile( italy.name );
+    }
+
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "single_file" };
+    constexpr auto arcFileName = BIT7Z_STRING( "clouds.jpg.7z" );
+    BitArchiveReader info{ test::sevenzipLib(), arcFileName, BitFormat::SevenZip };
+
+    SECTION( "OverwriteMode::None" ) {
+        info.setOverwriteMode( OverwriteMode::None );
+
+        // The extraction method throws without touching the already non-empty buffer.
+        REQUIRE_THROWS_CODE( info.extractTo( bufferMap ), std::errc::operation_canceled );
+        REQUIRE( bufferMap.size() == 1 );
+        REQUIRE( crc32( bufferMap[ clouds.name ] ) == italy.crc32 );
+    }
+
+    SECTION( "OverwriteMode::Overwrite" ) {
+        info.setOverwriteMode( OverwriteMode::Overwrite );
+
+        // The extraction method overwrites the original buffer in the map.
+        REQUIRE_NOTHROW( info.extractTo( bufferMap ) );
+        REQUIRE( bufferMap.size() == 1 );
+        REQUIRE( crc32( bufferMap[ clouds.name ] ) == clouds.crc32 );
+    }
+
+    SECTION( "OverwriteMode::Skip" ) {
+        info.setOverwriteMode( OverwriteMode::Skip );
+
+        // The extraction method succeeds (unlike OverwriteMode::None) without touching the already non-empty buffer.
+        REQUIRE_NOTHROW( info.extractTo( bufferMap ) );
+        REQUIRE( bufferMap.size() == 1 );
+        REQUIRE( crc32( bufferMap[ clouds.name ] ) == italy.crc32 );
     }
 }
 

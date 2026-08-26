@@ -25,6 +25,7 @@
 
 #include <cstdint>
 #include <map>
+#include <system_error>
 
 using namespace bit7z;
 using namespace bit7z::test;
@@ -174,31 +175,49 @@ TEST_CASE( "BitOutputArchive: Compressing to a path without a filename should th
     );
 }
 
-TEST_CASE(
-    "BitOutputArchive: With OverwriteMode::Skip, compressing to an existing file leaves it unchanged",
-    "[bitoutputarchive]"
-) {
+TEST_CASE( "BitOutputArchive: Compressing to an existing file must honor the overwrite mode", "[bitoutputarchive]" ) {
     const TempTestDirectory testOutDir{ "test_bitoutputarchive" };
     INFO( "Output directory: " << testOutDir )
 
     const auto contentFile = fs::path{ test_filesystem_dir } / "folder" / "clouds.jpg";
 
-    const tstring outputArchive = BIT7Z_STRING( "existing.7z" );
-    REQUIRE_NOTHROW( fs::copy_file( contentFile, fs::path{ outputArchive } ) );
-    const auto originalContent = loadFile( fs::path{ outputArchive } );
-
-    // The buffer must outlive the writer, as addFile only keeps a reference to it.
-    const auto fileContent = loadFile( contentFile );
+    constexpr auto outputArchive = BIT7Z_STRING( "existing.7z" );
+    const fs::path outputArchivePath = outputArchive;
+    REQUIRE_NOTHROW( fs::copy_file( contentFile,  outputArchivePath ) );
 
     BitArchiveWriter writer{ test::sevenzipLib(), BitFormat::SevenZip };
-    writer.addFile( fileContent, BIT7Z_STRING( "clouds.jpg" ) );
-    writer.setOverwriteMode( OverwriteMode::Skip );
-    REQUIRE_NOTHROW( writer.compressTo( outputArchive ) );
+    writer.addFile( to_tstring( contentFile.native() ), BIT7Z_STRING( "clouds.jpg" ) );
 
-    // The pre-existing file must still hold its original (non-archive) content.
-    REQUIRE( loadFile( fs::path{ outputArchive } ) == originalContent );
+    SECTION( "OverwriteMode::None throws, leaving the existing file untouched" ) {
+        REQUIRE_THROWS_CODE( writer.compressTo( outputArchive ), std::errc::file_exists );
 
-    REQUIRE_NOTHROW( fs::remove( fs::path{ outputArchive } ) );
+        // The pre-existing file must still contain its original (non-archive) content.
+        REQUIRE( crc32( loadFile( outputArchivePath ) ) == clouds.crc32 );
+    }
+
+    SECTION( "OverwriteMode::Overwrite replaces the existing file with a new archive" ) {
+        writer.setOverwriteMode( OverwriteMode::Overwrite );
+        REQUIRE_NOTHROW( writer.compressTo( outputArchive ) );
+
+        REQUIRE( crc32( loadFile( outputArchivePath ) ) != clouds.crc32 );
+
+        {
+            // Scoped, so that the reader releases the output archive before the final removal.
+            const BitArchiveReader result{ test::sevenzipLib(), outputArchive, BitFormat::SevenZip };
+            REQUIRE( result.itemsCount() == 1 );
+            REQUIRE( result.itemAt( 0 ).crc() == clouds.crc32 );
+        }
+    }
+
+    SECTION( "OverwriteMode::Skip does nothing, leaving the existing file untouched" ) {
+        writer.setOverwriteMode( OverwriteMode::Skip );
+        REQUIRE_NOTHROW( writer.compressTo( outputArchive ) );
+
+        // The pre-existing file must still contain its original (non-archive) content.
+        REQUIRE( crc32( loadFile( outputArchivePath ) ) == clouds.crc32 );
+    }
+
+    REQUIRE_NOTHROW( fs::remove( outputArchivePath ) );
 }
 
 TEST_CASE( "BitOutputArchive: Compressing to a non-empty buffer respects the overwrite mode", "[bitoutputarchive]" ) {
