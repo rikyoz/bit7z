@@ -34,7 +34,7 @@ TEMPLATE_LIST_TEST_CASE(
     "[bitabstractarchiveopener]",
     OpenerTypes
 ) {
-    const auto testFormat = GENERATE( as<  TestInputFormat >(),
+    const auto testFormat = GENERATE( as< TestInputFormat >(),
         TestInputFormat{ "zip", BitFormat::Zip },
         TestInputFormat{ "bz2", BitFormat::BZip2 },
         TestInputFormat{ "7z", BitFormat::SevenZip },

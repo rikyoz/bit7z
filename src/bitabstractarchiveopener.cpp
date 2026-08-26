@@ -27,6 +27,9 @@ auto BitAbstractArchiveOpener::extractionFormat() const noexcept -> const BitInF
     return mFormat;
 }
 
+// Note: openers deliberately set the 'retainDirectories' flag to true so that
+// the archive's directory structure is preserved during extraction.
+// Archive creators set it to false instead.
 BitAbstractArchiveOpener::BitAbstractArchiveOpener(
     const Bit7zLibrary& lib,
     const BitInFormat& format,
