@@ -761,3 +761,70 @@ TEST_CASE(
     buffer_t outBuffer;
     REQUIRE_THROWS_WITH( writer.compressTo( outBuffer ), Catch::Matchers::Contains( "custom callback failure" ) );
 }
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEST_CASE(
+    "BitArchiveWriter: Encryption scopes must be respected when creating encrypted archives",
+    "[bitarchivewriter]"
+) {
+    constexpr auto password = BIT7Z_STRING( "helloworld" );
+
+    static const TestDirectory testDir{ test_filesystem_dir };
+
+    SECTION( "Using EncryptionScope::DataOnly leaves the 7z headers readable" ) {
+        BitArchiveWriter writer{ test::sevenzipLib(), BitFormat::SevenZip };
+        writer.setPassword( password, EncryptionScope::DataOnly );
+        REQUIRE_FALSE( writer.cryptHeaders() );
+        REQUIRE_NOTHROW( writer.addFile( italy.name ) );
+
+        buffer_t outBuffer;
+        REQUIRE_NOTHROW( writer.compressTo( outBuffer ) );
+
+        // As the headers are not encrypted, the archive can be opened and listed without the password...
+        BitArchiveReader reader{ test::sevenzipLib(), outBuffer, BitFormat::SevenZip };
+        REQUIRE( reader.itemsCount() == 1 );
+        REQUIRE( reader.find( italy.name ) != reader.cend() );
+
+        // ...but its content is encrypted, meaning testing will fail until the password is provided.
+        REQUIRE_THROWS( reader.test() );
+        reader.setPassword( password );
+        REQUIRE_NOTHROW( reader.test() );
+    }
+
+    SECTION( "Using EncryptionScope::DataAndHeaders encrypts also the 7z headers" ) {
+        BitArchiveWriter writer{ test::sevenzipLib(), BitFormat::SevenZip };
+        writer.setPassword( password, EncryptionScope::DataAndHeaders );
+        REQUIRE( writer.cryptHeaders() );
+        REQUIRE_NOTHROW( writer.addFile( italy.name ) );
+
+        buffer_t outBuffer;
+        REQUIRE_NOTHROW( writer.compressTo( outBuffer ) );
+
+        // The headers are encrypted, so we need the password to open the archive.
+        REQUIRE_THROWS( BitArchiveReader( test::sevenzipLib(), outBuffer, BitFormat::SevenZip ) );
+
+        const BitArchiveReader reader{ test::sevenzipLib(), outBuffer, BitFormat::SevenZip, password };
+        REQUIRE( reader.itemsCount() == 1 );
+        REQUIRE( reader.find( italy.name ) != reader.cend() );
+        REQUIRE_NOTHROW( reader.test() );
+    }
+
+    SECTION( "Using EncryptionScope::DataAndHeaders has no effect on formats not supporting header encryption" ) {
+        BitArchiveWriter writer{ test::sevenzipLib(), BitFormat::Zip };
+        writer.setPassword( password, EncryptionScope::DataAndHeaders );
+        REQUIRE( writer.cryptHeaders() );
+        REQUIRE_NOTHROW( writer.addFile( italy.name ) );
+
+        buffer_t outBuffer;
+        REQUIRE_NOTHROW( writer.compressTo( outBuffer ) );
+
+        // ZIP doesn't support header encryption, hence we don't need the password to open and list the archive.
+        BitArchiveReader reader{ test::sevenzipLib(), outBuffer, BitFormat::Zip };
+        REQUIRE( reader.itemsCount() == 1 );
+        REQUIRE( reader.find( italy.name ) != reader.cend() );
+
+        REQUIRE_THROWS( reader.test() );
+        reader.setPassword( password );
+        REQUIRE_NOTHROW( reader.test() );
+    }
+}
