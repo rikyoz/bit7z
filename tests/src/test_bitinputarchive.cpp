@@ -1668,11 +1668,10 @@ TEMPLATE_TEST_CASE(
         REQUIRE( fs::exists( expectedFile ) );
 
         SECTION( "OverwriteMode::None" ) {
-            // After setting OverwriteMode::Overwrite, extracting should not throw.
+            // After setting OverwriteMode::None, extracting should throw.
             info.setOverwriteMode( OverwriteMode::None );
 
-            // By default, BitArchiveReader uses OverwriteMode::None, so extracting again should throw.
-            REQUIRE_THROWS( info.extractTo( testOutDir ) );
+            REQUIRE_THROWS_CODE( info.extractTo( testOutDir ), std::errc::operation_canceled );
             REQUIRE( fs::exists( expectedFile ) );
             REQUIRE( fs::is_empty( expectedFile ) );
             REQUIRE( fs::remove( expectedFile ) );
