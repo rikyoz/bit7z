@@ -57,7 +57,7 @@ TEMPLATE_LIST_TEST_CASE(
 }
 
 TEMPLATE_LIST_TEST_CASE(
-    "BitAbstractArchiveCreator: setPassword(...) / password() / cryptHeaders()",
+    "BitAbstractArchiveCreator: setPassword(...) / clearPassword() / password() / cryptHeaders()",
     "[bitabstractarchivecreator]",
     CreatorTypes
 ) {
@@ -98,6 +98,54 @@ TEMPLATE_LIST_TEST_CASE(
     compressor.setPassword( BIT7Z_STRING( "foo" ), EncryptionScope::DataAndHeaders );
     handler.setPassword( BIT7Z_STRING( "" ) );
     REQUIRE( compressor.password().empty() );
+    REQUIRE( !compressor.cryptHeaders() );
+
+    // Narrowing the encryption scope of an already header-encrypting creator must disable the header encryption.
+    compressor.setPassword( BIT7Z_STRING( "foo" ), EncryptionScope::DataAndHeaders );
+    REQUIRE( compressor.cryptHeaders() );
+    compressor.setPassword( BIT7Z_STRING( "bar" ), EncryptionScope::DataOnly );
+    REQUIRE( compressor.password() == BIT7Z_STRING( "bar" ) );
+    REQUIRE( !compressor.cryptHeaders() );
+
+    compressor.setPassword( BIT7Z_STRING( "foo" ), true );
+    REQUIRE( compressor.cryptHeaders() );
+    compressor.setPassword( BIT7Z_STRING( "bar" ), false );
+    REQUIRE( compressor.password() == BIT7Z_STRING( "bar" ) );
+    REQUIRE( !compressor.cryptHeaders() );
+
+    // Even when an explicit scope is requested, an empty password resets the encryption scope.
+    compressor.setPassword( BIT7Z_STRING( "foo" ), EncryptionScope::DataAndHeaders );
+    compressor.setPassword( BIT7Z_STRING( "" ), EncryptionScope::DataAndHeaders );
+    REQUIRE( compressor.password().empty() );
+    REQUIRE( !compressor.cryptHeaders() );
+    compressor.setPassword( BIT7Z_STRING( "bar" ) );
+    REQUIRE( !compressor.cryptHeaders() );
+
+    compressor.setPassword( BIT7Z_STRING( "foo" ), true );
+    compressor.setPassword( BIT7Z_STRING( "" ), true );
+    REQUIRE( compressor.password().empty() );
+    REQUIRE( !compressor.cryptHeaders() );
+    compressor.setPassword( BIT7Z_STRING( "bar" ) );
+    REQUIRE( !compressor.cryptHeaders() );
+
+    // Clearing the password must also reset the encryption scope, in the same way that setting an empty password does.
+    compressor.setPassword( BIT7Z_STRING( "foo" ), EncryptionScope::DataAndHeaders );
+    compressor.clearPassword();
+    REQUIRE( compressor.password().empty() );
+    REQUIRE( !compressor.cryptHeaders() );
+
+    // Setting a new password must not restore the encryption scope cleared by the 'clearPassword()' function.
+    compressor.setPassword( BIT7Z_STRING( "bar" ) );
+    REQUIRE( compressor.password() == BIT7Z_STRING( "bar" ) );
+    REQUIRE( !compressor.cryptHeaders() );
+
+    compressor.setPassword( BIT7Z_STRING( "foo" ), EncryptionScope::DataAndHeaders );
+    handler.clearPassword();
+    REQUIRE( compressor.password().empty() );
+    REQUIRE( !compressor.cryptHeaders() );
+
+    compressor.setPassword( BIT7Z_STRING( "bar" ) );
+    REQUIRE( compressor.password() == BIT7Z_STRING( "bar" ) );
     REQUIRE( !compressor.cryptHeaders() );
 }
 
@@ -144,6 +192,13 @@ TEMPLATE_LIST_TEST_CASE(
     REQUIRE_NOTHROW( compressor.setPassword( BIT7Z_STRING( "password~with~tilde" ) ) );
     REQUIRE( compressor.password() == BIT7Z_STRING( "password~with~tilde" ) );
     REQUIRE( !compressor.cryptHeaders() );
+
+    // As with the password itself, a rejected password must leave the encryption scope untouched.
+    REQUIRE_NOTHROW( compressor.setPassword( BIT7Z_STRING( "password" ), EncryptionScope::DataAndHeaders ) );
+    REQUIRE( compressor.cryptHeaders() );
+    REQUIRE_THROWS( compressor.setPassword( BIT7Z_STRING( "contraseña" ), EncryptionScope::DataOnly ) );
+    REQUIRE( compressor.password() == BIT7Z_STRING( "password" ) );
+    REQUIRE( compressor.cryptHeaders() );
 
     // Resetting the password
     REQUIRE_NOTHROW( compressor.setPassword( BIT7Z_STRING( "" ) ) );

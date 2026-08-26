@@ -226,7 +226,7 @@ class BitAbstractArchiveHandler {
          *
          * @note This is equivalent to calling setPassword(L"").
          */
-        void clearPassword() noexcept;
+        virtual void clearPassword() noexcept;
 
         /**
          * @brief Sets whether the operations' output will preserve the input's directory structure or not.

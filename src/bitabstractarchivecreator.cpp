@@ -137,7 +137,7 @@ auto BitAbstractArchiveCreator::compressionFormat() const noexcept -> const BitI
 }
 
 auto BitAbstractArchiveCreator::cryptHeaders() const noexcept -> bool {
-    return mCryptHeaders;
+    return isPasswordDefined() && mEncryptionScope == EncryptionScope::DataAndHeaders;
 }
 
 auto BitAbstractArchiveCreator::compressionLevel() const noexcept -> BitCompressionLevel {
@@ -200,7 +200,7 @@ auto BitAbstractArchiveCreator::preserveAccessTime() const noexcept -> bool {
 }
 
 void BitAbstractArchiveCreator::setPassword( const tstring& password ) {
-    setPassword( password, mCryptHeaders ? EncryptionScope::DataAndHeaders : EncryptionScope::DataOnly );
+    setPassword( password, mEncryptionScope );
 }
 
 BitAbstractArchiveCreator::BitAbstractArchiveCreator(
@@ -215,7 +215,7 @@ BitAbstractArchiveCreator::BitAbstractArchiveCreator(
     mCompressionMethod( format.defaultMethod() ),
     mDictionarySize( 0 ),
     mWordSize( 0 ),
-    mCryptHeaders( false ),
+    mEncryptionScope{ EncryptionScope::DataOnly },
     mSolidMode( false ),
     mVolumeSize( 0 ),
     mThreadsCount( 0 ),
@@ -247,11 +247,16 @@ void BitAbstractArchiveCreator::setPassword( const tstring& password, Encryption
     }
 #endif
     BitAbstractArchiveHandler::setPassword( password );
-    mCryptHeaders = !password.empty() && scope == EncryptionScope::DataAndHeaders;
+    mEncryptionScope = password.empty() ? EncryptionScope::DataOnly : scope;
 }
 
 void BitAbstractArchiveCreator::setPassword( const tstring& password, bool cryptHeaders ) {
     setPassword( password, cryptHeaders ? EncryptionScope::DataAndHeaders : EncryptionScope::DataOnly );
+}
+
+void BitAbstractArchiveCreator::clearPassword() noexcept {
+    BitAbstractArchiveHandler::clearPassword();
+    mEncryptionScope = EncryptionScope::DataOnly;
 }
 
 void BitAbstractArchiveCreator::setCompressionLevel( BitCompressionLevel level ) noexcept {
@@ -365,7 +370,7 @@ auto wordSizePropertyName( const BitInOutFormat& format, BitCompressionMethod me
 
 auto BitAbstractArchiveCreator::archiveProperties() const -> ArchiveProperties {
     ArchiveProperties properties = {};
-    if ( mCryptHeaders && mFormat.hasFeature( FormatFeatures::HeaderEncryption ) ) {
+    if ( cryptHeaders() && mFormat.hasFeature( FormatFeatures::HeaderEncryption ) ) {
         properties.setProperty( L"he", true );
     }
     if ( mFormat.hasFeature( FormatFeatures::CompressionLevel ) ) {

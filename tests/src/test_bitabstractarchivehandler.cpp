@@ -58,7 +58,7 @@ TEST_CASE( "BitAbstractArchiveHandler: constructing a handler", "[bitabstractarc
 }
 
 TEST_CASE(
-    "BitAbstractArchiveHandler: setPassword(...) / password() / isPasswordDefined()",
+    "BitAbstractArchiveHandler: setPassword(...) / clearPassword() / password() / isPasswordDefined()",
     "[bitabstractarchivehandler]"
 ) {
     DummyHandler handler;
@@ -71,6 +71,13 @@ TEST_CASE(
 
     // Setting an empty password clears the previously set one.
     handler.setPassword( BIT7Z_STRING( "" ) );
+    REQUIRE( handler.password().empty() );
+    REQUIRE_FALSE( handler.isPasswordDefined() );
+
+    handler.setPassword( BIT7Z_STRING( "mondo" ) );
+    REQUIRE( handler.isPasswordDefined() );
+
+    handler.clearPassword();
     REQUIRE( handler.password().empty() );
     REQUIRE_FALSE( handler.isPasswordDefined() );
 }

@@ -157,16 +157,19 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
          * @brief Sets up a password for the output archives.
          *
          * When setting a password, the produced archives will be encrypted using the default
-         * cryptographic method of the output format. The option "crypt headers" remains unchanged,
-         * in contrast with what happens when calling the setPassword(tstring, bool) method.
+         * cryptographic method of the output format. Unless the given password is empty, the option
+         * "crypt headers" remains unchanged, in contrast with what happens when calling the
+         * setPassword(tstring, bool) method.
          *
          * @note Calling setPassword when the output format doesn't support archive encryption
          * (e.g., GZip, BZip2, etc...) does not have any effects (in other words, it doesn't
          * throw exceptions, and it has no effects on compression operations).
          *
+         * @note Setting an empty password resets the encryption scope to EncryptionScope::DataOnly.
+         *
          * @note After a password has been set, it will be used for every subsequent operation.
-         * To disable the use of the password, you need to call the clearPassword method
-         * (inherited from BitAbstractArchiveHandler), which is equivalent to setPassword(L"").
+         * To disable the use of the password, you need to call the clearPassword method,
+         * which is equivalent to setPassword(L"").
          *
          * @param password the password to be used when creating/updating archives.
          */
@@ -186,9 +189,12 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
          *
          * @note Using EncryptionScope::DataAndHeaders does not have effects on formats other than 7z.
          *
+         * @note Setting an empty password resets the encryption scope to EncryptionScope::DataOnly,
+         * ignoring the given scope.
+         *
          * @note After a password has been set, it will be used for every subsequent operation.
-         * To disable the use of the password, you need to call the clearPassword method
-         * (inherited from BitAbstractArchiveHandler), which is equivalent to setPassword(L"").
+         * To disable the use of the password, you need to call the clearPassword method,
+         * which is equivalent to setPassword(L"").
          *
          * @param password  the password to be used when creating/updating archives.
          * @param scope     the scope of encryption; use EncryptionScope::DataAndHeaders to also
@@ -211,9 +217,11 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
          * @note Calling setPassword with "cryptHeaders" set to true does not have effects on
          * formats different from 7z.
          *
+         * @note Setting an empty password disables the headers encryption, ignoring the value of "cryptHeaders".
+         *
          * @note After a password has been set, it will be used for every subsequent operation.
-         * To disable the use of the password, you need to call the clearPassword method
-         * (inherited from BitAbstractArchiveHandler), which is equivalent to setPassword(L"").
+         * To disable the use of the password, you need to call the clearPassword method,
+         * which is equivalent to setPassword(L"").
          *
          * @param password      the password to be used when creating/updating archives.
          * @param cryptHeaders  if true, the headers of the output archives will be encrypted
@@ -223,6 +231,16 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
          */
         BIT7Z_DEPRECATED_MSG( "Since v4.1. Please use the setPassword overload taking an EncryptionScope enumerator." )
         void setPassword( const tstring& password, bool cryptHeaders );
+
+        /**
+         * @brief Clear the current password used by the creator.
+         *
+         * Calling clearPassword() will disable the encryption of the output archives.
+         *
+         * @note This is equivalent to calling setPassword(L""); in particular, it also resets the
+         * encryption scope to EncryptionScope::DataOnly, disabling encryption of the headers.
+         */
+        void clearPassword() noexcept final; //-V2023
 
         /**
          * @brief Sets the compression level to be used when creating/updating an archive.
@@ -411,7 +429,7 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
         BitCompressionMethod mCompressionMethod;
         std::uint32_t mDictionarySize;
         std::uint32_t mWordSize;
-        bool mCryptHeaders;
+        EncryptionScope mEncryptionScope;
         bool mSolidMode;
         std::uint64_t mVolumeSize;
         std::uint32_t mThreadsCount;
