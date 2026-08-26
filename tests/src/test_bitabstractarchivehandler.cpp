@@ -12,7 +12,6 @@
 
 #include <catch2/catch.hpp>
 
-#include "utils/filesystem.hpp"
 #include "utils/shared_lib.hpp"
 
 #include <bit7z/bitabstractarchivehandler.hpp>
@@ -28,8 +27,13 @@ namespace {
 // A minimal archive handler, used for testing BitAbstractArchiveHandler's own non-virtual settings.
 class DummyHandler final : public BitAbstractArchiveHandler {
     public:
-        explicit DummyHandler( tstring password = {}, OverwriteMode overwriteMode = OverwriteMode::None )
-            : BitAbstractArchiveHandler{ test::sevenzipLib(), std::move( password ), overwriteMode } {}
+        explicit DummyHandler(
+            tstring password = {},
+            OverwriteMode overwriteMode = OverwriteMode::None,
+            bool retainDirectories = true
+        ) : BitAbstractArchiveHandler{
+                test::sevenzipLib(), std::move( password ), overwriteMode, retainDirectories
+            } {}
 
         BIT7Z_NODISCARD auto format() const noexcept -> const BitInFormat& override {
             return BitFormat::SevenZip;
@@ -54,6 +58,13 @@ TEST_CASE( "BitAbstractArchiveHandler: constructing a handler", "[bitabstractarc
         REQUIRE( handler.isPasswordDefined() );
         REQUIRE( handler.overwriteMode() == OverwriteMode::Skip );
         REQUIRE( handler.retainDirectories() );
+    }
+
+    SECTION( "Using an explicit retainDirectories value" ) {
+        const DummyHandler handler{ {}, OverwriteMode::Skip, false };
+        REQUIRE( handler.password().empty() );
+        REQUIRE( handler.overwriteMode() == OverwriteMode::Skip );
+        REQUIRE_FALSE( handler.retainDirectories() );
     }
 }
 
@@ -172,9 +183,9 @@ TEST_CASE(
         } );
         REQUIRE( handler.fileCallback() != nullptr );
 
-        using test::filesystem::italy;
-        handler.fileCallback()( italy.name );
-        REQUIRE( processedFile == italy.name );
+        constexpr auto testFile = BIT7Z_STRING( "folder/subfolder/item.txt" );
+        handler.fileCallback()( testFile );
+        REQUIRE( processedFile == testFile );
 
         handler.setFileCallback( nullptr );
         REQUIRE( handler.fileCallback() == nullptr );
@@ -196,4 +207,3 @@ TEST_CASE(
         REQUIRE( handler.passwordCallback() == nullptr );
     }
 }
-
