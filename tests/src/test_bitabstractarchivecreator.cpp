@@ -10,10 +10,9 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include "utils/format.hpp"
-
 #include <catch2/catch.hpp>
 
+#include "utils/format.hpp"
 #include "utils/shared_lib.hpp"
 
 #include <bit7z/bitabstractarchivecreator.hpp>
@@ -369,14 +368,13 @@ TEMPLATE_LIST_TEST_CASE(
         auto testMethod = GENERATE( BitCompressionMethod::Lzma, BitCompressionMethod::Lzma2 );
         compressor.setCompressionMethod( testMethod );
 
-        std::uint32_t dictionarySize = 1024 * 1024 * 1024;
+        constexpr std::uint32_t dictionarySize = 1024 * 1024 * 1024;
         compressor.setDictionarySize( dictionarySize );
         REQUIRE( compressor.dictionarySize() == dictionarySize );
 
         compressor.setDictionarySize( kMaxLzmaDictionarySize );
         REQUIRE( compressor.dictionarySize() == kMaxLzmaDictionarySize );
 
-        dictionarySize = std::numeric_limits< std::uint32_t >::max();
         REQUIRE_THROWS( compressor.setDictionarySize( std::numeric_limits< std::uint32_t >::max() ) );
         REQUIRE( compressor.dictionarySize() == kMaxLzmaDictionarySize );
     }
@@ -388,14 +386,13 @@ TEMPLATE_LIST_TEST_CASE(
         REQUIRE( compressor.dictionarySize() == 0 );
         compressor.setCompressionMethod( BitCompressionMethod::Ppmd );
 
-        std::uint32_t dictionarySize = 1024 * 1024 * 1024;
+        constexpr std::uint32_t dictionarySize = 1024 * 1024 * 1024;
         compressor.setDictionarySize( dictionarySize );
         REQUIRE( compressor.dictionarySize() == dictionarySize );
 
         compressor.setDictionarySize( kMaxPpmdDictionarySize );
         REQUIRE( compressor.dictionarySize() == kMaxPpmdDictionarySize );
 
-        dictionarySize = std::numeric_limits< std::uint32_t >::max();
         REQUIRE_THROWS( compressor.setDictionarySize( std::numeric_limits< std::uint32_t >::max() ) );
         REQUIRE( compressor.dictionarySize() == kMaxPpmdDictionarySize );
 
@@ -415,14 +412,13 @@ TEMPLATE_LIST_TEST_CASE(
         TestType compressor( test::sevenzipLib(), BitFormat::BZip2 );
         REQUIRE( compressor.dictionarySize() == 0 );
 
-        std::uint32_t dictionarySize = 1024;
+        constexpr std::uint32_t dictionarySize = 1024;
         compressor.setDictionarySize( dictionarySize );
         REQUIRE( compressor.dictionarySize() == dictionarySize );
 
         compressor.setDictionarySize( kMaxBzip2DictionarySize );
         REQUIRE( compressor.dictionarySize() == kMaxBzip2DictionarySize );
 
-        dictionarySize = std::numeric_limits< std::uint32_t >::max();
         REQUIRE_THROWS( compressor.setDictionarySize( std::numeric_limits< std::uint32_t >::max() ) );
         REQUIRE( compressor.dictionarySize() == kMaxBzip2DictionarySize );
     }
