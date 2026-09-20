@@ -439,10 +439,14 @@ void BitOutputArchive::updateInputIndices() {
     }
 
     std::uint32_t offset = 0;
-    for ( std::uint32_t newIndex = 0; newIndex < itemsCount(); ++newIndex ) {
-        for ( auto it = mDeletedItems.find( newIndex + offset );
-              it != mDeletedItems.end() && *it == newIndex + offset;
-              ++it ) {
+    const auto count = itemsCount();
+    for ( std::uint32_t newIndex = 0; newIndex < count; ++newIndex ) {
+        // Note: the inner loop increments offset, so we cannot hoist the index + offset operation.
+        for (
+            auto it = mDeletedItems.find( newIndex + offset );
+            it != mDeletedItems.end() && *it == newIndex + offset;
+            ++it
+        ) {
             ++offset;
         }
         mInputIndices.push_back( static_cast< InputIndex >( newIndex + offset ) );
