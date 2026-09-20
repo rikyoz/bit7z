@@ -26,6 +26,8 @@
 #include <bit7z/bitarchivewriter.hpp>
 #include <bit7z/bittypes.hpp>
 
+#include <algorithm>
+#include <iterator>
 #include <map>
 #include <utility>
 
@@ -42,6 +44,19 @@ struct EditedArchive : TestOutputArchive {
     EditedArchive( std::string extension, const BitInOutFormat& format, std::size_t packedSize )
         : TestOutputArchive{ std::move( extension ), format, packedSize, multipleItemsContent() } {}
 };
+
+/* Note: the formats don't agree on where the folders of an archive are listed: the 7z and wim test archives
+ * list all of them before any file, while the tar and zip ones interleave the two, listing each folder right
+ * before what it contains. A test working on the files of an archive must therefore look the next one up,
+ * and never take the item that follows a file as another file. */
+auto nextFileItem(
+    const BitArchiveReader::ConstIterator& first,
+    const BitArchiveReader::ConstIterator& last
+) -> BitArchiveReader::ConstIterator {
+    return std::find_if( first, last, []( const BitArchiveItemOffset& item ) -> bool {
+        return !item.isDir();
+    } );
+}
 } // namespace
 
 TEST_CASE( "BitArchiveEditor: Opening a non-existing archive should throw", "[bitarchiveeditor]" ) {
@@ -226,6 +241,85 @@ TEST_CASE(
             const BitArchiveReader reader( test::sevenzipLib(), editedArcPath, testArchive.format() );
             REQUIRE( reader.itemsCount() == ( originalReader.itemsCount() - 1 ) );
             REQUIRE( reader.find( deletedItem->path() ) == reader.cend() );
+        }
+
+        REQUIRE_NOTHROW( fs::remove( editedArcFileName ) );
+    }
+}
+
+TEST_CASE(
+    "BitArchiveEditor: Deleting non-contiguous items in an archive (index-based)",
+    "[bitarchiveeditor]"
+) {
+    const auto arcDir = fs::path{ test_archives_dir } / "extraction" / "multiple_items";
+
+    const TempTestDirectory testDir{ "bitarchiveeditor" };
+
+    const auto testArchive = GENERATE(
+        as< EditedArchive >(),
+        EditedArchive{ "7z", BitFormat::SevenZip, 563797 },
+        EditedArchive{ "tar", BitFormat::Tar, 617472 },
+        EditedArchive{ "wim", BitFormat::Wim, 615351 },
+        EditedArchive{ "zip", BitFormat::Zip, 564097 }
+    );
+
+    DYNAMIC_SECTION( "Archive format: " << testArchive.extension() ) {
+        const fs::path originalArcPath = arcDir / ( "multiple_items." + testArchive.extension() );
+        const fs::path editedArcFileName = "edited." + testArchive.extension();
+
+        REQUIRE_NOTHROW( fs::copy_file( originalArcPath, editedArcFileName ) );
+
+        const BitArchiveReader originalReader(
+            test::sevenzipLib(),
+            to_tstring( originalArcPath.native() ),
+            testArchive.format()
+        );
+
+        // The original archive should have at least 3 files.
+        const auto originalItemsCount = originalReader.itemsCount();
+        REQUIRE( originalItemsCount >= 3 );
+
+        // Iterator to the first file inside the archive. This will be the first file we will delete from the archive.
+        const auto firstDeletedFileItem = nextFileItem( originalReader.begin(), originalReader.end() );
+        REQUIRE( firstDeletedFileItem != originalReader.cend() );
+
+        /* Iterator to the first file after it, which will be kept in the edited archive: the item following a
+         * file is not necessarily one (see nextFileItem), and a folder would make a poor surviving item, having
+         * no content whose crc and size could be compared below. */
+        const auto survivingItem = nextFileItem( std::next( firstDeletedFileItem ), originalReader.end() );
+        REQUIRE( survivingItem != originalReader.cend() );
+
+        /* Iterator to the first file after the surviving file. This will be second file to be deleted.
+         * Note: this is what keeps the two deletions non-contiguous, whatever the format's ordering: the
+         * surviving file sits between them, so their indices can never be consecutive ones. */
+        const auto secondDeletedFileItem = nextFileItem( std::next( survivingItem ), originalReader.end() );
+        REQUIRE( secondDeletedFileItem != originalReader.cend() );
+
+        auto firstDeletedFileIndex = firstDeletedFileItem->index();
+        auto secondDeletedFileIndex = secondDeletedFileItem->index();
+
+        const tstring editedArcPath = to_tstring( editedArcFileName );
+        {
+            BitArchiveEditor editor( test::sevenzipLib(), editedArcPath, testArchive.format() );
+            REQUIRE_NOTHROW( editor.deleteItem( firstDeletedFileIndex ) );
+            REQUIRE_NOTHROW( editor.deleteItem( secondDeletedFileIndex ) );
+            REQUIRE_NOTHROW( editor.applyChanges() );
+        }
+
+        {
+            // The deleted file must not exist in the edited file after applying the changes.
+            const BitArchiveReader reader( test::sevenzipLib(), editedArcPath, testArchive.format() );
+            REQUIRE( reader.itemsCount() == ( originalItemsCount - 2 ) );
+            REQUIRE( reader.find( firstDeletedFileItem->path() ) == reader.cend() );
+            REQUIRE( reader.find( secondDeletedFileItem->path() ) == reader.cend() );
+
+            // The surviving item must still exist in the edited file.
+            const auto remainingItem = reader.find( survivingItem->path() );
+            REQUIRE( remainingItem != reader.cend() );
+            REQUIRE( remainingItem->name() == survivingItem->name() );
+            REQUIRE( remainingItem->isDir() == survivingItem->isDir() );
+            REQUIRE( remainingItem->crc() == survivingItem->crc() );
+            REQUIRE( remainingItem->size() == survivingItem->size() );
         }
 
         REQUIRE_NOTHROW( fs::remove( editedArcFileName ) );
