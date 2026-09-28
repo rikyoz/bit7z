@@ -84,7 +84,6 @@ set(
         src/internal/csymlinkinstream.hpp
         src/internal/csynchronizedinstream.hpp
         src/internal/csynchronizedoutstream.hpp
-        src/internal/cvolumeoutstream.hpp
         src/internal/dateutil.hpp
         src/internal/exceptionutil.hpp
         src/internal/extractcallback.hpp
@@ -164,7 +163,6 @@ set(
         src/internal/csymlinkinstream.cpp
         src/internal/csynchronizedinstream.cpp
         src/internal/csynchronizedoutstream.cpp
-        src/internal/cvolumeoutstream.cpp
         src/internal/dateutil.cpp
         src/internal/extractcallback.cpp
         src/internal/failuresourcecategory.cpp
