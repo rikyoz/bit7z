@@ -31,8 +31,17 @@ using namespace bit7z;
 using namespace bit7z::test;
 using namespace bit7z::test::filesystem;
 
+TEST_CASE( "BitOutputArchive: Compressing to a path without a filename should throw", "[bitoutputarchive]" ) {
+    BitArchiveWriter writer{ test::sevenzipLib(), BitFormat::SevenZip };
+    REQUIRE_THROWS_CODE(
+        writer.compressTo( BIT7Z_STRING( "directory/" ) ),
+        BitError::InvalidArchivePath
+    );
+}
+
 // Note: in the following tests, we use BitArchiveReader for checking BitArchiveWriter's output archives.
 
+#ifdef BIT7Z_TESTS_FILESYSTEM
 TEST_CASE( "BitOutputArchive: Creating a multi-volume archive", "[bitoutputarchive]" ) {
     const auto inputFile = fs::path{ test_filesystem_dir } / "folder" / "clouds.jpg";
 
@@ -167,14 +176,6 @@ TEST_CASE( "BitOutputArchive: Updating an archive overwrites items with matching
     REQUIRE( extractedItems.count( BIT7Z_STRING( "brand_new.dat" ) ) == 1 );
 }
 
-TEST_CASE( "BitOutputArchive: Compressing to a path without a filename should throw", "[bitoutputarchive]" ) {
-    BitArchiveWriter writer{ test::sevenzipLib(), BitFormat::SevenZip };
-    REQUIRE_THROWS_CODE(
-        writer.compressTo( BIT7Z_STRING( "directory/" ) ),
-        BitError::InvalidArchivePath
-    );
-}
-
 TEST_CASE( "BitOutputArchive: Compressing to an existing file must honor the overwrite mode", "[bitoutputarchive]" ) {
     const TempTestDirectory testOutDir{ "test_bitoutputarchive" };
     INFO( "Output directory: " << testOutDir )
@@ -285,3 +286,4 @@ TEST_CASE( "BitOutputArchive: Compressing a commented file should preserve the c
     REQUIRE( fs::remove( expectedFile ) );
 }
 #endif
+#endif // BIT7Z_TESTS_FILESYSTEM

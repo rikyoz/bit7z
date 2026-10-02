@@ -38,6 +38,7 @@ using namespace bit7z::test;
 using namespace bit7z::test::filesystem;
 using bit7z::BitArchiveWriter;
 
+#ifdef BIT7Z_TESTS_FILESYSTEM
 TEST_CASE(
     "BitArchiveWriter: Constructing from a buffer or stream with an explicit start offset reads the input archive",
     "[bitarchivewriter]"
@@ -828,3 +829,4 @@ TEST_CASE(
         REQUIRE_NOTHROW( reader.test() );
     }
 }
+#endif // BIT7Z_TESTS_FILESYSTEM

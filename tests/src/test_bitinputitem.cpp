@@ -37,6 +37,48 @@ TEST_CASE( "BitInputItem filesystem constructor should throw on an invalid path"
     REQUIRE_THROWS_AS( BitInputItem( "nonexistent/file/path" ), BitException );
 }
 
+TEST_CASE( "BitInputItem buffer constructor should set the correct metadata", "[bitinputitem]" ) {
+    const std::string data = "Hello, World!";
+    buffer_t buffer;
+    buffer.reserve( data.size() );
+    std::transform(
+        data.cbegin(),
+        data.cend(),
+        std::back_inserter( buffer ),
+        [] ( char character ) -> byte_t {
+            return static_cast< byte_t >( character );
+        }
+    );
+    const fs::path path = BIT7Z_NATIVE_STRING( "path/to/buffer.txt" );
+
+    const BitInputItem item{ buffer, path.string< tchar >() };
+
+    REQUIRE_FALSE( item.isDir() );
+    REQUIRE_FALSE( item.isSymLink() );
+    REQUIRE( item.size() == buffer.size() );
+    REQUIRE( item.path() == path.native() );
+    REQUIRE( item.attributes() != 0 ); // TODO: Better check file attributes
+    REQUIRE( item.inArchivePath() == path.wstring() );
+    REQUIRE( item.hasNewData() );
+}
+
+TEST_CASE( "BitInputItem std::istream constructor should set the correct metadata", "[bitinputitem]" ) {
+    const std::string data = "Hello, World!";
+    std::istringstream iss{ data };
+    const fs::path path = BIT7Z_NATIVE_STRING( "path/to/stream.txt" );
+
+    const BitInputItem item{ iss, path.string< tchar >() };
+
+    REQUIRE_FALSE( item.isDir() );
+    REQUIRE_FALSE( item.isSymLink() );
+    REQUIRE( item.size() == data.size() );
+    REQUIRE( item.path() == path.native() );
+    REQUIRE( item.attributes() != 0 ); // TODO: Better check file attributes
+    REQUIRE( item.inArchivePath() == path.wstring() );
+    REQUIRE( item.hasNewData() );
+}
+
+#ifdef BIT7Z_TESTS_FILESYSTEM
 TEST_CASE(
     "BitInputItem filesystem constructor should correctly read the metadata of an existing file",
     "[bitinputitem]"
@@ -103,47 +145,6 @@ TEST_CASE(
 }
 #endif
 
-TEST_CASE( "BitInputItem buffer constructor should set the correct metadata", "[bitinputitem]" ) {
-    const std::string data = "Hello, World!";
-    buffer_t buffer;
-    buffer.reserve( data.size() );
-    std::transform(
-        data.cbegin(),
-        data.cend(),
-        std::back_inserter( buffer ),
-        [] ( char character ) -> byte_t {
-            return static_cast< byte_t >( character );
-        }
-    );
-    const fs::path path = BIT7Z_NATIVE_STRING( "path/to/buffer.txt" );
-
-    const BitInputItem item{ buffer, path.string< tchar >() };
-
-    REQUIRE_FALSE( item.isDir() );
-    REQUIRE_FALSE( item.isSymLink() );
-    REQUIRE( item.size() == buffer.size() );
-    REQUIRE( item.path() == path.native() );
-    REQUIRE( item.attributes() != 0 ); // TODO: Better check file attributes
-    REQUIRE( item.inArchivePath() == path.wstring() );
-    REQUIRE( item.hasNewData() );
-}
-
-TEST_CASE( "BitInputItem std::istream constructor should set the correct metadata", "[bitinputitem]" ) {
-    const std::string data = "Hello, World!";
-    std::istringstream iss{ data };
-    const fs::path path = BIT7Z_NATIVE_STRING( "path/to/stream.txt" );
-
-    const BitInputItem item{ iss, path.string< tchar >() };
-
-    REQUIRE_FALSE( item.isDir() );
-    REQUIRE_FALSE( item.isSymLink() );
-    REQUIRE( item.size() == data.size() );
-    REQUIRE( item.path() == path.native() );
-    REQUIRE( item.attributes() != 0 ); // TODO: Better check file attributes
-    REQUIRE( item.inArchivePath() == path.wstring() );
-    REQUIRE( item.hasNewData() );
-}
-
 TEST_CASE(
     "BitInputItem rename constructor should correctly read the metadata of an item from an existing archive",
     "[bitinputitem]"
@@ -164,5 +165,6 @@ TEST_CASE(
     REQUIRE( newItem.inArchivePath() == newItemPath.wstring() );
     REQUIRE_FALSE( newItem.hasNewData() );
 }
+#endif // BIT7Z_TESTS_FILESYSTEM
 
 #endif

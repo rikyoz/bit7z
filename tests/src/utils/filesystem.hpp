@@ -66,12 +66,6 @@ inline auto exePath() -> fs::path {
 #endif
 }
 
-#ifdef BIT7Z_TESTS_DATA_DIR
-
-constexpr auto test_data_dir = BIT7Z_TESTS_DATA_DIR;
-constexpr auto test_filesystem_dir = BIT7Z_TESTS_DATA_DIR "/test_filesystem";
-constexpr auto test_archives_dir = BIT7Z_TESTS_DATA_DIR "/test_archives";
-
 #ifdef _WIN32
 inline auto getenv( const wchar_t* name ) -> std::wstring {
     std::size_t requiredSize = 0;
@@ -109,6 +103,12 @@ inline auto userDir() -> fs::path {
     return std::getenv( "HOME" );
 #endif
 }
+
+#ifdef BIT7Z_TESTS_DATA_DIR
+
+constexpr auto test_data_dir = BIT7Z_TESTS_DATA_DIR;
+constexpr auto test_filesystem_dir = BIT7Z_TESTS_DATA_DIR "/test_filesystem";
+constexpr auto test_archives_dir = BIT7Z_TESTS_DATA_DIR "/test_archives";
 
 inline auto currentDir() -> fs::path {
     std::error_code error;

@@ -38,6 +38,9 @@ namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
 namespace test {
 namespace filesystem {
 
+// Note: like their declarations (see filesystem.hpp), these are only for the tests reading from the filesystem.
+#ifdef BIT7Z_TESTS_DATA_DIR
+
 const FilesystemItemInfo italy{
     BIT7Z_STRING( "italy.svg" ),
     BIT7Z_STRING( "svg" ),
@@ -464,6 +467,8 @@ void PermissionsRestorer::restore() const {
     std::error_code ignored;
     fs::permissions( mTarget, mPerms, fs::perm_options::replace, ignored );
 }
+
+#endif // BIT7Z_TESTS_DATA_DIR
 
 } // namespace filesystem
 } // namespace test

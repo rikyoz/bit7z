@@ -34,6 +34,8 @@
 #include <sstream>
 #include <type_traits>
 
+#ifdef BIT7Z_TESTS_FILESYSTEM
+
 // MSVC doesn't define these macros!
 #if !defined(S_ISREG) && defined(S_IFMT) && defined(S_IFREG)
 #define S_ISREG( m ) (((m) & S_IFMT) == S_IFREG)
@@ -985,3 +987,5 @@ TEMPLATE_TEST_CASE(
         // TODO: Check the items returned in the last result vector.
     }
 }
+
+#endif // BIT7Z_TESTS_FILESYSTEM

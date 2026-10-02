@@ -30,6 +30,8 @@ using namespace bit7z;
 using namespace bit7z::test;
 using namespace bit7z::test::filesystem;
 
+#ifdef BIT7Z_TESTS_FILESYSTEM
+
 namespace {
 void require_extracts_to_filesystem( const BitNestedArchiveReader& info, const ExpectedItems& expectedItems ) {
     const TempTestDirectory testDir{ "test_bitinputarchive" };
@@ -917,3 +919,5 @@ TEST_CASE(
     REQUIRE( innerArchive.itemsCount() == 1 );
     REQUIRE( innerArchive.openCount() == 0 );
 }
+
+#endif // BIT7Z_TESTS_FILESYSTEM

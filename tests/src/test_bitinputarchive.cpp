@@ -50,6 +50,85 @@ using namespace bit7z;
 using namespace bit7z::test;
 using namespace bit7z::test::filesystem;
 
+/* Note: throughout this unit test we will use BitArchiveReader for testing BitInputArchive's specific methods. */
+
+TEST_CASE( "BitInputArchive: Opening a non-existing archive should throw an exception" ) {
+    REQUIRE_THROWS( BitArchiveReader{ test::sevenzipLib(), BIT7Z_STRING( "non-existing.7z" ), BitFormat::SevenZip } );
+
+    const buffer_t emptyBuffer{};
+    REQUIRE_THROWS( BitArchiveReader{ test::sevenzipLib(), emptyBuffer, BitFormat::SevenZip } );
+
+    fs::ifstream nonExistingStream{ "non-existing.7z" };
+    REQUIRE_THROWS( BitArchiveReader{ test::sevenzipLib(), nonExistingStream, BitFormat::SevenZip } );
+}
+
+namespace {
+// Builds an in-memory archive from the given writer configuration and returns the root folder
+// reported by a reader opened on the resulting archive.
+template< typename Configure >
+auto archiveRootFolder( const Configure& configure, const BitInOutFormat& format = BitFormat::SevenZip ) -> tstring {
+    BitArchiveWriter writer{ test::sevenzipLib(), format };
+    configure( writer );
+
+    buffer_t archiveBuffer;
+    writer.compressTo( archiveBuffer );
+
+    const BitArchiveReader reader{ test::sevenzipLib(), archiveBuffer, format };
+    return reader.rootFolder();
+}
+} // namespace
+
+TEST_CASE( "BitInputArchive: Retrieving the archive's root folder", "[bitinputarchive]" ) {
+    // A small dummy content for the in-memory files added to the test archives.
+    const buffer_t fileContent( 8, static_cast< byte_t >( 0x7A ) );
+
+    SECTION( "An empty archive has no root folder" ) {
+        const auto rootFolder = archiveRootFolder( []( BitArchiveWriter& ) -> void {} );
+        REQUIRE( rootFolder.empty() );
+    }
+
+    SECTION( "A single top-level file has no root folder" ) {
+        const auto rootFolder = archiveRootFolder( [ &fileContent ] ( BitArchiveWriter& writer ) -> void {
+            writer.addFile( fileContent, BIT7Z_STRING( "file.txt" ) );
+        } );
+        REQUIRE( rootFolder.empty() );
+    }
+
+    SECTION( "Multiple top-level files have no common root folder" ) {
+        const auto rootFolder = archiveRootFolder( [ &fileContent ]( BitArchiveWriter& writer ) -> void {
+            writer.addFile( fileContent, BIT7Z_STRING( "a.txt" ) );
+            writer.addFile( fileContent, BIT7Z_STRING( "b.txt" ) );
+        } );
+        REQUIRE( rootFolder.empty() );
+    }
+
+    SECTION( "Files sharing a single top-level folder share that root folder" ) {
+        const auto rootFolder = archiveRootFolder( [ &fileContent ] ( BitArchiveWriter& writer ) -> void {
+            writer.addFile( fileContent, BIT7Z_STRING( "root/a.txt" ) );
+            writer.addFile( fileContent, BIT7Z_STRING( "root/b.txt" ) );
+            writer.addFile( fileContent, BIT7Z_STRING( "root/sub/c.txt" ) );
+        } );
+        REQUIRE( rootFolder == BIT7Z_STRING( "root" ) );
+    }
+
+    SECTION( "Files under different top-level folders have no common root folder" ) {
+        const auto rootFolder = archiveRootFolder( [ &fileContent ] ( BitArchiveWriter& writer ) -> void {
+            writer.addFile( fileContent, BIT7Z_STRING( "x/a.txt" ) );
+            writer.addFile( fileContent, BIT7Z_STRING( "y/b.txt" ) );
+        } );
+        REQUIRE( rootFolder.empty() );
+    }
+
+    SECTION( "A top-level file alongside a folder has no common root folder" ) {
+        const auto rootFolder = archiveRootFolder( [ &fileContent ]( BitArchiveWriter& writer ) -> void {
+            writer.addFile( fileContent, BIT7Z_STRING( "readme.txt" ) );
+            writer.addFile( fileContent, BIT7Z_STRING( "folder/a.txt" ) );
+        } );
+        REQUIRE( rootFolder.empty() );
+    }
+}
+
+#ifdef BIT7Z_TESTS_FILESYSTEM
 namespace {
 auto archiveItem(
     const BitArchiveReader& archive,
@@ -429,18 +508,6 @@ void require_archive_tests( const BitArchiveReader& info, const SourceLocation& 
 #define REQUIRE_ARCHIVE_TESTS( info ) \
     require_archive_tests( info, BIT7Z_CURRENT_LOCATION )
 
-/* Note: throughout this unit test we will use BitArchiveReader for testing BitInputArchive's specific methods. */
-
-TEST_CASE( "BitInputArchive: Opening a non-existing archive should throw an exception" ) {
-    REQUIRE_THROWS( BitArchiveReader{ test::sevenzipLib(), BIT7Z_STRING( "non-existing.7z" ), BitFormat::SevenZip } );
-
-    const buffer_t emptyBuffer{};
-    REQUIRE_THROWS( BitArchiveReader{ test::sevenzipLib(), emptyBuffer, BitFormat::SevenZip } );
-
-    fs::ifstream nonExistingStream{ "non-existing.7z" };
-    REQUIRE_THROWS( BitArchiveReader{ test::sevenzipLib(), nonExistingStream, BitFormat::SevenZip } );
-}
-
 // NOLINTNEXTLINE(*-err58-cpp)
 TEMPLATE_TEST_CASE(
     "BitInputArchive: Testing and extracting archives containing only a single file",
@@ -778,72 +845,6 @@ TEMPLATE_TEST_CASE(
         const BitArchiveReader info( test::sevenzipLib(), inputArchive, testFormat.format );
         REQUIRE_ARCHIVE_TESTS( info );
         REQUIRE_ARCHIVE_EXTRACTS( info, {} );
-    }
-}
-
-namespace {
-// Builds an in-memory archive from the given writer configuration and returns the root folder
-// reported by a reader opened on the resulting archive.
-template< typename Configure >
-auto archiveRootFolder( const Configure& configure, const BitInOutFormat& format = BitFormat::SevenZip ) -> tstring {
-    BitArchiveWriter writer{ test::sevenzipLib(), format };
-    configure( writer );
-
-    buffer_t archiveBuffer;
-    writer.compressTo( archiveBuffer );
-
-    const BitArchiveReader reader{ test::sevenzipLib(), archiveBuffer, format };
-    return reader.rootFolder();
-}
-} // namespace
-
-TEST_CASE( "BitInputArchive: Retrieving the archive's root folder", "[bitinputarchive]" ) {
-    // A small dummy content for the in-memory files added to the test archives.
-    const buffer_t fileContent( 8, static_cast< byte_t >( 0x7A ) );
-
-    SECTION( "An empty archive has no root folder" ) {
-        const auto rootFolder = archiveRootFolder( []( BitArchiveWriter& ) -> void {} );
-        REQUIRE( rootFolder.empty() );
-    }
-
-    SECTION( "A single top-level file has no root folder" ) {
-        const auto rootFolder = archiveRootFolder( [ &fileContent ] ( BitArchiveWriter& writer ) -> void {
-            writer.addFile( fileContent, BIT7Z_STRING( "file.txt" ) );
-        } );
-        REQUIRE( rootFolder.empty() );
-    }
-
-    SECTION( "Multiple top-level files have no common root folder" ) {
-        const auto rootFolder = archiveRootFolder( [ &fileContent ]( BitArchiveWriter& writer ) -> void {
-            writer.addFile( fileContent, BIT7Z_STRING( "a.txt" ) );
-            writer.addFile( fileContent, BIT7Z_STRING( "b.txt" ) );
-        } );
-        REQUIRE( rootFolder.empty() );
-    }
-
-    SECTION( "Files sharing a single top-level folder share that root folder" ) {
-        const auto rootFolder = archiveRootFolder( [ &fileContent ] ( BitArchiveWriter& writer ) -> void {
-            writer.addFile( fileContent, BIT7Z_STRING( "root/a.txt" ) );
-            writer.addFile( fileContent, BIT7Z_STRING( "root/b.txt" ) );
-            writer.addFile( fileContent, BIT7Z_STRING( "root/sub/c.txt" ) );
-        } );
-        REQUIRE( rootFolder == BIT7Z_STRING( "root" ) );
-    }
-
-    SECTION( "Files under different top-level folders have no common root folder" ) {
-        const auto rootFolder = archiveRootFolder( [ &fileContent ] ( BitArchiveWriter& writer ) -> void {
-            writer.addFile( fileContent, BIT7Z_STRING( "x/a.txt" ) );
-            writer.addFile( fileContent, BIT7Z_STRING( "y/b.txt" ) );
-        } );
-        REQUIRE( rootFolder.empty() );
-    }
-
-    SECTION( "A top-level file alongside a folder has no common root folder" ) {
-        const auto rootFolder = archiveRootFolder( [ &fileContent ]( BitArchiveWriter& writer ) -> void {
-            writer.addFile( fileContent, BIT7Z_STRING( "readme.txt" ) );
-            writer.addFile( fileContent, BIT7Z_STRING( "folder/a.txt" ) );
-        } );
-        REQUIRE( rootFolder.empty() );
     }
 }
 
@@ -3566,3 +3567,4 @@ TEMPLATE_TEST_CASE(
     }
 }
 #endif
+#endif // BIT7Z_TESTS_FILESYSTEM

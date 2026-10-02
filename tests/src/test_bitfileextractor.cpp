@@ -24,6 +24,8 @@ using namespace bit7z;
 using namespace bit7z::test;
 using namespace bit7z::test::filesystem;
 
+#ifdef BIT7Z_TESTS_FILESYSTEM
+
 namespace {
 auto toString( FilterPolicy policy ) -> std::string {
     switch ( policy ) {
@@ -687,3 +689,5 @@ TEST_CASE(
 }
 
 #endif
+
+#endif // BIT7Z_TESTS_FILESYSTEM

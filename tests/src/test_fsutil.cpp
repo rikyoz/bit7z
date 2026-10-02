@@ -1115,7 +1115,7 @@ struct PathBuildTest {
     fs::path expectedPath;
 };
 
-#ifndef _WIN32
+#if !defined( _WIN32 ) && defined( BIT7Z_TESTS_FILESYSTEM )
 void writeSymlinkFile( const fs::path& filePath, const std::string& content ) {
     fs::ofstream ofs{ filePath, std::ios::out | std::ios::binary };
     ofs.write( content.data(), static_cast< std::streamsize >( content.size() ) );
@@ -1123,6 +1123,7 @@ void writeSymlinkFile( const fs::path& filePath, const std::string& content ) {
 #endif
 } // namespace
 
+#ifdef BIT7Z_TESTS_FILESYSTEM
 TEST_CASE(
     "fsutil: Path building with item paths containing redundant separators",
     "[fsutil][SafeOutPathBuilder]"
@@ -1236,6 +1237,7 @@ TEST_CASE(
         }
     }
 }
+#endif // BIT7Z_TESTS_FILESYSTEM
 
 TEST_CASE( "fsutil: Check if extracted path is outside base path", "[fsutil][SafeOutPathBuilder]" ) {
     SECTION( "Basic ZipSlip attacks" ) {
@@ -1568,6 +1570,8 @@ TEST_CASE( "fsutil: Check if extracted path is outside base path", "[fsutil][Saf
 #endif
 }
 
+#ifdef BIT7Z_TESTS_FILESYSTEM
+
 #ifndef _WIN32
 
 TEST_CASE( "fsutil: Restoring symlinks with valid targets", "[fsutil][SafeOutPathBuilder]" ) {
@@ -1899,3 +1903,5 @@ TEST_CASE( "fsutil: Restoring symlinks handles targets with null bytes", "[fsuti
 }
 
 #endif
+
+#endif // BIT7Z_TESTS_FILESYSTEM

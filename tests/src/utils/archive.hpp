@@ -27,6 +27,9 @@
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
 namespace test {
 
+// Note: the test archives, and what they are expected to hold, are only for the tests reading from the filesystem.
+#ifdef BIT7Z_TESTS_DATA_DIR
+
 using filesystem::ArchiveContent;
 using filesystem::ExpectedItem;
 
@@ -119,6 +122,8 @@ void requireArchiveContent(
 void requireFilesystemItem( const ExpectedItem& expectedItem, const SourceLocation& location );
 
 #define REQUIRE_FILESYSTEM_ITEM( expectedItem ) requireFilesystemItem( expectedItem, BIT7Z_CURRENT_LOCATION )
+
+#endif // BIT7Z_TESTS_DATA_DIR
 
 } // namespace test
 } // namespace bit7z

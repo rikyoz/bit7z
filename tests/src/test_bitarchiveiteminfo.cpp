@@ -29,6 +29,7 @@ TEST_CASE( "BitArchiveItemInfo: Ensuring that item objects are copyable and mova
     STATIC_REQUIRE( std::is_move_assignable< BitArchiveItemInfo >::value );
 }
 
+#ifdef BIT7Z_TESTS_FILESYSTEM
 // NOLINTNEXTLINE(*-err58-cpp)
 TEMPLATE_TEST_CASE(
     "BitArchiveItemInfo: Ensuring that objects in the items() vector can be sorted",
@@ -52,3 +53,4 @@ TEMPLATE_TEST_CASE(
     };
     REQUIRE_NOTHROW( std::sort( items.begin(), items.end(), sort_comparator ) );
 }
+#endif

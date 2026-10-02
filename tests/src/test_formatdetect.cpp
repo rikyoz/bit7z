@@ -30,6 +30,8 @@ using namespace bit7z;
 using namespace bit7z::test;
 using namespace bit7z::test::filesystem;
 
+#ifdef BIT7Z_TESTS_FILESYSTEM
+
 #ifdef BIT7Z_DETECT_FROM_EXTENSION
 // Note: format detection by extension doesn't actually require the file to exist.
 TEST_CASE( "formatdetect: Format detection by extension", "[formatdetect]" ) {
@@ -418,5 +420,7 @@ TEST_CASE( "formatdetect: Format detection of ELF SFX archives", "[formatdetect]
         REQUIRE( reader.itemsCount() > 0 );
     }
 }
+
+#endif // BIT7Z_TESTS_FILESYSTEM
 
 #endif // BIT7Z_AUTO_FORMAT

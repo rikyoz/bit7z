@@ -21,6 +21,9 @@
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
 namespace test {
 
+// Note: like their declarations (see archive.hpp), these are only for the tests reading from the filesystem.
+#ifdef BIT7Z_TESTS_DATA_DIR
+
 void requireArchiveItem(
     const BitInFormat& format,
     const BitArchiveItem& item,
@@ -153,6 +156,8 @@ void requireFilesystemItem( const ExpectedItem& expectedItem, const SourceLocati
         REQUIRE_NOTHROW( fs::remove( expectedItem.inArchivePath ) );
     }
 }
+
+#endif // BIT7Z_TESTS_DATA_DIR
 
 } // namespace test
 } // namespace bit7z

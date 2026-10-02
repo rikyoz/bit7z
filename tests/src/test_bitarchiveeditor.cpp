@@ -39,6 +39,19 @@ using namespace bit7z;
 using namespace bit7z::test;
 using namespace bit7z::test::filesystem;
 
+TEST_CASE( "BitArchiveEditor: Opening a non-existing archive should throw", "[bitarchiveeditor]" ) {
+    REQUIRE_THROWS( BitArchiveEditor{ test::sevenzipLib(), BIT7Z_STRING( "non_existent.7z" ), BitFormat::SevenZip } );
+}
+
+TEST_CASE( "BitArchiveEditor: Opening an archive with an empty path should throw", "[bitarchiveeditor]" ) {
+    const Bit7zLibrary lib{ sevenzipLibPath() };
+    REQUIRE_THROWS_CODE(
+        BitArchiveEditor( lib, BIT7Z_STRING( "" ), BitFormat::SevenZip ),
+        BitError::InvalidArchivePath
+    );
+}
+
+#ifdef BIT7Z_TESTS_FILESYSTEM
 namespace {
 struct EditedArchive : TestOutputArchive {
     EditedArchive( std::string extension, const BitInOutFormat& format, std::size_t packedSize )
@@ -58,10 +71,6 @@ auto nextFileItem(
     } );
 }
 } // namespace
-
-TEST_CASE( "BitArchiveEditor: Opening a non-existing archive should throw", "[bitarchiveeditor]" ) {
-    REQUIRE_THROWS( BitArchiveEditor{ test::sevenzipLib(), BIT7Z_STRING( "non_existent.7z" ), BitFormat::SevenZip } );
-}
 
 TEST_CASE(
     "BitArchiveEditor: Deleting an item using an invalid index should throw and leave the archive unchanged",
@@ -824,14 +833,6 @@ auto indexOf( const BitArchiveReader& reader, const tstring& itemPath ) -> std::
 }
 } // namespace
 
-TEST_CASE( "BitArchiveEditor: Opening an archive with an empty path should throw", "[bitarchiveeditor]" ) {
-    const Bit7zLibrary lib{ sevenzipLibPath() };
-    REQUIRE_THROWS_CODE(
-        BitArchiveEditor( lib, BIT7Z_STRING( "" ), BitFormat::SevenZip ),
-        BitError::InvalidArchivePath
-    );
-}
-
 TEST_CASE( "BitArchiveEditor: setUpdateMode rejects UpdateMode::None", "[bitarchiveeditor]" ) {
     const Bit7zLibrary lib{ sevenzipLibPath() };
     const TempTestDirectory testDir{ "bitarchiveeditor" };
@@ -1084,3 +1085,4 @@ TEST_CASE( "BitArchiveEditor: Adding a new file to an existing archive", "[bitar
     REQUIRE( items[ BIT7Z_STRING( "alpha.txt" ) ] == alphaBytes );
     REQUIRE( items[ BIT7Z_STRING( "beta.txt" ) ] == betaBytes );
 }
+#endif // BIT7Z_TESTS_FILESYSTEM

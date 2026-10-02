@@ -52,6 +52,22 @@ TEST_CASE( "BitItemsVector: Indexing an invalid directory (empty string)", "[bit
     REQUIRE_THROWS( indexDirectory( itemsVector, BIT7Z_STRING( "" ) ) );
 }
 
+TEST_CASE( "BitItemsVector: Indexing the content of an invalid directory (non-existing)", "[bititemsvector]" ) {
+    BitItemsVector itemsVector;
+    REQUIRE_THROWS( indexDirectoryContent( itemsVector, BIT7Z_STRING( "not_existing_path" ) ) );
+}
+
+TEST_CASE( "BitItemsVector: Indexing the content of an invalid directory (empty string)", "[bititemsvector]" ) {
+    BitItemsVector itemsVector;
+    REQUIRE_THROWS( indexDirectoryContent( itemsVector, BIT7Z_STRING( "" ) ) );
+}
+
+TEST_CASE( "BitItemsVector: Indexing a non-existing file should fail", "[bititemsvector]" ) {
+    BitItemsVector itemsVector;
+    REQUIRE_THROWS( indexFile( itemsVector, BIT7Z_STRING( "non-existing.ext" ) ) );
+}
+
+#ifdef BIT7Z_TESTS_FILESYSTEM
 namespace {
 auto in_archive_paths( const BitItemsVector& vector ) -> std::vector< fs::path > {
     std::vector< fs::path > paths;
@@ -1836,16 +1852,6 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (empty custom path mappin
         const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
         REQUIRE_THAT( indexedPaths, Catch::Matchers::UnorderedEquals( testInput.expectedItems ) );
     }
-}
-
-TEST_CASE( "BitItemsVector: Indexing the content of an invalid directory (non-existing)", "[bititemsvector]" ) {
-    BitItemsVector itemsVector;
-    REQUIRE_THROWS( indexDirectoryContent( itemsVector, BIT7Z_STRING( "not_existing_path" ) ) );
-}
-
-TEST_CASE( "BitItemsVector: Indexing the content of an invalid directory (empty string)", "[bititemsvector]" ) {
-    BitItemsVector itemsVector;
-    REQUIRE_THROWS( indexDirectoryContent( itemsVector, BIT7Z_STRING( "" ) ) );
 }
 
 TEST_CASE( "BitItemsVector: Indexing the content of a valid directory", "[bititemsvector]" ) {
@@ -3672,11 +3678,6 @@ TEST_CASE( "BitItemsVector: Indexing a directory as a file should fail", "[bitit
     REQUIRE_THROWS( indexFile( itemsVector, BIT7Z_STRING( "folder/subfolder2" ) ) );
 }
 
-TEST_CASE( "BitItemsVector: Indexing a non-existing file should fail", "[bititemsvector]" ) {
-    BitItemsVector itemsVector;
-    REQUIRE_THROWS( indexFile( itemsVector, BIT7Z_STRING( "non-existing.ext" ) ) );
-}
-
 namespace {
 struct TestFile {
     fs::path inputFile;
@@ -3914,3 +3915,4 @@ TEST_CASE( "BitItemsVector: Indexing long paths", "[bititemsvector]" ) {
 }
 
 #endif
+#endif // BIT7Z_TESTS_FILESYSTEM
