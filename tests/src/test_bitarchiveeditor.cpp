@@ -13,6 +13,7 @@
 #include <catch2/catch.hpp>
 
 #include "utils/archive.hpp"
+#include "utils/buffer.hpp"
 #include "utils/exception.hpp"
 #include "utils/filesystem.hpp"
 #include "utils/shared_lib.hpp"
@@ -558,14 +559,6 @@ TEST_CASE(
 }
 
 namespace {
-template< std::size_t N >
-auto as_bytes( const char (&text)[ N ] ) -> buffer_t { // NOLINT(*-avoid-c-arrays)
-    /* N includes the trailing null terminator, which we exclude from the buffer
-     * so the bytes match the string literal's content. */
-    const auto* const begin = reinterpret_cast< const byte_t* >( text ); // NOLINT(*-pro-type-reinterpret-cast)
-    return { begin, begin + ( N - 1 ) };
-}
-
 auto read_file_text( const fs::path& file ) -> std::string {
     fs::ifstream ifs{ file, std::ios::binary };
     return { std::istreambuf_iterator< char >( ifs ), std::istreambuf_iterator< char >() };
@@ -593,8 +586,8 @@ TEST_CASE( "BitArchiveEditor: applyChanges does not follow a pre-placed <archive
     const tstring archivePathStr = to_tstring( archivePath );
     const tstring itemName = BIT7Z_STRING( "data.txt" );
 
-    const buffer_t originalBytes = as_bytes( "Hello, World!" );
-    const buffer_t updatedBytes = as_bytes( "Updated World!" );
+    const buffer_t originalBytes = asBytes( "Hello, World!" );
+    const buffer_t updatedBytes = asBytes( "Updated World!" );
 
     // Seed the archive with a single file so the editor has something to update.
     {
@@ -787,8 +780,8 @@ TEST_CASE( "BitArchiveEditor: applyChanges refuses in-place multi-volume updates
     const tstring archivePathStr = to_tstring( archivePath );
     const tstring itemName = BIT7Z_STRING( "data.txt" );
 
-    const buffer_t originalBytes = as_bytes( "Hello, World!" );
-    const buffer_t updatedBytes = as_bytes( "Updated World!" );
+    const buffer_t originalBytes = asBytes( "Hello, World!" );
+    const buffer_t updatedBytes = asBytes( "Updated World!" );
 
     {
         BitArchiveWriter writer{ lib, BitFormat::SevenZip };
@@ -838,7 +831,7 @@ TEST_CASE( "BitArchiveEditor: setUpdateMode rejects UpdateMode::None", "[bitarch
     const TempTestDirectory testDir{ "bitarchiveeditor" };
 
     const tstring archivePathStr = to_tstring( testDir.path() / BIT7Z_NATIVE_STRING( "archive.7z" ) );
-    seedArchive( lib, archivePathStr, { { BIT7Z_STRING( "alpha.txt" ), as_bytes( "Alpha original" ) } } );
+    seedArchive( lib, archivePathStr, { { BIT7Z_STRING( "alpha.txt" ), asBytes( "Alpha original" ) } } );
 
     BitArchiveEditor editor{ lib, archivePathStr, BitFormat::SevenZip };
     REQUIRE_NOTHROW( editor.setUpdateMode( UpdateMode::Update ) );
@@ -850,8 +843,8 @@ TEST_CASE( "BitArchiveEditor: Renaming an item preserves its content", "[bitarch
     const TempTestDirectory testDir{ "bitarchiveeditor" };
 
     const tstring archivePathStr = to_tstring( testDir.path() / BIT7Z_NATIVE_STRING( "archive.7z" ) );
-    const buffer_t alphaBytes = as_bytes( "Alpha original" );
-    const buffer_t betaBytes = as_bytes( "Beta original" );
+    const buffer_t alphaBytes = asBytes( "Alpha original" );
+    const buffer_t betaBytes = asBytes( "Beta original" );
     seedArchive( lib, archivePathStr, {
         { BIT7Z_STRING( "alpha.txt" ), alphaBytes },
         { BIT7Z_STRING( "beta.txt" ), betaBytes }
@@ -895,9 +888,9 @@ TEST_CASE( "BitArchiveEditor: Updating an item by index replaces its content", "
     const TempTestDirectory testDir{ "bitarchiveeditor" };
 
     const tstring archivePathStr = to_tstring( testDir.path() / BIT7Z_NATIVE_STRING( "archive.7z" ) );
-    const buffer_t betaBytes = as_bytes( "Beta original" );
+    const buffer_t betaBytes = asBytes( "Beta original" );
     seedArchive( lib, archivePathStr, {
-        { BIT7Z_STRING( "alpha.txt" ), as_bytes( "Alpha original" ) },
+        { BIT7Z_STRING( "alpha.txt" ), asBytes( "Alpha original" ) },
         { BIT7Z_STRING( "beta.txt" ), betaBytes }
     } );
 
@@ -940,9 +933,9 @@ TEST_CASE( "BitArchiveEditor: Updating an item by path replaces its content", "[
     const TempTestDirectory testDir{ "bitarchiveeditor" };
 
     const tstring archivePathStr = to_tstring( testDir.path() / BIT7Z_NATIVE_STRING( "archive.7z" ) );
-    const buffer_t betaBytes = as_bytes( "Beta original" );
+    const buffer_t betaBytes = asBytes( "Beta original" );
     seedArchive( lib, archivePathStr, {
-        { BIT7Z_STRING( "alpha.txt" ), as_bytes( "Alpha original" ) },
+        { BIT7Z_STRING( "alpha.txt" ), asBytes( "Alpha original" ) },
         { BIT7Z_STRING( "beta.txt" ), betaBytes }
     } );
 
@@ -975,11 +968,11 @@ TEST_CASE( "BitArchiveEditor: Editing an item at an invalid index throws", "[bit
 
     const tstring archivePathStr = to_tstring( testDir.path() / BIT7Z_NATIVE_STRING( "archive.7z" ) );
     seedArchive( lib, archivePathStr, {
-        { BIT7Z_STRING( "alpha.txt" ), as_bytes( "Alpha original" ) },
-        { BIT7Z_STRING( "beta.txt" ), as_bytes( "Beta original" ) }
+        { BIT7Z_STRING( "alpha.txt" ), asBytes( "Alpha original" ) },
+        { BIT7Z_STRING( "beta.txt" ), asBytes( "Beta original" ) }
     } );
 
-    const buffer_t someBytes = as_bytes( "irrelevant" );
+    const buffer_t someBytes = asBytes( "irrelevant" );
 
     SECTION( "index out of range" ) {
         BitArchiveEditor editor{ lib, archivePathStr, BitFormat::SevenZip };
@@ -1009,11 +1002,11 @@ TEST_CASE( "BitArchiveEditor: Editing a missing or deleted path throws", "[bitar
 
     const tstring archivePathStr = to_tstring( testDir.path() / BIT7Z_NATIVE_STRING( "archive.7z" ) );
     seedArchive( lib, archivePathStr, {
-        { BIT7Z_STRING( "alpha.txt" ), as_bytes( "Alpha original" ) },
-        { BIT7Z_STRING( "beta.txt" ), as_bytes( "Beta original" ) }
+        { BIT7Z_STRING( "alpha.txt" ), asBytes( "Alpha original" ) },
+        { BIT7Z_STRING( "beta.txt" ), asBytes( "Beta original" ) }
     } );
 
-    const buffer_t someBytes = as_bytes( "irrelevant" );
+    const buffer_t someBytes = asBytes( "irrelevant" );
 
     SECTION( "path not found" ) {
         BitArchiveEditor editor{ lib, archivePathStr, BitFormat::SevenZip };
@@ -1046,7 +1039,7 @@ TEST_CASE( "BitArchiveEditor: Deleting an invalid path throws", "[bitarchiveedit
     const TempTestDirectory testDir{ "bitarchiveeditor" };
 
     const tstring archivePathStr = to_tstring( testDir.path() / BIT7Z_NATIVE_STRING( "archive.7z" ) );
-    seedArchive( lib, archivePathStr, { { BIT7Z_STRING( "alpha.txt" ), as_bytes( "Alpha original" ) } } );
+    seedArchive( lib, archivePathStr, { { BIT7Z_STRING( "alpha.txt" ), asBytes( "Alpha original" ) } } );
 
     BitArchiveEditor editor{ lib, archivePathStr, BitFormat::SevenZip };
 
@@ -1063,14 +1056,14 @@ TEST_CASE( "BitArchiveEditor: Adding a new file to an existing archive", "[bitar
     const TempTestDirectory testDir{ "bitarchiveeditor" };
 
     const tstring archivePathStr = to_tstring( testDir.path() / BIT7Z_NATIVE_STRING( "archive.7z" ) );
-    const buffer_t alphaBytes = as_bytes( "Alpha original" );
-    const buffer_t betaBytes = as_bytes( "Beta original" );
+    const buffer_t alphaBytes = asBytes( "Alpha original" );
+    const buffer_t betaBytes = asBytes( "Beta original" );
     seedArchive( lib, archivePathStr, {
         { BIT7Z_STRING( "alpha.txt" ), alphaBytes },
         { BIT7Z_STRING( "beta.txt" ), betaBytes }
     } );
 
-    const buffer_t addedBytes = as_bytes( "Added content" );
+    const buffer_t addedBytes = asBytes( "Added content" );
     {
         BitArchiveEditor editor{ lib, archivePathStr, BitFormat::SevenZip };
         editor.addFile( addedBytes, BIT7Z_STRING( "added.txt" ) );
