@@ -67,33 +67,41 @@ inline auto exePath() -> fs::path {
 }
 
 #ifdef _WIN32
-inline auto getenv( const wchar_t* name ) -> std::wstring {
+// Note: _wgetenv_s is not thread-safe; the test app does not modify environment variables.
+inline auto getEnvironmentVariable( const wchar_t* name ) -> std::wstring {
     std::size_t requiredSize = 0;
-    _wgetenv_s( &requiredSize, nullptr, 0, name );
-    if ( requiredSize == 0 ) {
-        return {}; // The environment variable doesn't exist.
+    auto error = _wgetenv_s( &requiredSize, nullptr, 0, name );
+    if ( error != 0 || requiredSize == 0 ) {
+        return {}; // The environment variable doesn't exist or could not be queried.
     }
 
     std::wstring result( requiredSize, L'\0' );
+    // std::wstring::data() is const before C++17.
     // NOLINTNEXTLINE(*-container-data-pointer, *-pro-bounds-avoid-unchecked-container-access)
-    _wgetenv_s( &requiredSize, &result[ 0 ], requiredSize, name );
+    error = _wgetenv_s( &requiredSize, &result[ 0 ], result.size(), name );
+    if ( error != 0 || requiredSize == 0 ) {
+        return {}; // Retrieval failed, or the variable no longer exists.
+    }
+    // Note: the required size counts the terminating null character, which a std::wstring must not hold:
+    // a variable set to the empty string would otherwise come back as a string of one such character.
+    result.resize( requiredSize - 1 );
     return result;
 }
 #endif
 
 inline auto userDir() -> fs::path {
 #ifdef _WIN32
-    auto userProfile = getenv( L"USERPROFILE" );
+    auto userProfile = getEnvironmentVariable( L"USERPROFILE" );
     if ( !userProfile.empty() ) {
         return std::move( userProfile );
     }
 
-    auto homeDrive = getenv( L"HOMEDRIVE" );
+    auto homeDrive = getEnvironmentVariable( L"HOMEDRIVE" );
     if ( homeDrive.empty() ) {
         return {};
     }
 
-    auto homePath = getenv( L"HOMEPATH" );
+    auto homePath = getEnvironmentVariable( L"HOMEPATH" );
     if ( homePath.empty() ) {
         return {};
     }
