@@ -201,6 +201,8 @@ class BitOutputArchive {
          * @brief Adds the given standard input stream, using the given name as a path when compressed
          *        in the output archive.
          *
+         * @note Every compression operation reads the stream from the position it had when the item was added.
+         *
          * @param inStream  the input stream to be added.
          * @param name      the name of the file inside the output archive.
          *

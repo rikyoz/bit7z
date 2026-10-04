@@ -15,6 +15,8 @@
 
 #include <cstdint>
 #include <functional>
+#include <ios>
+#include <istream>
 
 struct ISequentialInStream;
 
@@ -40,7 +42,12 @@ struct FilesystemInputItem final {
 
 using BufferInputItem = std::reference_wrapper< const buffer_t >;
 
-using StdInputItem = std::reference_wrapper< std::istream >;
+struct StdInputItem final {
+    std::reference_wrapper< std::istream > stream;
+    // The position the item's content starts at in the stream, i.e., the one the stream was at when the item was
+    // created, or -1 if the stream couldn't tell it.
+    std::streamoff position;
+};
 
 struct RenamedInputItemInitTag final {};
 

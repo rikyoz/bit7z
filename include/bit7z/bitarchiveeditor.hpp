@@ -126,6 +126,9 @@ class BIT7Z_MAYBE_UNUSED BitArchiveEditor final : public BitArchiveWriter {
          * @brief Requests to update the content of the item at the specified index
          *        with the data from the given stream.
          *
+         * @note Every attempt to apply the changes reads the stream from the position it had when this function was
+         *       called.
+         *
          * @param index     the index of the item to be updated.
          * @param inStream  the stream of new data for the item.
          */
@@ -160,6 +163,9 @@ class BIT7Z_MAYBE_UNUSED BitArchiveEditor final : public BitArchiveWriter {
         /**
          * @brief Requests to update the content of the item at the specified path
          *        with the data from the given stream.
+         *
+         * @note Every attempt to apply the changes reads the stream from the position it had when this function was
+         *       called.
          *
          * @param itemPath  the path (in the archive) of the item to be updated.
          * @param inStream  the stream of new data for the item.

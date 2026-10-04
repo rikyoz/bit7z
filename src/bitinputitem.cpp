@@ -20,6 +20,10 @@
 #include "internal/fsutil.hpp"
 #include "internal/stringutil.hpp"
 #include "internal/util.hpp"
+#include "internal/windows.hpp"
+
+#include <ios>
+#include <istream>
 
 namespace bit7z {
 
@@ -195,7 +199,7 @@ BitInputItem::BitInputItem( std::istream& stream, const tstring& path )
     : mProperties{ streamProperties( stream ) },
       mPath{ NATIVE( path ) },
       mInArchivePath{ WIDEN( path ) },
-      mStdItem{ stream } {}
+      mStdItem{ stream, static_cast< std::streamoff >( stream.tellg() ) } {}
 
 BitInputItem::BitInputItem( const BitInputArchive& inputArchive, std::uint32_t index, const tstring& newPath )
     : mProperties{ renamedItemProperties( inputArchive, index ) },
@@ -302,8 +306,20 @@ auto BitInputItem::getStream( ISequentialInStream** inStream ) const -> HRESULT 
         // NOLINTNEXTLINE(*-pro-type-union-access)
         inStreamLoc = bit7z::make_com< CBufferInStream, ISequentialInStream >( mBufferItem );
     } else if ( mProperties.inputType == InputItemType::StdStream ) {
-        // NOLINTNEXTLINE(*-pro-type-union-access)
-        inStreamLoc = bit7z::make_com< CStdInStream, ISequentialInStream >( mStdItem );
+        /* Note: the item is what the stream held past its position when the item was created, which its size was
+         * computed from, so the stream is read from there every time, as an earlier compression may have read it
+         * (e.g., one written elsewhere, or a failed update in place, both leaving the item pending). A stream that
+         * couldn't tell its position is read from where it is. */
+        std::istream& stream = mStdItem.stream; // NOLINT(*-pro-type-union-access)
+        const std::streamoff position = mStdItem.position; // NOLINT(*-pro-type-union-access)
+        if ( position != -1 ) {
+            stream.clear();
+            stream.seekg( position );
+            if ( stream.fail() ) {
+                return HRESULT_FROM_SYSTEM_ERROR( ERROR_SEEK );
+            }
+        }
+        inStreamLoc = bit7z::make_com< CStdInStream, ISequentialInStream >( stream );
     } else {
         // Nothing to do for InputItemType::RenamedItem.
     }

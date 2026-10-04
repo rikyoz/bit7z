@@ -12,6 +12,7 @@
 
 #include <catch2/catch.hpp>
 
+#include "utils/buffer.hpp"
 #include "utils/exception.hpp"
 #include "utils/filesystem.hpp"
 #include "utils/format.hpp"
@@ -29,7 +30,10 @@
 #include <cstdint>
 #include <exception>
 #include <functional>
+#include <initializer_list>
 #include <new>
+#include <sstream>
+#include <string>
 #include <system_error>
 #include <vector>
 
@@ -37,6 +41,38 @@ using namespace bit7z;
 using namespace bit7z::test;
 using namespace bit7z::test::filesystem;
 using bit7z::BitArchiveWriter;
+
+/* An item added from a stream is what the stream holds past its position when added, which its size is computed from:
+ * every compression reads it from there, so one writing elsewhere, leaving the item pending, doesn't leave the stream
+ * read to its end for the next one. The stream is added past its start, so reading it from its start would store
+ * something else. */
+// NOLINTNEXTLINE(*-err58-cpp)
+TEST_CASE(
+    "BitArchiveWriter: Every compression reads an item added from a stream from where it was added",
+    "[bitarchivewriter]"
+) {
+    const std::string skippedContent{ "Skipped content, " };
+    const std::string itemContent{ "The item content" };
+    std::istringstream stream{ skippedContent + itemContent };
+    stream.seekg( static_cast< std::streamoff >( skippedContent.size() ) );
+
+    BitArchiveWriter writer{ test::sevenzipLib(), BitFormat::SevenZip };
+    REQUIRE_NOTHROW( writer.addFile( stream, BIT7Z_STRING( "item.txt" ) ) );
+
+    buffer_t firstArchive;
+    REQUIRE_NOTHROW( writer.compressTo( firstArchive ) );
+    buffer_t secondArchive;
+    REQUIRE_NOTHROW( writer.compressTo( secondArchive ) );
+
+    const buffer_t expectedContent = asBytes( itemContent );
+    for ( const auto* archive : { &firstArchive, &secondArchive } ) {
+        const BitArchiveReader reader{ test::sevenzipLib(), *archive, BitFormat::SevenZip };
+        REQUIRE( reader.itemsCount() == 1 );
+        buffer_t content;
+        REQUIRE_NOTHROW( reader.extractTo( content ) );
+        REQUIRE( content == expectedContent );
+    }
+}
 
 #ifdef BIT7Z_TESTS_FILESYSTEM
 TEST_CASE(
