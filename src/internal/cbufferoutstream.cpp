@@ -14,6 +14,7 @@
 
 #include "bittypes.hpp"
 #include "internal/bufferutil.hpp"
+#include "internal/cpp20.hpp"
 #include "internal/cpp26.hpp"
 
 #include <algorithm> //for std::copy_n
@@ -87,12 +88,19 @@ STDMETHODIMP CBufferOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* ne
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CBufferOutStream::SetSize( UInt64 newSize ) noexcept {
+    const auto oldOffset = mCurrentPosition - mBuffer.begin();
+
     try {
         mBuffer.resize( static_cast< buffer_t::size_type >( newSize ) );
-        return S_OK;
     } catch ( ... ) {
         return E_OUTOFMEMORY;
     }
+
+    // If the current position is past the new end, we clamp it, as an iterator can't point past the end of the buffer.
+    // Note: 7-Zip's own streams behaves differently; they keep such a position, extending the stream on the next write.
+    const bool isPastEnd = cpp20::cmp_less( mBuffer.size(), oldOffset );
+    mCurrentPosition = isPastEnd ? mBuffer.end() : mBuffer.begin() + oldOffset;
+    return S_OK;
 }
 
 } // namespace bit7z
