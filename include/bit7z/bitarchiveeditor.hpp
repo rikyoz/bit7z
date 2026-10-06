@@ -83,22 +83,31 @@ class BIT7Z_MAYBE_UNUSED BitArchiveEditor final : public BitArchiveWriter {
         /**
          * @brief Requests to change the path of the item at the specified index with the given one.
          *
-         * @param index    the index of the item to be renamed.
-         * @param newPath the new path (in the archive) desired for the item.
+         * @note Renaming the item again replaces the path given before, keeping the data it was updated with, if any.
+         *
+         * @param index     the index of the item to be renamed.
+         * @param newPath   the new path desired for the item.
          */
         void renameItem( std::uint32_t index, const tstring& newPath );
 
         /**
          * @brief Requests to change the path of the item from oldPath to the newPath.
          *
-         * @param oldPath the old path (in the archive) of the item to be renamed.
-         * @param newPath the new path (in the archive) desired for the item.
+         * @note The item is found at its current path in the archive: renaming it doesn't change that until the
+         *       changes are applied. Renaming the item again replaces the path given before,
+         *       keeping the data it was updated with, if any.
+         *
+         * @param oldPath   the current path (in the archive) of the item to be renamed.
+         * @param newPath   the new path desired for the item.
          */
         void renameItem( const tstring& oldPath, const tstring& newPath );
 
         /**
          * @brief Requests to update the content of the item at the specified index
          *        with the data from the given file.
+         *
+         * @note The item keeps its current path, or the new one it was renamed to,
+         *       and updating it again replaces the data given before.
          *
          * @param index     the index of the item to be updated.
          * @param inFile    the path to the file containing the new data for the item.
@@ -108,6 +117,9 @@ class BIT7Z_MAYBE_UNUSED BitArchiveEditor final : public BitArchiveWriter {
         /**
          * @brief Requests to update the content of the item at the specified index
          *        with the data from the given buffer.
+         *
+         * @note The item keeps its current path, or the new one it was renamed to,
+         *       and updating it again replaces the data given before.
          *
          * @param index     the index of the item to be updated.
          * @param inBuffer  the buffer containing the new data for the item.
@@ -126,6 +138,9 @@ class BIT7Z_MAYBE_UNUSED BitArchiveEditor final : public BitArchiveWriter {
          * @brief Requests to update the content of the item at the specified index
          *        with the data from the given stream.
          *
+         * @note The item keeps its current path, or the new one it was renamed to,
+         *       and updating it again replaces the data given before.
+         *
          * @note Every attempt to apply the changes reads the stream from the position it had when this function was
          *       called.
          *
@@ -138,7 +153,11 @@ class BIT7Z_MAYBE_UNUSED BitArchiveEditor final : public BitArchiveWriter {
          * @brief Requests to update the content of the item at the specified path
          *        with the data from the given file.
          *
-         * @param itemPath  the path (in the archive) of the item to be updated.
+         * @note The item is found at its current path in the archive: renaming it doesn't change that until the
+         *       changes are applied. The item keeps the path it was renamed to, if any.
+         *       Updating the item again replaces the data given before.
+         *
+         * @param itemPath  the current path (in the archive) of the item to be updated.
          * @param inFile    the path to the file containing the new data for the item.
          */
         void updateItem( const tstring& itemPath, const tstring& inFile );
@@ -147,7 +166,11 @@ class BIT7Z_MAYBE_UNUSED BitArchiveEditor final : public BitArchiveWriter {
          * @brief Requests to update the content of the item at the specified path
          *        with the data from the given buffer.
          *
-         * @param itemPath  the path (in the archive) of the item to be updated.
+         * @note The item is found at its current path in the archive: renaming it doesn't change that until the
+         *       changes are applied. The item keeps the path it was renamed to, if any.
+         *       Updating the item again replaces the data given before.
+         *
+         * @param itemPath  the current path (in the archive) of the item to be updated.
          * @param inBuffer  the buffer containing the new data for the item.
          */
         void updateItem( const tstring& itemPath, const buffer_t& inBuffer );
@@ -164,10 +187,14 @@ class BIT7Z_MAYBE_UNUSED BitArchiveEditor final : public BitArchiveWriter {
          * @brief Requests to update the content of the item at the specified path
          *        with the data from the given stream.
          *
+         * @note The item is found at its current path in the archive: renaming it doesn't change that until the
+         *       changes are applied. The item keeps the path it was renamed to, if any.
+         *       Updating the item again replaces the data given before.
+         *
          * @note Every attempt to apply the changes reads the stream from the position it had when this function was
          *       called.
          *
-         * @param itemPath  the path (in the archive) of the item to be updated.
+         * @param itemPath  the current path (in the archive) of the item to be updated.
          * @param inStream  the stream of new data for the item.
          */
         void updateItem( const tstring& itemPath, std::istream& inStream );

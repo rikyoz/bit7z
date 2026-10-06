@@ -65,42 +65,50 @@ BitArchiveEditor::~BitArchiveEditor() = default;
 
 void BitArchiveEditor::renameItem( std::uint32_t index, const tstring& newPath ) {
     checkIndex( index );
+
+    // Note: an item edited already, e.g., updated, keeps what it is read from, and only takes the new path.
+    const auto editedItem = mEditedItems.find( index );
+    if ( editedItem != mEditedItems.end() ) {
+        editedItem->second.setInArchivePath( newPath );
+        return;
+    }
     setEditedItem( index, BitInputItem{ *inputArchive(), index, newPath } );
 }
 
 void BitArchiveEditor::renameItem( const tstring& oldPath, const tstring& newPath ) {
-    const auto index = findItem( oldPath );
-    setEditedItem( index, BitInputItem{ *inputArchive(), index, newPath } ); //-V108
+    renameItem( findItem( oldPath ), newPath );
 }
 
 void BitArchiveEditor::updateItem( std::uint32_t index, const tstring& inFile ) {
     checkIndex( index );
-    const auto itemName = inputArchive()->itemProperty( index, BitProperty::Path );
+    /* Note: the updated item keeps the path it is stored with in the archive written (the one it was renamed to, if
+     * any), so the path is asked of this editor (see itemProperty), not of the input archive; likewise below. */
+    const auto itemName = itemProperty( static_cast< InputIndex >( index ), BitProperty::Path );
     setEditedItem( index, BitInputItem{ tstringToPath( inFile ), itemName.getNativeString() } ); //-V108
 }
 
 void BitArchiveEditor::updateItem( std::uint32_t index, const buffer_t& inBuffer ) {
     checkIndex( index );
-    const auto itemName = inputArchive()->itemProperty( index, BitProperty::Path );
+    const auto itemName = itemProperty( static_cast< InputIndex >( index ), BitProperty::Path );
     setEditedItem( index, BitInputItem{ inBuffer, itemName.getString() } ); //-V108
 }
 
 void BitArchiveEditor::updateItem( std::uint32_t index, std::istream& inStream ) { //-V2009
     checkIndex( index );
-    const auto itemName = inputArchive()->itemProperty( index, BitProperty::Path );
+    const auto itemName = itemProperty( static_cast< InputIndex >( index ), BitProperty::Path );
     setEditedItem( index, BitInputItem{ inStream, itemName.getString() } ); //-V108
 }
 
 void BitArchiveEditor::updateItem( const tstring& itemPath, const tstring& inFile ) {
-    setEditedItem( findItem( itemPath ), BitInputItem{ tstringToPath( inFile ), tstringToPath( itemPath ) } );
+    updateItem( findItem( itemPath ), inFile );
 }
 
 void BitArchiveEditor::updateItem( const tstring& itemPath, const buffer_t& inBuffer ) {
-    setEditedItem( findItem( itemPath ), BitInputItem{ inBuffer, itemPath } ); //-V108
+    updateItem( findItem( itemPath ), inBuffer );
 }
 
 void BitArchiveEditor::updateItem( const tstring& itemPath, std::istream& inStream ) { //-V2009
-    setEditedItem( findItem( itemPath ), BitInputItem{ inStream, itemPath } ); //-V108
+    updateItem( findItem( itemPath ), inStream );
 }
 
 void BitArchiveEditor::deleteItem( std::uint32_t index, DeletePolicy policy ) {
@@ -314,7 +322,14 @@ void BitArchiveEditor::markItemAsDeleted( std::uint32_t index ) {
 }
 
 void BitArchiveEditor::setEditedItem( std::uint32_t index, BitInputItem&& item ) {
-    mEditedItems.emplace( std::make_pair( index, std::move( item ) ) );
+    /* Note: an item edited again takes the new edit in place of the earlier one, which emplacing alone would keep. It
+     * is assigned in place, not erased and emplaced again, so that failing to emplace cannot lose the earlier edit. */
+    const auto editedItem = mEditedItems.find( index );
+    if ( editedItem != mEditedItems.end() ) {
+        editedItem->second = std::move( item );
+        return;
+    }
+    mEditedItems.emplace( index, std::move( item ) );
 }
 
 } // namespace bit7z

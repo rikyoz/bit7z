@@ -883,6 +883,83 @@ TEST_CASE( "BitArchiveEditor: Renaming an item preserves its content", "[bitarch
     REQUIRE( items[ BIT7Z_STRING( "beta.txt" ) ] == betaBytes );
 }
 
+// NOLINTNEXTLINE(*-err58-cpp)
+TEST_CASE( "BitArchiveEditor: The last rename and the last update of an item both take effect", "[bitarchiveeditor]" ) {
+    const Bit7zLibrary lib{ sevenzipLibPath() };
+    const TempTestDirectory testDir{ "bitarchiveeditor" };
+
+    const tstring archivePathStr = to_tstring( testDir.path() / BIT7Z_NATIVE_STRING( "archive.7z" ) );
+    const buffer_t alphaBytes = asBytes( "Alpha original" );
+    const buffer_t betaBytes = asBytes( "Beta original" );
+    seedArchive( lib, archivePathStr, {
+        { BIT7Z_STRING( "alpha.txt" ), alphaBytes },
+        { BIT7Z_STRING( "beta.txt" ), betaBytes }
+    } );
+
+    // Note: the buffers must outlive the editor, as updateItem only keeps a reference to them.
+    const buffer_t firstBytes = asBytes( "First update" );
+    const buffer_t secondBytes = asBytes( "Second update" );
+    std::map< tstring, buffer_t > expectedItems;
+    {
+        BitArchiveEditor editor{ lib, archivePathStr, BitFormat::SevenZip };
+        const tstring alphaPath = BIT7Z_STRING( "alpha.txt" );
+
+        SECTION( "Renaming it twice" ) { // Renaming an item again replaces the path given before.
+            REQUIRE_NOTHROW( editor.renameItem( alphaPath, BIT7Z_STRING( "first.txt" ) ) );
+            REQUIRE_NOTHROW( editor.renameItem( alphaPath, BIT7Z_STRING( "second.txt" ) ) );
+            expectedItems = { { BIT7Z_STRING( "second.txt" ), alphaBytes }, { BIT7Z_STRING( "beta.txt" ), betaBytes } };
+        }
+
+        SECTION( "Updating it twice" ) { // Updating an item again replaces the data given before.
+            REQUIRE_NOTHROW( editor.updateItem( alphaPath, firstBytes ) );
+            REQUIRE_NOTHROW( editor.updateItem( alphaPath, secondBytes ) );
+            expectedItems = { { alphaPath, secondBytes }, { BIT7Z_STRING( "beta.txt" ), betaBytes } };
+        }
+
+        SECTION( "Renaming it, then updating it" ) { // Renaming an updated item keeps its new data.
+            REQUIRE_NOTHROW( editor.renameItem( alphaPath, BIT7Z_STRING( "renamed.txt" ) ) );
+            REQUIRE_NOTHROW( editor.updateItem( alphaPath, firstBytes ) );
+            expectedItems = {
+                { BIT7Z_STRING( "renamed.txt" ), firstBytes },
+                { BIT7Z_STRING( "beta.txt" ), betaBytes }
+            };
+        }
+
+        SECTION( "Updating it, then renaming it" ) { // Updating a renamed item keeps its current path.
+            REQUIRE_NOTHROW( editor.updateItem( alphaPath, firstBytes ) );
+            REQUIRE_NOTHROW( editor.renameItem( alphaPath, BIT7Z_STRING( "renamed.txt" ) ) );
+            expectedItems = {
+                { BIT7Z_STRING( "renamed.txt" ), firstBytes },
+                { BIT7Z_STRING( "beta.txt" ), betaBytes }
+            };
+        }
+
+        SECTION( "Updating it from a file, then renaming it" ) {
+            // An item updated from a file is still read from it once renamed.
+            const fs::path sourcePath = testDir.path() / BIT7Z_NATIVE_STRING( "source.txt" );
+            {
+                fs::ofstream sourceStream{ sourcePath, std::ios::binary };
+                REQUIRE( sourceStream.is_open() );
+                sourceStream << "From a file";
+            }
+            REQUIRE_NOTHROW( editor.updateItem( alphaPath, to_tstring( sourcePath ) ) );
+            REQUIRE_NOTHROW( editor.renameItem( alphaPath, BIT7Z_STRING( "renamed.txt" ) ) );
+            expectedItems = {
+                { BIT7Z_STRING( "renamed.txt" ), asBytes( "From a file" ) },
+                { BIT7Z_STRING( "beta.txt" ), betaBytes }
+            };
+        }
+
+        REQUIRE_NOTHROW( editor.applyChanges() );
+    }
+
+    const BitArchiveReader reader{ lib, archivePathStr, BitFormat::SevenZip };
+    REQUIRE( reader.itemsCount() == expectedItems.size() );
+    std::map< tstring, buffer_t > items;
+    reader.extractTo( items );
+    REQUIRE( items == expectedItems );
+}
+
 TEST_CASE( "BitArchiveEditor: Updating an item by index replaces its content", "[bitarchiveeditor]" ) {
     const Bit7zLibrary lib{ sevenzipLibPath() };
     const TempTestDirectory testDir{ "bitarchiveeditor" };

@@ -185,6 +185,10 @@ class BitInputItem final {
         auto getStream( ISequentialInStream** inStream ) const -> HRESULT;
 #endif
 
+        // For internal use only: changes the path this item is stored with in the archive, keeping what it is read
+        // from, e.g., when an item a BitArchiveEditor updated is then renamed.
+        void setInArchivePath( const tstring& inArchivePath );
+
         detail::InputItemProperties mProperties;
         // Note: we need to store paths as strings rather than bit7zfs::path as the public API is in C++14.
         native_string mPath; // std::wstring on Windows, std::string elsewhere.

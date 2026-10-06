@@ -231,6 +231,15 @@ auto BitInputItem::inArchivePath() const -> const sevenzip_string& {
     return mInArchivePath;
 }
 
+void BitInputItem::setInArchivePath( const tstring& inArchivePath ) {
+    // Only items read from the filesystem have their own path, i.e., the path of the file they are read from,
+    // which they keep. The others are named by the path they are stored with.
+    if ( mProperties.inputType != InputItemType::Filesystem ) {
+        mPath = NATIVE( inArchivePath );
+    }
+    mInArchivePath = WIDEN( inArchivePath );
+}
+
 auto BitInputItem::itemProperty( BitProperty property ) const -> BitPropVariant {
     BitPropVariant prop;
     switch ( property ) {
