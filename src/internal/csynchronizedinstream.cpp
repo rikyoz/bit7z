@@ -30,7 +30,7 @@ CSynchronizedInStream::CSynchronizedInStream(
     mParentArchive{ parentArchive },
     mIndex{ index },
     mExtractionStarted{ false },
-    mExtractionFinished{ false } {
+    mExtractionResult{ S_OK } {
     mCurrentReadPosition = mReadBuffer.begin();
 }
 
@@ -54,7 +54,7 @@ STDMETHODIMP CSynchronizedInStream::Read( void* data, UInt32 size, UInt32* proce
         mCurrentReadPosition = mReadBuffer.begin();
 
         if ( mReadBuffer.empty() ) {
-            return S_OK;
+            return mExtractionResult.load();
         }
     }
 
@@ -79,8 +79,11 @@ CSynchronizedInStream::~CSynchronizedInStream() {
 void CSynchronizedInStream::extractParentArchive() try {
     mParentArchive.extractSequentially( mBufferQueue, mIndex );
     mBufferQueue.notifyFinished();
-} catch ( const BitException& /*ex*/ ) {
-    // TODO: Error handling
+} catch ( const BitException& ex ) {
+    mExtractionResult = ex.hresultCode();
+    mBufferQueue.notifyFinished();
+} catch ( ... ) {
+    mExtractionResult = E_FAIL;
     mBufferQueue.notifyFinished();
 }
 

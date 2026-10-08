@@ -15,8 +15,12 @@
 #include "utils/archive.hpp"
 #include "utils/shared_lib.hpp"
 
+#include <bit7z/bitarchivewriter.hpp>
+#include <bit7z/bitexception.hpp>
 #include <bit7z/bitnestedarchivereader.hpp>
 #include <bit7z/bittypes.hpp>
+
+#include <string>
 
 using namespace bit7z;
 using namespace bit7z::test;
@@ -33,6 +37,24 @@ void require_extracts_to_filesystem( const BitNestedArchiveReader& info, const E
     }
 }
 } // namespace
+
+TEST_CASE( "BitNestedArchiveReader: Parent extraction errors are not reported as EOF", "[bitnestedarchivereader]" ) {
+    const TempTestDirectory testDir{ "test_bitnestedarchivereader" };
+    const tstring archivePath = to_tstring( testDir.path() / BIT7Z_NATIVE_STRING( "encrypted-parent.7z" ) );
+
+    {
+        BitArchiveWriter writer{ test::sevenzipLib(), BitFormat::SevenZip };
+        writer.setPassword( BIT7Z_STRING( "secret" ) );
+        const std::string invalidArchive = "not a valid tar archive";
+        const buffer_t invalidArchiveBytes( invalidArchive.begin(), invalidArchive.end() );
+        writer.addFile( invalidArchiveBytes, BIT7Z_STRING( "nested.tar" ) );
+        writer.compressTo( archivePath );
+    }
+
+    const BitArchiveReader parent{ test::sevenzipLib(), archivePath, BitFormat::SevenZip };
+    const BitNestedArchiveReader nested{ test::sevenzipLib(), parent, 0, BitFormat::Tar };
+    REQUIRE_THROWS_AS( nested.items(), BitException );
+}
 
 #ifdef BIT7Z_AUTO_FORMAT
 // NOLINTNEXTLINE(*-err58-cpp)
