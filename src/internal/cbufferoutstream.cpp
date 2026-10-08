@@ -27,8 +27,13 @@ CBufferOutStream::CBufferOutStream( buffer_t& outBuffer )
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CBufferOutStream::SetSize( UInt64 newSize ) noexcept {
+    const auto currentPosition = mCurrentPosition - mBuffer.begin();
     try {
         mBuffer.resize( static_cast< buffer_t::size_type >( newSize ) );
+        mCurrentPosition = mBuffer.begin() + std::min(
+            currentPosition,
+            static_cast< buffer_t::difference_type >( mBuffer.size() )
+        );
         return S_OK;
     } catch ( ... ) {
         return E_OUTOFMEMORY;

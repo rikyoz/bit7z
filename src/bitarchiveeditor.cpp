@@ -206,6 +206,10 @@ void BitArchiveEditor::markItemAsDeleted( std::uint32_t index ) {
 }
 
 void BitArchiveEditor::setEditedItem( std::uint32_t index, BitInputItem&& item ) {
+    const auto existing = mEditedItems.find( index );
+    if ( existing != mEditedItems.end() ) {
+        mEditedItems.erase( existing );
+    }
     mEditedItems.emplace( std::make_pair( index, std::move( item ) ) );
 }
 
