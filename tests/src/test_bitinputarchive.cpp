@@ -2425,6 +2425,17 @@ TEMPLATE_TEST_CASE(
                 std::errc::operation_canceled
             );
         }
+
+        SECTION( "A BitException thrown by the ItemBufferCallback is rethrown as it is" ) {
+            const auto throwingCallback = []( const BitArchiveItem&, const tstring& ) -> buffer_t& {
+                throw BitException( "custom callback failure", BitError::Fail );
+            };
+            REQUIRE_THROWS_CODE( info.extractTo( throwingCallback, FilterCallback{} ), BitError::Fail );
+            REQUIRE_THROWS_WITH(
+                info.extractTo( throwingCallback, FilterCallback{} ),
+                Catch::Matchers::Contains( "custom callback failure" )
+            );
+        }
     }
 }
 

@@ -40,7 +40,7 @@ void BufferExtractCallback::releaseStream() {
 auto BufferExtractCallback::getOutStream(
     const BitArchiveItem& item,
     ISequentialOutStream** outStream
-) -> HRESULT try {
+) -> HRESULT {
     if ( item.isDir() ) {
         return S_OK;
     }
@@ -75,8 +75,6 @@ auto BufferExtractCallback::getOutStream(
     *outStream = outStreamLoc.Detach();
     mExtractionAttempted = true;
     return S_OK;
-} catch ( const BitException& exception ) {
-    return exception.hresultCode();
 }
 
 } // namespace bit7z
