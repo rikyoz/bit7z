@@ -758,12 +758,9 @@ void BitInputArchive::extractTo( buffer_t& outBuffer, std::uint32_t index ) cons
         *this,
         std::move( bufferCallback )
     );
-    try {
-        extractArchive( extractCallback, ExtractMode::Extract, index );
-    } catch ( const BitException& ) {
-        outBuffer.clear();
-        throw;
-    }
+    /* Note: if the extraction fails, the buffer keeps what was extracted into it, if anything, as a file extracted to
+     * disk would; otherwise, it's left as it was (e.g., if OverwriteMode::None refused to erase it). */
+    extractArchive( extractCallback, ExtractMode::Extract, index );
 }
 
 void BitInputArchive::extractMatchingTo( buffer_t& outBuffer, const tstring& itemFilter, FilterPolicy policy ) const {

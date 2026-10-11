@@ -1169,6 +1169,9 @@ TEMPLATE_TEST_CASE(
     // The italy.svg file in the ko_test archives is different from the one used for filesystem tests
     static constexpr auto italy_ko_crc32 = 0x2ADFB3AF;
 
+    // The test_filesystem.tar file in the single-file ko_test archives (i.e., the CRC stored in ko_test.gz)
+    static constexpr auto test_filesystem_tar_ko_crc32 = 0x54E3E6F6;
+
     const auto testArchive = GENERATE(
         as< TestInputFormat >(),
         TestInputFormat{ "7z", BitFormat::SevenZip },
@@ -1197,7 +1200,8 @@ TEMPLATE_TEST_CASE(
         std::ostringstream outputStream;
         if ( info.itemsCount() == 1 ) {
             REQUIRE_THROWS( info.extractTo( outputBuffer, 0 ) );
-            REQUIRE( outputBuffer.empty() );
+            // Note: we might have written part of the item to the buffer before 7-zip failed, but not all of it.
+            REQUIRE( crc32( outputBuffer ) != test_filesystem_tar_ko_crc32 );
 
             REQUIRE_THROWS( info.extractTo( outputStream, 0 ) );
             // Note: we might have written some data to the stream before 7-zip failed!
@@ -1212,7 +1216,8 @@ TEMPLATE_TEST_CASE(
 
             outputBuffer.clear();
             REQUIRE_THROWS( info.extractTo( outputBuffer, 1 ) );
-            REQUIRE( outputBuffer.empty() );
+            // Note: we might have written part of the item to the buffer before 7-zip failed, but not all of it.
+            REQUIRE( crc32( outputBuffer ) != loremIpsum.crc32 );
 
             outputStream.str( "" );
             outputStream.clear();
@@ -1748,6 +1753,43 @@ TEST_CASE(
         REQUIRE_NOTHROW( info.extractTo( bufferMap ) );
         REQUIRE( bufferMap.size() == 1 );
         REQUIRE( crc32( bufferMap[ clouds.name ] ) == italy.crc32 );
+    }
+}
+
+TEST_CASE(
+    "BitInputArchive: Extracting an item to a non-empty buffer respects the overwrite mode",
+    "[bitinputarchive]"
+) {
+    buffer_t outBuffer;
+    {
+        // We are preloading a file fixture in the buffer so that we can check whether the overwrite mode changes it.
+        const TestDirectory originalTestDir{ test_filesystem_dir };
+        outBuffer = loadFile( italy.name );
+    }
+
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "single_file" };
+    constexpr auto arcFileName = BIT7Z_STRING( "clouds.jpg.7z" );
+    BitArchiveReader info{ test::sevenzipLib(), arcFileName, BitFormat::SevenZip };
+
+    SECTION( "OverwriteMode::None" ) {
+        info.setOverwriteMode( OverwriteMode::None );
+
+        REQUIRE_THROWS_CODE( info.extractTo( outBuffer, 0 ), std::errc::operation_canceled );
+        REQUIRE( crc32( outBuffer ) == italy.crc32 );
+    }
+
+    SECTION( "OverwriteMode::Overwrite" ) {
+        info.setOverwriteMode( OverwriteMode::Overwrite );
+
+        REQUIRE_NOTHROW( info.extractTo( outBuffer, 0 ) );
+        REQUIRE( crc32( outBuffer ) == clouds.crc32 );
+    }
+
+    SECTION( "OverwriteMode::Skip" ) {
+        info.setOverwriteMode( OverwriteMode::Skip );
+
+        REQUIRE_NOTHROW( info.extractTo( outBuffer, 0 ) );
+        REQUIRE( crc32( outBuffer ) == italy.crc32 );
     }
 }
 
