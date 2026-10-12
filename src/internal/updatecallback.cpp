@@ -85,7 +85,7 @@ STDMETHODIMP UpdateCallback::GetProperty( UInt32 index, PROPID propId, PROPVARIA
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP UpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStream ) noexcept {
-    return guardOperation( [ this, index, inStream ]() -> HRESULT {
+    return guardOperation( "Failed to get the stream", [ this, index, inStream ]() -> HRESULT {
         RINOK( finalize() ) //-V3504
 
         if ( mHandler.fileCallback() ) {

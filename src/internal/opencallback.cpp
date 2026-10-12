@@ -60,7 +60,7 @@ STDMETHODIMP OpenCallback::GetProperty( PROPID property, PROPVARIANT* value ) no
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP OpenCallback::GetStream( const wchar_t* name, IInStream** inStream ) noexcept {
-    return guardOperation( [ this, name, inStream ]() -> HRESULT {
+    return guardOperation( "Failed to get the stream", [ this, name, inStream ]() -> HRESULT {
         *inStream = nullptr;
         if ( mSubArchiveMode ) {
             return S_FALSE;

@@ -1149,11 +1149,13 @@ void BitInputArchive::extractSequentially( BufferQueue& queue, std::uint32_t ind
 void BitInputArchive::extractArchive( ExtractCallback* callback, ExtractMode mode, BitIndicesView indices ) const {
     const auto numItems = indices.empty() ? std::numeric_limits< std::uint32_t >::max() : indices.size();
     const HRESULT res = mInArchive->Extract( indices.data(), numItems, static_cast< std::int32_t >( mode ), callback );
+    /* Note: also if the extraction succeeded, as some formats' handlers ignore a callback's failure, going on
+     * extracting: e.g., the AR, CramFS, FLV, Mach-O, and NSIS ones, reporting the total size; and the BZip2, XZ, and
+     * Zstandard ones, reporting the progress once done. */
+    callback->rethrowStoredException();
     if ( res == S_OK ) {
         return;
     }
-
-    callback->rethrowStoredException();
     throw BitException(
         mode == ExtractMode::Test ? "Could not test the archive" : "Could not extract the archive",
         make_hresult_code( res )

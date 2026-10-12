@@ -30,26 +30,32 @@ namespace bit7z {
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP ExtractCallback::SetTotal( UInt64 size ) noexcept {
-    if ( mHandler.totalCallback() ) {
-        mHandler.totalCallback()( size );
-    }
-    return S_OK;
+    return guardOperation( "Failed to report the total size", [ this, size ]() -> HRESULT {
+        if ( mHandler.totalCallback() ) {
+            mHandler.totalCallback()( size );
+        }
+        return S_OK;
+    } );
 }
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP ExtractCallback::SetCompleted( const UInt64* completeValue ) noexcept {
-    if ( mHandler.progressCallback() && completeValue != nullptr ) {
-        return mHandler.progressCallback()( *completeValue ) ? S_OK : E_ABORT;
-    }
-    return S_OK;
+    return guardOperation( "Failed to report the progress", [ this, completeValue ]() -> HRESULT {
+        if ( mHandler.progressCallback() && completeValue != nullptr ) {
+            return mHandler.progressCallback()( *completeValue ) ? S_OK : E_ABORT;
+        }
+        return S_OK;
+    } );
 }
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP ExtractCallback::SetRatioInfo( const UInt64* inSize, const UInt64* outSize ) noexcept {
-    if ( mHandler.ratioCallback() && inSize != nullptr && outSize != nullptr ) {
-        mHandler.ratioCallback()( *inSize, *outSize );
-    }
-    return S_OK;
+    return guardOperation( "Failed to report the ratio", [ this, inSize, outSize ]() -> HRESULT {
+        if ( mHandler.ratioCallback() && inSize != nullptr && outSize != nullptr ) {
+            mHandler.ratioCallback()( *inSize, *outSize );
+        }
+        return S_OK;
+    } );
 }
 
 COM_DECLSPEC_NOTHROW
@@ -62,7 +68,7 @@ STDMETHODIMP ExtractCallback::PrepareOperation( Int32 askExtractMode ) noexcept 
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP ExtractCallback::GetStream( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode ) noexcept {
-    return guardOperation( [ this, index, outStream, askExtractMode ]() -> HRESULT {
+    return guardOperation( "Failed to get the stream", [ this, index, outStream, askExtractMode ]() -> HRESULT {
         *outStream = nullptr;
         releaseStream();
 
@@ -143,23 +149,25 @@ STDMETHODIMP ExtractCallback::SetOperationResult( Int32 operationResult ) noexce
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP ExtractCallback::CryptoGetTextPassword( BSTR* password ) noexcept {
-    std::wstring pass;
-    if ( !mHandler.isPasswordDefined() ) {
-        if ( mHandler.passwordCallback() ) {
-            pass = WIDEN( mHandler.passwordCallback()() );
+    return guardOperation( "Failed to get the password", [ this, password ]() -> HRESULT {
+        std::wstring pass;
+        if ( !mHandler.isPasswordDefined() ) {
+            if ( mHandler.passwordCallback() ) {
+                pass = WIDEN( mHandler.passwordCallback()() );
+            }
+
+            if ( pass.empty() ) {
+                const auto* msg = mExtractMode == ExtractMode::Test ? kTestFailed : kExtractFailed;
+                const auto error = make_error_code( OperationResult::EmptyPassword );
+                setErrorException( msg, error );
+                return E_FAIL;
+            }
+        } else {
+            pass = WIDEN( mHandler.password() );
         }
 
-        if ( pass.empty() ) {
-            const auto* msg = mExtractMode == ExtractMode::Test ? kTestFailed : kExtractFailed;
-            const auto error = make_error_code( OperationResult::EmptyPassword );
-            setErrorException( msg, error );
-            return E_FAIL;
-        }
-    } else {
-        pass = WIDEN( mHandler.password() );
-    }
-
-    return StringToBstr( pass.c_str(), password );
+        return StringToBstr( pass.c_str(), password );
+    } );
 }
 
 auto ExtractCallback::inputArchive() const -> const BitInputArchive& {

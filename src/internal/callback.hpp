@@ -75,10 +75,11 @@ class Callback : protected CMyUnknownImp {
         void setErrorException( const char* message, std::error_code code ) noexcept;
 
         // Runs `operation`, catching whatever it throws (storing it via setErrorException(), above)
-        // so it can't escape a noexcept COM method such as GetStream().
+        // so it can't escape a noexcept COM method such as GetStream(). The context (e.g., "Failed to
+        // get the stream") prefixes the message of the BitException a std::exception is stored as.
         template< typename Operation >
         BIT7Z_ALWAYS_INLINE_GUARD
-        auto guardOperation( Operation&& operation ) noexcept -> HRESULT;
+        auto guardOperation( const char* context, Operation&& operation ) noexcept -> HRESULT;
 
         const BitAbstractArchiveHandler& mHandler;
 
@@ -91,7 +92,7 @@ class Callback : protected CMyUnknownImp {
 
 template< typename Operation >
 BIT7Z_ALWAYS_INLINE_GUARD
-auto Callback::guardOperation( Operation&& operation ) noexcept -> HRESULT {
+auto Callback::guardOperation( const char* context, Operation&& operation ) noexcept -> HRESULT {
     try {
         return std::forward< Operation >( operation )();
     } catch ( const BitException& exception ) {
@@ -101,7 +102,7 @@ auto Callback::guardOperation( Operation&& operation ) noexcept -> HRESULT {
         // exception.what() already embeds its category's message, and BitException's own
         // std::system_error base would append that same message again if reused here, so only the
         // error code is preserved, not the original message.
-        setErrorException( "Failed to get the stream", exception.code() );
+        setErrorException( context, exception.code() );
         return E_ABORT;
     } catch ( const std::bad_alloc& ) {
         // Avoid allocating while already handling an out-of-memory condition: unlike toBitException()
@@ -110,7 +111,7 @@ auto Callback::guardOperation( Operation&& operation ) noexcept -> HRESULT {
         mErrorException = std::current_exception();
         return E_OUTOFMEMORY;
     } catch ( const std::exception& exception ) {
-        setErrorException( toBitException( "Failed to get the stream", exception ) );
+        setErrorException( toBitException( context, exception ) );
         return E_ABORT;
     } catch ( ... ) {
         // E.g., a user-provided callback threw an exception not derived from std::exception; it must

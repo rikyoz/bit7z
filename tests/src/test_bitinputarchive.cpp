@@ -2261,8 +2261,8 @@ TEST_CASE( "BitInputArchive: Extracting via an empty callback must fail graceful
 }
 
 namespace {
-// Deliberately not derived from std::exception at all, to exercise ExtractCallback::GetStream()'s
-// catch(...) branch -- the true last resort, for exceptions the std::exception tier can't see.
+// Deliberately not derived from std::exception at all, to exercise the catch(...) branch of ExtractCallback's
+// methods (e.g., GetStream()): the true last resort, for exceptions the std::exception tier can't see.
 struct ExoticExtractionFailure {};
 } // namespace
 
@@ -2326,6 +2326,73 @@ TEST_CASE( "BitInputArchive: Callbacks throwing arbitrary exceptions must not te
             throw std::logic_error{ "failing user callback" };
         } ), BitException );
     }
+
+    SECTION( "A ProgressCallback throwing a std::exception-derived error aborts the extraction" ) {
+        BitArchiveReader reader( test::sevenzipLib(), inputArchive, BitFormat::SevenZip );
+        reader.setProgressCallback( []( std::uint64_t ) -> bool {
+            throw std::logic_error{ "failing user callback" };
+        } );
+        REQUIRE_THROWS_WITH( reader.test(), Catch::Matchers::Contains( "failing user callback" ) );
+    }
+
+    SECTION( "A ProgressCallback throwing a non-std::exception type should propagate instead of crashing" ) {
+        BitArchiveReader reader( test::sevenzipLib(), inputArchive, BitFormat::SevenZip );
+        reader.setProgressCallback( []( std::uint64_t ) -> bool {
+            throw ExoticExtractionFailure{};
+        } );
+        REQUIRE_THROWS_AS( reader.test(), ExoticExtractionFailure );
+    }
+
+    SECTION( "A TotalCallback throwing an exception aborts the extraction" ) {
+        BitArchiveReader reader( test::sevenzipLib(), inputArchive, BitFormat::SevenZip );
+        reader.setTotalCallback( []( std::uint64_t ) -> void {
+            throw std::logic_error{ "failing user callback" };
+        } );
+        REQUIRE_THROWS_WITH( reader.test(), Catch::Matchers::Contains( "failing user callback" ) );
+    }
+
+    SECTION( "A RatioCallback throwing an exception aborts the extraction" ) {
+        BitArchiveReader reader( test::sevenzipLib(), inputArchive, BitFormat::SevenZip );
+        reader.setRatioCallback( []( std::uint64_t, std::uint64_t ) -> void {
+            throw std::logic_error{ "failing user callback" };
+        } );
+        REQUIRE_THROWS_WITH( reader.test(), Catch::Matchers::Contains( "failing user callback" ) );
+    }
+}
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEST_CASE( "BitInputArchive: A PasswordCallback throwing an exception aborts the extraction", "[bitinputarchive]" ) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "encrypted" };
+
+    tstring inputArchive;
+    getInputArchive( "encrypted.7z", inputArchive );
+    // Note: only the items are encrypted, so the password is asked for when extracting, not when opening.
+    BitArchiveReader info( test::sevenzipLib(), inputArchive, BitFormat::SevenZip );
+    info.setPasswordCallback( []() -> tstring {
+        throw std::logic_error{ "failing user callback" };
+    } );
+    REQUIRE_THROWS_WITH( info.test(), Catch::Matchers::Contains( "failing user callback" ) );
+}
+
+/* Note: some formats' handlers (e.g., the AR, CramFS and NSIS ones) ignore what reporting the total size returns, going
+ * on extracting: the extraction fails once it ends instead. */
+// NOLINTNEXTLINE(*-err58-cpp)
+TEST_CASE(
+    "BitInputArchive: A TotalCallback throwing an exception fails the extraction even if the format's handler "
+    "ignores it",
+    "[bitinputarchive]"
+) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "detection" / "valid" };
+
+    tstring inputArchive;
+    getInputArchive( "valid.ar", inputArchive );
+    BitArchiveReader info( test::sevenzipLib(), inputArchive, BitFormat::Deb );
+    REQUIRE_NOTHROW( info.test() );
+
+    info.setTotalCallback( []( std::uint64_t ) -> void {
+        throw std::logic_error{ "failing user callback" };
+    } );
+    REQUIRE_THROWS_WITH( info.test(), Catch::Matchers::Contains( "failing user callback" ) );
 }
 
 // NOLINTNEXTLINE(*-err58-cpp)
