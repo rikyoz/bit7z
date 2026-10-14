@@ -1114,7 +1114,12 @@ void BitInputArchive::openArchiveSeqStream( ISequentialInStream* inStream ) cons
 
     res = inSeqArchive->OpenSeq( inStream );
     if ( res != S_OK ) {
-        throw BitException( "Could not open the nested archive", make_hresult_code( res ) );
+        // Note: as when opening a non-nested archive (see makeOpenError), an S_FALSE result means the handler couldn't
+        // open the stream as the requested format, reported as IsNotArc instead of the opaque raw HRESULT.
+        throw BitException(
+            "Could not open the nested archive",
+            res == S_FALSE ? make_error_code( OpenError::IsNotArc ) : make_hresult_code( res )
+        );
     }
 }
 

@@ -17,6 +17,8 @@
 #include "utils/exception.hpp"
 #include "utils/shared_lib.hpp"
 
+#include <bit7z/bitarchivereader.hpp>
+#include <bit7z/bitarchivewriter.hpp>
 #include <bit7z/biterror.hpp>
 #include <bit7z/bitfilecompressor.hpp>
 #include <bit7z/bitnestedarchivereader.hpp>
@@ -921,3 +923,26 @@ TEST_CASE(
 }
 
 #endif // BIT7Z_TESTS_FILESYSTEM
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEST_CASE(
+    "BitNestedArchiveReader: Opening a nested archive with the wrong format reports an invalid archive",
+    "[bitnestedarchivereader]"
+) {
+    const Bit7zLibrary& lib = test::sevenzipLib();
+
+    // A ZIP archive storing as it is an item that isn't a GZip archive.
+    const buffer_t content( 1024, static_cast< byte_t >( 'A' ) ); // NOLINT(*-magic-numbers)
+    BitArchiveWriter writer{ lib, BitFormat::Zip };
+    writer.setCompressionLevel( BitCompressionLevel::None );
+    writer.addFile( content, BIT7Z_STRING( "content.txt" ) );
+    buffer_t zipBuffer;
+    writer.compressTo( zipBuffer );
+
+    const BitArchiveReader parentArchive{ lib, zipBuffer, BitFormat::Zip };
+    const BitNestedArchiveReader nestedArchive{ lib, parentArchive, BitFormat::GZip };
+
+    // This behavior is similar to opening a non-nested archive with the wrong format.
+    // Rather than throwing with the GZip handler's opaque S_FALSE value, we report a more specific error.
+    REQUIRE_THROWS_CODE( nestedArchive.test(), BitFailureSource::InvalidArchive );
+}
