@@ -13,6 +13,7 @@
 #include "bittypes.hpp"
 
 #include <atomic>
+#include <cstddef>
 #include <condition_variable>
 #include <queue>
 #include <mutex>
@@ -49,7 +50,9 @@ class BufferQueue final {
         std::condition_variable mEmptyCondition;
         std::condition_variable mFullCondition;
         std::atomic_bool mFinished{ false };
-        std::atomic< std::uint64_t > mMemoryUsage;
+        // Size of the queued in-memory buffers, so it always fits in a size_t,
+        // which keeps the atomic lock-free on 32-bit targets as well.
+        std::atomic< std::size_t > mMemoryUsage;
         std::uint64_t mMaxMemoryUsage;
 };
 
