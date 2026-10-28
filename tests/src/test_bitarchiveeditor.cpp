@@ -999,3 +999,44 @@ TEST_CASE( "BitArchiveEditor: Adding a new file to an existing archive", "[bitar
     REQUIRE( items[ BIT7Z_STRING( "alpha.txt" ) ] == alphaBytes );
     REQUIRE( items[ BIT7Z_STRING( "beta.txt" ) ] == betaBytes );
 }
+
+TEST_CASE( "BitArchiveEditor: The latest pending edit to an item is applied", "[bitarchiveeditor]" ) {
+    const Bit7zLibrary lib{ sevenzipLibPath() };
+    const TempTestDirectory testDir{ "bitarchiveeditor" };
+
+    const tstring archivePathStr = to_tstring( testDir.path() / BIT7Z_NATIVE_STRING( "archive.7z" ) );
+    const buffer_t originalBytes = as_bytes( "Original content" );
+    const buffer_t firstUpdate = as_bytes( "First update" );
+    const buffer_t finalUpdate = as_bytes( "Final update" );
+    seedArchive( lib, archivePathStr, { { BIT7Z_STRING( "alpha.txt" ), originalBytes } } );
+
+    SECTION( "repeated renames" ) {
+        {
+            BitArchiveEditor editor{ lib, archivePathStr, BitFormat::SevenZip };
+            editor.renameItem( BIT7Z_STRING( "alpha.txt" ), BIT7Z_STRING( "first.txt" ) );
+            editor.renameItem( BIT7Z_STRING( "alpha.txt" ), BIT7Z_STRING( "final.txt" ) );
+            REQUIRE_NOTHROW( editor.applyChanges() );
+        }
+
+        const BitArchiveReader reader{ lib, archivePathStr, BitFormat::SevenZip };
+        std::map< tstring, buffer_t > items;
+        reader.extractTo( items );
+        REQUIRE( items.count( BIT7Z_STRING( "alpha.txt" ) ) == 0 );
+        REQUIRE( items.count( BIT7Z_STRING( "first.txt" ) ) == 0 );
+        REQUIRE( items[ BIT7Z_STRING( "final.txt" ) ] == originalBytes );
+    }
+
+    SECTION( "repeated content updates" ) {
+        {
+            BitArchiveEditor editor{ lib, archivePathStr, BitFormat::SevenZip };
+            editor.updateItem( BIT7Z_STRING( "alpha.txt" ), firstUpdate );
+            editor.updateItem( BIT7Z_STRING( "alpha.txt" ), finalUpdate );
+            REQUIRE_NOTHROW( editor.applyChanges() );
+        }
+
+        const BitArchiveReader reader{ lib, archivePathStr, BitFormat::SevenZip };
+        std::map< tstring, buffer_t > items;
+        reader.extractTo( items );
+        REQUIRE( items[ BIT7Z_STRING( "alpha.txt" ) ] == finalUpdate );
+    }
+}

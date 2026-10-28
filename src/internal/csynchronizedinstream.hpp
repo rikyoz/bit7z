@@ -57,7 +57,7 @@ class CSynchronizedInStream final : public ISequentialInStream, public CMyUnknow
 
         std::thread mExtractorThread;
         std::atomic_bool mExtractionStarted;
-        std::atomic_bool mExtractionFinished;
+        std::atomic< HRESULT > mExtractionResult;
 
         buffer_t mReadBuffer;
         buffer_t::iterator mCurrentReadPosition;
